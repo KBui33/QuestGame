@@ -1,6 +1,5 @@
-import junit.framework.TestCase;
 
-public class AppTest extends TestCase {
+public class AppTest {
 
     public AppTest() {}
 

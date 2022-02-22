@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
 
 public class Handler implements Runnable {
     private final SocketChannel _socketChannel;
@@ -38,7 +39,7 @@ public class Handler implements Runnable {
         _readBuffer.flip();
         byte[] bytes = new byte[_readBuffer.remaining()];
         _readBuffer.get(bytes, 0, bytes.length);
-        System.out.println("== Processing: " + new String(bytes));
+        System.out.println("== Processing: " + new String(bytes, Charset.forName("ISO-8859-1")));
 
         _writeBuffer = ByteBuffer.wrap(bytes);
 

@@ -10,9 +10,10 @@ public class Client implements Runnable {
     private Scanner _scanner;
 
     public Client() throws IOException {
+
         _socket = new Socket("localhost", PORT);
-        _inStream = new ObjectInputStream(_socket.getInputStream());
         _outStream = new ObjectOutputStream(_socket.getOutputStream());
+        _inStream = new ObjectInputStream(_socket.getInputStream());
         _scanner = new Scanner(System.in);
     }
 
