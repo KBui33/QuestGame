@@ -66,7 +66,10 @@ public class Server implements Runnable {
         _workerPool = Executors.newFixedThreadPool(WORKER_POOL_SIZE);
 
         try {
-            new Thread(new Server(9090)).start();
+            Integer port = Integer.parseInt(System.getenv("PORT"));
+            //int port = 9090;
+            new Thread(new Server(port)).start();
+            System.out.println("== Server started on port " + port);
         } catch(IOException e) {
             e.printStackTrace();
         }
