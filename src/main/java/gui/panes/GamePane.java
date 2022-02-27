@@ -1,40 +1,99 @@
 package gui.panes;
 
-import gui.main.ClientApplication;
 import gui.partials.CardView;
-import gui.scenes.LobbyScene;
+import gui.partials.ShieldsView;
+import gui.partials.UserCardView;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
+import static gui.main.Const.BODY_FONT;
+import static gui.main.Construct.SCREEN_WIDTH;
+
+/**
+ * @author James DiNovo
+ *
+ * GamePane contains the main game gui
+ *
+ */
 public class GamePane extends BorderPane {
+
+    private BorderPane topBar;
+    private VBox cardButtons;
+    private CardView myHand, discardedCards;
+    private HBox rankInfoBox;
+    private ShieldsView shieldsView;
+    private Text currentStateText;
+    private Button showHandButton, showDiscardedButton;
+
+    public CardView getMyHand() {
+        return myHand;
+    }
+
+    public CardView getDiscardedCards() {
+        return discardedCards;
+    }
+
+    public ShieldsView getShieldsView() {
+        return shieldsView;
+    }
+
+    public Text getCurrentStateText() {
+        return currentStateText;
+    }
+
+    public Button getShowHandButton() {
+        return showHandButton;
+    }
+
+    public Button getShowDiscardedButton() {
+        return showDiscardedButton;
+    }
 
     public GamePane() {
 
-        CardView allyCards = new CardView();
-        CardView foeCards = new CardView();
+        topBar = new BorderPane();
+        topBar.setMaxSize(SCREEN_WIDTH, 60);
+        setMargin(topBar, new Insets(5));
+
+        cardButtons = new VBox();
+        cardButtons.setSpacing(5);
+        cardButtons.setMaxSize(150, 60);
+        setMargin(cardButtons, new Insets(5));
+
+        myHand = new UserCardView();
+        discardedCards = new CardView();
+
+        // put current rank card next to shields
+        rankInfoBox = new HBox();
+        shieldsView = new ShieldsView();
 
 
-        for (int i = 1; i <= 11; i++) {
-            allyCards.addCard("/specials/quest_ally_" + i + ".png");
-        }
-        for (int i = 1; i <= 11; i++) {
-            foeCards.addCard("/foes/quest_foe_" + i + ".png");
-        }
+        currentStateText = new Text();
+        currentStateText.setFont(BODY_FONT);
+        currentStateText.setTextAlignment(TextAlignment.CENTER);
 
-        this.setBottom(foeCards.node());
+        showHandButton = new Button("Hand");
+        showHandButton.setPrefSize(150, 25);
+        showHandButton.getStyleClass().add("caution");
 
-        Button toggleButton = new Button("Switch Deck");
-        toggleButton.setPrefSize(150, 25);
-        toggleButton.getStyleClass().add("caution");
-        toggleButton.setOnAction(e -> {
-            System.out.println("Switching deck");
-            if (this.getBottom() != null && this.getBottom().equals(allyCards.node())) {
-                this.setBottom(foeCards.node());
-            } else {
-                this.setBottom(allyCards.node());
-            }
-        });
+        showDiscardedButton = new Button("Discarded");
+        showDiscardedButton.setPrefSize(150, 25);
+        showDiscardedButton.getStyleClass().add("caution");
 
-        this.setCenter(toggleButton);
+        cardButtons.getChildren().addAll(showHandButton, showDiscardedButton);
+        topBar.setLeft(shieldsView);
+        topBar.setRight(currentStateText);
+        setAlignment(cardButtons, Pos.BOTTOM_RIGHT);
+        this.setRight(cardButtons);
+        setAlignment(shieldsView, Pos.TOP_LEFT);
+        setAlignment(currentStateText, Pos.TOP_RIGHT);
+        this.setTop(topBar);
+        this.setBottom(myHand.node());
     }
 }

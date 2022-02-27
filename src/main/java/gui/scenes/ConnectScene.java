@@ -1,5 +1,6 @@
 package gui.scenes;
 
+import gui.controllers.ConnectController;
 import gui.main.Construct;
 import javafx.scene.Scene;
 import gui.panes.ConnectPane;
@@ -13,5 +14,6 @@ public class ConnectScene extends Scene {
     public ConnectScene() {
         super(new ConnectPane(), Construct.SCREEN_WIDTH, Construct.SCREEN_HEIGHT);
         this.getStylesheets().add(String.valueOf(ConnectScene.class.getResource("/styles/style.css")));
+        new ConnectController((ConnectPane) this.getRoot());
     }
 }
