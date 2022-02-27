@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
@@ -76,14 +77,13 @@ public class GamePane extends BorderPane {
         currentStateText = new Text();
         currentStateText.getStyleClass().add("body-font");
         currentStateText.setTextAlignment(TextAlignment.CENTER);
+        currentStateText.setFill(Paint.valueOf("#ff0000"));
 
         showHandButton = new Button("Hand");
         showHandButton.setPrefSize(150, 25);
-        showHandButton.getStyleClass().add("caution");
 
         showDiscardedButton = new Button("Discarded");
         showDiscardedButton.setPrefSize(150, 25);
-        showDiscardedButton.getStyleClass().add("caution");
 
         cardButtons.getChildren().addAll(showHandButton, showDiscardedButton);
         topBar.setLeft(shieldsView);
@@ -93,6 +93,5 @@ public class GamePane extends BorderPane {
         setAlignment(shieldsView, Pos.TOP_LEFT);
         setAlignment(currentStateText, Pos.TOP_RIGHT);
         this.setTop(topBar);
-        this.setBottom(myHand.node());
     }
 }

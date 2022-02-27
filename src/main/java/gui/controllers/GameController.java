@@ -29,8 +29,11 @@ public class GameController {
             System.out.println("showing hand");
             if (view.getBottom() != null && view.getBottom().equals(view.getMyHand().node())) {
                 view.setBottom(null);
+                view.getShowHandButton().getStyleClass().remove("caution");
             } else {
                 view.setBottom(view.getMyHand().node());
+                view.getShowHandButton().getStyleClass().add("caution");
+                view.getShowDiscardedButton().getStyleClass().remove("caution");
             }
         });
 
@@ -38,8 +41,11 @@ public class GameController {
             System.out.println("showing discarded");
             if (view.getBottom() != null && view.getBottom().equals(view.getDiscardedCards().node())) {
                 view.setBottom(null);
+                view.getShowDiscardedButton().getStyleClass().remove("caution");
             } else {
                 view.setBottom(view.getDiscardedCards().node());
+                view.getShowDiscardedButton().getStyleClass().add("caution");
+                view.getShowHandButton().getStyleClass().remove("caution");
             }
         });
 
