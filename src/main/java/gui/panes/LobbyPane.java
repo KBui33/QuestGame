@@ -8,9 +8,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-import static gui.main.Const.BODY_FONT;
-import static gui.main.Const.HEADER_FONT;
-
 /**
  * @author James DiNovo
  *
@@ -48,7 +45,7 @@ public class LobbyPane extends BorderPane {
 
     public LobbyPane() {
         header = new Text("Connected to Lobby");
-        header.setFont(HEADER_FONT);
+        header.getStyleClass().add("header-font");
         setAlignment(header, Pos.CENTER);
         setMargin(header, new Insets(20));
 
@@ -57,13 +54,13 @@ public class LobbyPane extends BorderPane {
         infoBox.setSpacing(10);
 
         serverText = new Text("Server Address: ");
-        serverText.setFont(BODY_FONT);
+        serverText.getStyleClass().add("body-font");
 
         playersText = new Text("Players Connected: ");
-        playersText.setFont(BODY_FONT);
+        playersText.getStyleClass().add("body-font");
 
         statusText = new Text("Waiting for players...");
-        statusText.setFont(BODY_FONT);
+        statusText.getStyleClass().add("body-font");
 
         infoBox.getChildren().addAll(serverText, playersText, statusText);
 

@@ -1,7 +1,5 @@
 package gui.panes;
 
-import gui.main.ClientApplication;
-import gui.scenes.LobbyScene;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -10,9 +8,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-
-import static gui.main.Const.BODY_FONT;
-import static gui.main.Const.HEADER_FONT;
 
 /**
  * @author James DiNovo
@@ -41,10 +36,10 @@ public class ConnectPane extends BorderPane {
         VBox mainColumn = new VBox();
 
         header = new Text("Quest");
-        header.setFont(HEADER_FONT);
+        header.getStyleClass().add("header-font");
 
         serverAddressLabel = new Label("Server Address");
-        serverAddressLabel.setFont(BODY_FONT);
+        serverAddressLabel.getStyleClass().add("body-font");
 
         serverAddress = new TextField();
         serverAddress.setMaxWidth(200);

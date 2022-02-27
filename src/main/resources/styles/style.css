@@ -5,7 +5,30 @@
             radial-gradient(center 50% 50%, radius 50%, #FFFFFF33, #00000033);
 }
 
+.header-font {
+    -fx-font-family: Impact;
+    -fx-font-size: 40;
+    -fx-font-weight: bold;
+    -fx-font-style: normal;
+}
+
+.body-font {
+    -fx-font-family: Impact;
+    -fx-font-size: 25;
+    -fx-font-weight: normal;
+    -fx-font-style: normal;
+}
+
+.stats-font {
+    -fx-font-family: Impact;
+    -fx-font-size: 15;
+    -fx-font-weight: lighter;
+    -fx-font-style: normal;
+}
+
 .button {
+    -fx-font-family: Impact;
+    -fx-font-weight: lighter;
     -fx-border-radius: 10;
     -fx-background-radius: 10;
     -fx-border-color: #000000;

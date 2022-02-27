@@ -12,7 +12,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
-import static gui.main.Const.BODY_FONT;
 import static gui.main.Construct.SCREEN_WIDTH;
 
 /**
@@ -75,7 +74,7 @@ public class GamePane extends BorderPane {
 
 
         currentStateText = new Text();
-        currentStateText.setFont(BODY_FONT);
+        currentStateText.getStyleClass().add("body-font");
         currentStateText.setTextAlignment(TextAlignment.CENTER);
 
         showHandButton = new Button("Hand");
