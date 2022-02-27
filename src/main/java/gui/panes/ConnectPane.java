@@ -1,5 +1,8 @@
 package gui.panes;
 
+import gui.main.ClientApplication;
+import gui.scenes.LobbyScene;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -34,16 +37,21 @@ public class ConnectPane extends BorderPane {
         serverAddress.setText("127.0.0.1");
 
         Button connectButton = new Button("Connect");
-        connectButton.setPrefSize(100, 50);
+        connectButton.setPrefSize(100, 25);
+        connectButton.getStyleClass().add("success");
         connectButton.setOnAction(e -> {
             System.out.println("Connecting to " + serverAddress.getText().trim() + "...");
+            ClientApplication.window.setScene(new LobbyScene());
         });
 
 
-        vBox.getChildren().addAll(header, serverAddressLabel, serverAddress, connectButton);
+        vBox.getChildren().addAll(serverAddressLabel, serverAddress, connectButton);
         vBox.setSpacing(10);
         vBox.setAlignment(Pos.CENTER);
 
+        this.setTop(header);
+        setAlignment(header, Pos.CENTER);
+        setMargin(header, new Insets(20));
         this.setCenter(vBox);
 
     }

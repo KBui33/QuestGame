@@ -1,8 +1,19 @@
 .button {
-    -fx-background-color: #aaffaa;
     -fx-border-radius: 10;
     -fx-background-radius: 10;
     -fx-border-color: #000000;
     -fx-border-width: 0.5;
     -fx-font-size: 18;
+}
+
+.success {
+    -fx-background-color: #aaffaa;
+}
+
+.caution {
+    -fx-background-color: #ffffaa;
+}
+
+.warn {
+    -fx-background-color: #ffaaaa;
 }
