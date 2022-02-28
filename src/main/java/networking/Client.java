@@ -65,9 +65,6 @@ public class Client implements Runnable {
                 _readBuffer.flip();
                 byte[] inMessage = new byte[_readBuffer.limit()];
                 _readBuffer.get(inMessage);
-                //_outStream.writeObject(sentCommand);
-                //_outStream.flush();
-                //_outStream.reset();
 
                 GameCommand receivedCommand = GameCommand.fromBytesArray(inMessage);
                 System.out.println("== Server says: " + receivedCommand);

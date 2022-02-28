@@ -53,19 +53,15 @@ public class GameCommand implements Serializable {
     }
 
     public static GameCommand fromBytesArray(byte[] bytes) throws IOException, ClassNotFoundException {
-       GameCommand command = null;
-       System.out.println("== Read: " + bytes.length);
        ByteArrayInputStream bis = new ByteArrayInputStream(bytes, 0, bytes.length);
        ObjectInputStream ins = new ObjectInputStream(bis);
-       command = (GameCommand) ins.readObject();
-
-       return command;
+       return (GameCommand) ins.readObject();
     }
 
     public static byte[] toBytesArray(GameCommand gameCommand) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream outs = new ObjectOutputStream(bos);
-        outs.flush();
+        outs.writeObject(gameCommand);
         return bos.toByteArray();
     }
 }
