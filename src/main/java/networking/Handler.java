@@ -1,6 +1,8 @@
 package networking;
 // CODE FROM::https://tianpan.co/blog/2015-01-13-understanding-reactor-pattern-for-highly-scalable-i-o-bound-web-server
 
+import logic.GameCommand;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -12,12 +14,12 @@ public class Handler implements Runnable {
     private final SocketChannel _socketChannel;
     private final SelectionKey _selectionKey;
 
-    private static final int READ_BUFFER_SIZE = 1024;
-    private static final int WRITE_BUFFER_SIZE = 1024;
+    private static final int READ_BUFFER_SIZE = 2048;
+    private static final int WRITE_BUFFER_SIZE = 2048;
     private ByteBuffer _readBuffer = ByteBuffer.allocate(READ_BUFFER_SIZE);
     private ByteBuffer _writeBuffer = ByteBuffer.allocate(WRITE_BUFFER_SIZE);
 
-    public Handler(Selector selector, SocketChannel socketChannel) throws IOException {
+    public Handler(Selector selector, SocketChannel socketChannel) throws IOException, ClassNotFoundException {
         _socketChannel = socketChannel;
         _socketChannel.configureBlocking(false);
 
@@ -38,9 +40,9 @@ public class Handler implements Runnable {
 
     synchronized void process() {
         _readBuffer.flip();
-        byte[] bytes = new byte[_readBuffer.remaining()];
-        _readBuffer.get(bytes, 0, bytes.length);
-        System.out.println("== Processing: " + new String(bytes, Charset.forName("ISO-8859-1")));
+        byte[] bytes = new byte[_readBuffer.limit()];
+        _readBuffer.get(bytes);
+        System.out.println("== Processing: " + new String(bytes));
 
         _writeBuffer = ByteBuffer.wrap(bytes);
 

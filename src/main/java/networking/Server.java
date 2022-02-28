@@ -1,8 +1,13 @@
 package networking;
 // CODE FROM::https://tianpan.co/blog/2015-01-13-understanding-reactor-pattern-for-highly-scalable-i-o-bound-web-server
 
+import logic.GameCommand;
+
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -56,7 +61,7 @@ public class Server implements Runnable {
             try {
                 SocketChannel socketChannel = _serverSocketChannel.accept();
                 if(socketChannel != null) new Handler(_selector, socketChannel);
-            } catch (IOException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
@@ -66,8 +71,8 @@ public class Server implements Runnable {
         _workerPool = Executors.newFixedThreadPool(WORKER_POOL_SIZE);
 
         try {
-            Integer port = Integer.parseInt(System.getenv("PORT"));
-            //int port = 9090;
+            //Integer port = Integer.parseInt(System.getenv("PORT"));
+            int port = 5000;
             new Thread(new Server(port)).start();
             System.out.println("== Server started on port " + port);
         } catch(IOException e) {
