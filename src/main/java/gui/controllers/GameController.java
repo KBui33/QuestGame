@@ -25,13 +25,31 @@ public class GameController {
             view.getDiscardedCards().addCard("/foes/quest_foe_" + i + ".png");
         }
 
+        view.getMyHand().getList().forEach(cardView -> {
+            cardView.getDiscardButton().setOnAction(e -> {
+                // send delete signal to server and await response
+                view.getMyHand().removeCard(cardView);
+            });
+
+            cardView.getPlayButton().setOnAction(e -> {
+                System.out.println("Play");
+            });
+
+            cardView.setOnMouseEntered(e -> {
+                cardView.getButtonBox().setVisible(true);
+            });
+            cardView.setOnMouseExited(e -> {
+                cardView.getButtonBox().setVisible(false);
+            });
+        });
+
         view.getShowHandButton().setOnAction(e -> {
             System.out.println("showing hand");
-            if (view.getBottom() != null && view.getBottom().equals(view.getMyHand().node())) {
+            if (view.getBottom() != null && view.getBottom().equals(view.getMyHand().getListView())) {
                 view.setBottom(null);
                 view.getShowHandButton().getStyleClass().remove("caution");
             } else {
-                view.setBottom(view.getMyHand().node());
+                view.setBottom(view.getMyHand().getListView());
                 view.getShowHandButton().getStyleClass().add("caution");
                 view.getShowDiscardedButton().getStyleClass().remove("caution");
             }
@@ -39,11 +57,11 @@ public class GameController {
 
         view.getShowDiscardedButton().setOnAction(e -> {
             System.out.println("showing discarded");
-            if (view.getBottom() != null && view.getBottom().equals(view.getDiscardedCards().node())) {
+            if (view.getBottom() != null && view.getBottom().equals(view.getDiscardedCards().getListView())) {
                 view.setBottom(null);
                 view.getShowDiscardedButton().getStyleClass().remove("caution");
             } else {
-                view.setBottom(view.getDiscardedCards().node());
+                view.setBottom(view.getDiscardedCards().getListView());
                 view.getShowDiscardedButton().getStyleClass().add("caution");
                 view.getShowHandButton().getStyleClass().remove("caution");
             }

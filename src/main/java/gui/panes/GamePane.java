@@ -1,8 +1,8 @@
 package gui.panes;
 
-import gui.partials.CardView;
+import gui.partials.DeckView;
 import gui.partials.ShieldsView;
-import gui.partials.UserCardView;
+import gui.partials.ModifiableDeckView;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -25,17 +25,17 @@ public class GamePane extends BorderPane {
 
     private BorderPane topBar;
     private VBox cardButtons;
-    private CardView myHand, discardedCards;
+    private DeckView myHand, discardedCards;
     private HBox rankInfoBox;
     private ShieldsView shieldsView;
     private Text currentStateText;
     private Button showHandButton, showDiscardedButton;
 
-    public CardView getMyHand() {
+    public DeckView getMyHand() {
         return myHand;
     }
 
-    public CardView getDiscardedCards() {
+    public DeckView getDiscardedCards() {
         return discardedCards;
     }
 
@@ -66,8 +66,8 @@ public class GamePane extends BorderPane {
         cardButtons.setMaxSize(150, 60);
         setMargin(cardButtons, new Insets(5));
 
-        myHand = new UserCardView();
-        discardedCards = new CardView();
+        myHand = new ModifiableDeckView();
+        discardedCards = new DeckView();
 
         // put current rank card next to shields
         rankInfoBox = new HBox();
@@ -80,10 +80,8 @@ public class GamePane extends BorderPane {
         currentStateText.setFill(Paint.valueOf("#ff0000"));
 
         showHandButton = new Button("Hand");
-        showHandButton.setPrefSize(150, 25);
 
         showDiscardedButton = new Button("Discarded");
-        showDiscardedButton.setPrefSize(150, 25);
 
         cardButtons.getChildren().addAll(showHandButton, showDiscardedButton);
         topBar.setLeft(shieldsView);

@@ -35,6 +35,8 @@
     -fx-border-color: #000000;
     -fx-border-width: 0.5;
     -fx-font-size: 18;
+    -fx-pref-width: 150;
+    -fx-pref-height: 25;
 }
 
 .success {
