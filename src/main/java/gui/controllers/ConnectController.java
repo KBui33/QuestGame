@@ -3,6 +3,9 @@ package gui.controllers;
 import gui.main.ClientApplication;
 import gui.panes.ConnectPane;
 import gui.scenes.LobbyScene;
+import networking.Client;
+
+import java.io.IOException;
 
 /**
  * @author James DiNovo
@@ -16,7 +19,15 @@ public class ConnectController {
 
     public void setView(ConnectPane view) {
         view.getConnectButton().setOnAction(e -> {
-            System.out.println("Connecting to " + view.getServerAddress().getText().trim() + "...");
+            String serverHost = view.getServerAddress().getText().trim();
+            System.out.println("Connecting to " + serverHost + "...");
+            // Create new client instance to connect to server
+            try {
+                Client.getInstance(serverHost);
+            } catch(IOException err) {
+                err.printStackTrace();
+            }
+
             ClientApplication.window.setScene(new LobbyScene());
         });
     }

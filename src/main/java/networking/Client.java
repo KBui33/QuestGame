@@ -1,6 +1,8 @@
 package networking;
 
 import logic.GameCommand;
+import utils.Observer;
+import utils.Subject;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -11,18 +13,63 @@ import java.util.Scanner;
 
 public class Client implements Runnable {
     private final int PORT = 80;
-    private Socket _socket;
-    private SocketChannel _socketChannel;
-    private Scanner _scanner;
     private static final int READ_BUFFER_SIZE = 2048;
     private static final int WRITE_BUFFER_SIZE = 2048;
+
+    private static Client client = null;
+
+    private SocketChannel _socketChannel;
+    private final ObjectInputStream _subscribeInputStream;
+    private Socket _subscribeSocket;
+    private Scanner _scanner;
+    private String serverHost;
     private ByteBuffer _readBuffer = ByteBuffer.allocate(READ_BUFFER_SIZE);
     private ByteBuffer _writeBuffer = ByteBuffer.allocate(WRITE_BUFFER_SIZE);
 
-    public Client() throws IOException, ClassNotFoundException {
-        InetSocketAddress address = new InetSocketAddress("localhost", 5000);
+    public Client(String serverHost) throws IOException {
+        this.serverHost = serverHost;
+        InetSocketAddress address = new InetSocketAddress(serverHost, 5000);
         _socketChannel = SocketChannel.open(address);
+
+        _subscribeSocket = new Socket(serverHost, 5050);
+        _subscribeInputStream = new ObjectInputStream(_subscribeSocket.getInputStream());
+        new Thread(new SocketSubscriptionThread()).start(); // Listen for server broadcasts
         _scanner = new Scanner(System.in);
+    }
+
+    public Client() throws IOException {
+        this("localhost");
+    }
+
+    public static Client getInstance(String serverHost) throws IOException {
+        if(client == null) {
+            if (serverHost.length() > 0) client = new Client(serverHost);
+            else client = new Client();
+        };
+        return client;
+    }
+
+    public GameCommand sendCommand(GameCommand command) {
+        GameCommand receivedCommand = null;
+        try {
+            byte[] outMessage = GameCommand.toBytesArray(command);
+            _writeBuffer = ByteBuffer.wrap(outMessage);
+            _socketChannel.write(_writeBuffer);
+            _writeBuffer.clear();
+
+            _socketChannel.read(_readBuffer);
+            _readBuffer.flip();
+            byte[] inMessage = new byte[_readBuffer.limit()];
+            _readBuffer.get(inMessage);
+
+            receivedCommand = GameCommand.fromBytesArray(inMessage);
+            System.out.println("== Server says: " + receivedCommand);
+
+            _readBuffer.clear();
+        } catch(IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return receivedCommand;
     }
 
     @Override
@@ -85,10 +132,26 @@ public class Client implements Runnable {
         }
     }
 
+    private class SocketSubscriptionThread implements Runnable {
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    GameCommand command = (GameCommand) _subscribeInputStream.readObject();
+                    System.out.println("== Subscription thread: " + command);
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
+
     public static void main(String[] args) {
         try {
             new Thread(new Client()).start();
-        } catch(IOException | ClassNotFoundException e) {
+        } catch(IOException e) {
             e.printStackTrace();
         }
     }

@@ -16,10 +16,13 @@ public class Handler implements Runnable {
 
     private static final int READ_BUFFER_SIZE = 2048;
     private static final int WRITE_BUFFER_SIZE = 2048;
+
+    private Server _server;
     private ByteBuffer _readBuffer = ByteBuffer.allocate(READ_BUFFER_SIZE);
     private ByteBuffer _writeBuffer = ByteBuffer.allocate(WRITE_BUFFER_SIZE);
 
-    public Handler(Selector selector, SocketChannel socketChannel) throws IOException, ClassNotFoundException {
+    public Handler(Server server, Selector selector, SocketChannel socketChannel) throws IOException, ClassNotFoundException {
+        _server = server;
         _socketChannel = socketChannel;
         _socketChannel.configureBlocking(false);
 
@@ -78,6 +81,8 @@ public class Handler implements Runnable {
         try {
             numBytes = _socketChannel.write(_writeBuffer);
             System.out.println("== Writing: " + numBytes + " byte(s)");
+            // Broadcast to all clients
+            _server.notifyClients(new GameCommand(GameCommand.Command.IS_READY));
 
             if(numBytes > 0) {
                 _readBuffer.clear();
