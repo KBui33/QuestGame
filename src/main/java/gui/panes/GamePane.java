@@ -1,5 +1,6 @@
 package gui.panes;
 
+import gui.partials.CardView;
 import gui.partials.DeckView;
 import gui.partials.ShieldsView;
 import javafx.geometry.Insets;
@@ -29,6 +30,7 @@ public class GamePane extends BorderPane {
     private ShieldsView shieldsView;
     private Text currentStateText;
     private Button showHandButton, showDiscardedButton, drawCardButton, endTurnButton;
+    private CardView drawnCard;
 
     public DeckView getMyHand() {
         return myHand;
@@ -62,6 +64,10 @@ public class GamePane extends BorderPane {
         return endTurnButton;
     }
 
+    public CardView getDrawnCard() {
+        return drawnCard;
+    }
+
     public GamePane() {
 
         topBar = new BorderPane();
@@ -85,6 +91,8 @@ public class GamePane extends BorderPane {
         rankInfoBox = new HBox();
         shieldsView = new ShieldsView();
 
+        drawnCard = new CardView();
+        drawnCard.getButtonBox().setVisible(true);
 
         currentStateText = new Text();
         currentStateText.getStyleClass().add("body-font");

@@ -30,7 +30,12 @@ public class CardView extends StackPane {
 
     // will take Card object once cards are implemented
     public CardView(Image img) {
-        imageView = new ImageView(img);
+        this();
+        this.imageView.setImage(img);
+    }
+
+    public CardView() {
+        imageView = new ImageView();
         imageView.setFitHeight(300);
         imageView.setPreserveRatio(true);
 
@@ -41,7 +46,7 @@ public class CardView extends StackPane {
         playButton = new Button("Play Card");
         playButton.getStyleClass().add("success");
         discardButton = new Button("Discard");
-        discardButton.getStyleClass().add("caution");
+        discardButton.getStyleClass().add("warn");
         buttonBox.getChildren().addAll(playButton, discardButton);
         buttonBox.setVisible(false);
 

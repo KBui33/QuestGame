@@ -39,7 +39,26 @@ public class GameController {
             // draw a card from server
 
             // once hand has more than 12 cards every next card drawn must be either played or discarded
-            addCardToHand(view.getMyHand(), new Image(String.valueOf(getClass().getResource("/specials/quest_ally_4.png"))));
+            if (view.getMyHand().getList().size() < 12) {
+                addCardToHand(view.getMyHand(), new Image(String.valueOf(getClass().getResource("/specials/quest_ally_4.png"))));
+            } else {
+                // display card with option to play it or discard it
+                view.getDrawnCard().getImageView().setImage(new Image(String.valueOf(getClass().getResource("/specials/quest_ally_4.png"))));
+                view.setCenter(view.getDrawnCard());
+                view.getDrawCardButton().setDisable(true);
+            }
+        });
+
+        view.getDrawnCard().getPlayButton().setOnAction(e -> {
+            System.out.println("played card");
+            view.setCenter(null);
+            view.getDrawCardButton().setDisable(false);
+        });
+
+        view.getDrawnCard().getDiscardButton().setOnAction(e -> {
+            System.out.println("discarded card");
+            view.setCenter(null);
+            view.getDrawCardButton().setDisable(false);
         });
 
         view.getEndTurnButton().setOnAction(e -> {
