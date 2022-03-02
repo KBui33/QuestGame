@@ -29,7 +29,6 @@ public class DeckView {
         listView.setOrientation(Orientation.HORIZONTAL);
         listView.setMaxHeight(325);
         list = FXCollections.observableArrayList();
-        listView.setItems(list);
 
         // Disable default list item selection behaviour
         listView.setOnMouseClicked(Event::consume);
@@ -43,36 +42,14 @@ public class DeckView {
 
     }
 
-    public DeckView(ArrayList<Image> input) {
+    public DeckView(ObservableList<CardView> input) {
         this();
-
-        for (Image c : input) {
-            this.addCard(c);
-        }
+        setListViewItems(input);
     }
 
-    public void addCard(String url) {
-        list.add(0, new CardView(new Image(String.valueOf(getClass().getResource(url)))));
-    }
-
-    public void addCard(Image img) {
-        list.add(0, new CardView(img));
-    }
-
-    public void addCard(CardView card) {
-        list.add(0, card);
-    }
-
-    public boolean removeCard(CardView card) {
-        return list.remove(card);
-    }
-
-    public boolean removeCard(int pos) {
-        try {
-            return list.remove(pos) != null;
-        } catch (IndexOutOfBoundsException | UnsupportedOperationException e) {
-            return false;
-        }
+    public void setListViewItems (ObservableList<CardView> input) {
+        this.list = input;
+        listView.setItems(this.list);
     }
 
     public ListView<CardView> getListView() {
