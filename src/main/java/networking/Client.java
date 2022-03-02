@@ -16,6 +16,12 @@ public class Client implements Runnable {
     private static final int READ_BUFFER_SIZE = 2048;
     private static final int WRITE_BUFFER_SIZE = 2048;
 
+    // Various game commands
+    public static enum ClientEvent {
+        EXTERNAL_GAME_STATE_UPDATED,
+        GAME_COMMAND_RECEIVED
+    };
+
     private static Client instance = null;
 
     private SocketChannel _socketChannel;
@@ -30,11 +36,15 @@ public class Client implements Runnable {
     private ByteBuffer _readBuffer = ByteBuffer.allocate(READ_BUFFER_SIZE);
     private ByteBuffer _writeBuffer = ByteBuffer.allocate(WRITE_BUFFER_SIZE);
 
+    public ClientEventManager clientEvents;
+
     public Client(String serverHost) throws IOException {
         this.serverHost = serverHost;
         InetSocketAddress address = new InetSocketAddress(serverHost, 5000);
         _socketChannel = SocketChannel.open(address);
         System.out.println("== Client connected to server socket");
+
+        clientEvents = new ClientEventManager(new ClientEvent[] {ClientEvent.EXTERNAL_GAME_STATE_UPDATED, ClientEvent.GAME_COMMAND_RECEIVED});
 
         _subscribeSocket = new Socket(serverHost, 5050);
         System.out.println("== 1");
@@ -49,17 +59,22 @@ public class Client implements Runnable {
         System.out.println("== Client subscribed to game state update channel");
 
         _scanner = new Scanner(System.in);
+
     }
 
     public Client() throws IOException {
         this("localhost");
     }
 
-    public static Client getInstance(String serverHost) throws IOException {
+    public static Client initialize(String serverHost) throws IOException {
         if(instance == null) {
-            if (serverHost.length() > 0) instance = new Client(serverHost);
-            else instance = new Client();
-        };
+            instance = new Client(serverHost);
+        }
+
+        return instance;
+    }
+
+    public static Client getInstance() throws IOException {
         return instance;
     }
 
@@ -152,6 +167,7 @@ public class Client implements Runnable {
             while (true) {
                 try {
                     GameCommand command = (GameCommand) _subscribeInputStream.readObject();
+                    clientEvents.notify(ClientEvent.GAME_COMMAND_RECEIVED, command);
                     System.out.println("== Subscription thread: " + command);
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
@@ -166,6 +182,7 @@ public class Client implements Runnable {
             while (true) {
                 try {
                     ExternalGameState externalGameState = (ExternalGameState) _gameStateInputStream.readObject();
+                    clientEvents.notify(ClientEvent.EXTERNAL_GAME_STATE_UPDATED, externalGameState);
                     System.out.println(externalGameState);
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();

@@ -4,8 +4,10 @@ import gui.main.ClientApplication;
 import gui.panes.LobbyPane;
 import gui.scenes.ConnectScene;
 import gui.scenes.GameScene;
+import model.ExternalGameState;
 import model.GameCommand;
 import networking.Client;
+import networking.ClientEventListener;
 
 import java.io.IOException;
 
@@ -37,7 +39,15 @@ public class LobbyController {
             // Send a ready command to the server
             GameCommand command = new GameCommand(GameCommand.Command.READY);
             try {
-                Client.getInstance("").sendCommand(command);
+                Client client = Client.getInstance();
+                client.clientEvents.subscribe(Client.ClientEvent.EXTERNAL_GAME_STATE_UPDATED, new ClientEventListener() {
+                    @Override
+                    public void update(Client.ClientEvent eventType, Object o) {
+                        ExternalGameState externalGameState = (ExternalGameState) o;
+                        System.out.println("== Connect Controller says: " + externalGameState);
+                    }
+                });
+                client.sendCommand(command);
             } catch(IOException err) {
                 err.printStackTrace();
             }
