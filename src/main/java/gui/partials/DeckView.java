@@ -22,6 +22,7 @@ public class DeckView {
     // cards will be card objects once cards are created
     protected ListView<CardView> listView;
     protected ObservableList<CardView> list;
+    protected DeckCellFactory cardCellFactory;
 
     public DeckView() {
         listView = new ListView<>();
@@ -37,7 +38,7 @@ public class DeckView {
             e.consume();
         });
 
-        Callback<ListView<CardView>, ListCell<CardView>> cardCellFactory = new DeckCellFactory();
+        cardCellFactory = new DeckCellFactory();
         listView.setCellFactory(cardCellFactory);
 
     }
@@ -51,11 +52,15 @@ public class DeckView {
     }
 
     public void addCard(String url) {
-        list.add(new CardView(new Image(String.valueOf(getClass().getResource(url)))));
+        list.add(0, new CardView(new Image(String.valueOf(getClass().getResource(url)))));
     }
 
     public void addCard(Image img) {
-        list.add(new CardView(img));
+        list.add(0, new CardView(img));
+    }
+
+    public void addCard(CardView card) {
+        list.add(0, card);
     }
 
     public boolean removeCard(CardView card) {

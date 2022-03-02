@@ -2,7 +2,6 @@ package gui.panes;
 
 import gui.partials.DeckView;
 import gui.partials.ShieldsView;
-import gui.partials.ModifiableDeckView;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -24,12 +23,12 @@ import static gui.main.Construct.SCREEN_WIDTH;
 public class GamePane extends BorderPane {
 
     private BorderPane topBar;
-    private VBox cardButtons;
+    private VBox deckButtons, cardButtons;
     private DeckView myHand, discardedCards;
     private HBox rankInfoBox;
     private ShieldsView shieldsView;
     private Text currentStateText;
-    private Button showHandButton, showDiscardedButton;
+    private Button showHandButton, showDiscardedButton, drawCardButton, endTurnButton;
 
     public DeckView getMyHand() {
         return myHand;
@@ -55,18 +54,31 @@ public class GamePane extends BorderPane {
         return showDiscardedButton;
     }
 
+    public Button getDrawCardButton() {
+        return drawCardButton;
+    }
+
+    public Button getEndTurnButton() {
+        return endTurnButton;
+    }
+
     public GamePane() {
 
         topBar = new BorderPane();
         topBar.setMaxSize(SCREEN_WIDTH, 60);
         setMargin(topBar, new Insets(5));
 
+        deckButtons = new VBox();
+        deckButtons.setSpacing(5);
+        deckButtons.setMaxSize(150, 60);
+        setMargin(deckButtons, new Insets(5));
+
         cardButtons = new VBox();
         cardButtons.setSpacing(5);
         cardButtons.setMaxSize(150, 60);
         setMargin(cardButtons, new Insets(5));
 
-        myHand = new ModifiableDeckView();
+        myHand = new DeckView();
         discardedCards = new DeckView();
 
         // put current rank card next to shields
@@ -83,11 +95,20 @@ public class GamePane extends BorderPane {
 
         showDiscardedButton = new Button("Discarded");
 
-        cardButtons.getChildren().addAll(showHandButton, showDiscardedButton);
+        drawCardButton = new Button("Draw Card");
+        drawCardButton.getStyleClass().add("success");
+
+        endTurnButton = new Button("End Turn");
+        endTurnButton.getStyleClass().add("warn");
+
+        deckButtons.getChildren().addAll(showHandButton, showDiscardedButton);
+        cardButtons.getChildren().addAll(drawCardButton, endTurnButton);
         topBar.setLeft(shieldsView);
         topBar.setRight(currentStateText);
-        setAlignment(cardButtons, Pos.BOTTOM_RIGHT);
-        this.setRight(cardButtons);
+        setAlignment(deckButtons, Pos.BOTTOM_RIGHT);
+        this.setRight(deckButtons);
+        setAlignment(cardButtons, Pos.BOTTOM_LEFT);
+        this.setLeft(cardButtons);
         setAlignment(shieldsView, Pos.TOP_LEFT);
         setAlignment(currentStateText, Pos.TOP_RIGHT);
         this.setTop(topBar);

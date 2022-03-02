@@ -10,7 +10,7 @@ import javafx.scene.layout.VBox;
 public class CardView extends StackPane {
     private ImageView imageView;
     private VBox buttonBox;
-    private Button cancelButton, discardButton, playButton;
+    private Button discardButton, playButton;
 
     public ImageView getImageView() {
         return imageView;
@@ -53,5 +53,9 @@ public class CardView extends StackPane {
         imageView.setScaleZ(1);
         buttonBox.setScaleZ(2);
         this.getChildren().addAll(imageView, buttonBox);
+    }
+
+    public CardView(String url) {
+        this(new Image(String.valueOf(CardView.class.getResource(url))));
     }
 }

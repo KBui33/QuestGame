@@ -1,6 +1,9 @@
 package gui.controllers;
 
 import gui.panes.GamePane;
+import gui.partials.CardView;
+import gui.partials.DeckView;
+import javafx.scene.image.Image;
 
 /**
  * @author James DiNovo
@@ -16,35 +19,36 @@ public class GameController {
     public void setView(GamePane view) {
         // a lot of this is just for laying out gui will be removed later
         view.getCurrentStateText().setText("Your turn!");
-        view.getShieldsView().setShields(7);
+        view.getShieldsView().setShields(1);
 
         for (int i = 1; i <= 11; i++) {
             view.getMyHand().addCard("/specials/quest_ally_" + i + ".png");
         }
+
         for (int i = 1; i <= 11; i++) {
             view.getDiscardedCards().addCard("/foes/quest_foe_" + i + ".png");
         }
 
+        // set button actions for hand cards
         view.getMyHand().getList().forEach(cardView -> {
-            cardView.getDiscardButton().setOnAction(e -> {
-                // send delete signal to server and await response
-                view.getMyHand().removeCard(cardView);
-            });
+            setCardViewButtonActions(view.getMyHand(), cardView);
+        });
 
-            cardView.getPlayButton().setOnAction(e -> {
-                System.out.println("Play");
-            });
+        // set action for draw card button
+        view.getDrawCardButton().setOnAction(e -> {
+            // draw a card from server
 
-            cardView.setOnMouseEntered(e -> {
-                cardView.getButtonBox().setVisible(true);
-            });
-            cardView.setOnMouseExited(e -> {
-                cardView.getButtonBox().setVisible(false);
-            });
+            // once hand has more than 12 cards every next card drawn must be either played or discarded
+            addCardToHand(view.getMyHand(), new Image(String.valueOf(getClass().getResource("/specials/quest_ally_4.png"))));
+        });
+
+        view.getEndTurnButton().setOnAction(e -> {
+            System.out.println("Turn ended");
         });
 
         view.getShowHandButton().setOnAction(e -> {
             System.out.println("showing hand");
+            // show and hide hand
             if (view.getBottom() != null && view.getBottom().equals(view.getMyHand().getListView())) {
                 view.setBottom(null);
                 view.getShowHandButton().getStyleClass().remove("caution");
@@ -57,6 +61,7 @@ public class GameController {
 
         view.getShowDiscardedButton().setOnAction(e -> {
             System.out.println("showing discarded");
+            // show and hide discarded
             if (view.getBottom() != null && view.getBottom().equals(view.getDiscardedCards().getListView())) {
                 view.setBottom(null);
                 view.getShowDiscardedButton().getStyleClass().remove("caution");
@@ -66,7 +71,31 @@ public class GameController {
                 view.getShowHandButton().getStyleClass().remove("caution");
             }
         });
+    }
 
+    // will be replaced with card object instead of image
+    private void addCardToHand(DeckView hand, Image card) {
+        CardView newcard = new CardView(card);
+        hand.addCard(newcard);
+        setCardViewButtonActions(hand, newcard);
+    }
 
+    private void setCardViewButtonActions(DeckView deckView, CardView cardView) {
+        cardView.getDiscardButton().setOnAction(e -> {
+            // send delete signal to server and await response
+            deckView.removeCard(cardView);
+        });
+
+        cardView.getPlayButton().setOnAction(e -> {
+            System.out.println("Play");
+        });
+
+        cardView.setOnMouseEntered(e -> {
+            cardView.getButtonBox().setVisible(true);
+        });
+
+        cardView.setOnMouseExited(e -> {
+            cardView.getButtonBox().setVisible(false);
+        });
     }
 }

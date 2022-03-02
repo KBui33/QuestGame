@@ -1,9 +1,7 @@
 package gui.partials;
 
-import gui.partials.CardView;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.image.ImageView;
 import javafx.util.Callback;
 
 public class DeckCellFactory implements Callback<ListView<CardView>, ListCell<CardView>> {
