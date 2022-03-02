@@ -1,8 +1,8 @@
 package networking;
 
-import logic.GameCommand;
-import utils.Observer;
-import utils.Subject;
+import model.ExternalGameState;
+import model.GameCommand;
+import model.GameState;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -16,11 +16,15 @@ public class Client implements Runnable {
     private static final int READ_BUFFER_SIZE = 2048;
     private static final int WRITE_BUFFER_SIZE = 2048;
 
-    private static Client client = null;
+    private static Client instance = null;
 
     private SocketChannel _socketChannel;
     private final ObjectInputStream _subscribeInputStream;
+    private final ObjectInputStream _gameStateInputStream;
+
     private Socket _subscribeSocket;
+    private Socket _gameStateSocket;
+
     private Scanner _scanner;
     private String serverHost;
     private ByteBuffer _readBuffer = ByteBuffer.allocate(READ_BUFFER_SIZE);
@@ -30,10 +34,20 @@ public class Client implements Runnable {
         this.serverHost = serverHost;
         InetSocketAddress address = new InetSocketAddress(serverHost, 5000);
         _socketChannel = SocketChannel.open(address);
+        System.out.println("== Client connected to server socket");
 
         _subscribeSocket = new Socket(serverHost, 5050);
+        System.out.println("== 1");
         _subscribeInputStream = new ObjectInputStream(_subscribeSocket.getInputStream());
+        System.out.println("== 2");
         new Thread(new SocketSubscriptionThread()).start(); // Listen for server broadcasts
+        System.out.println("== Client subscribed to server broadcast channel");
+
+        _gameStateSocket = new Socket(serverHost, 5080);
+        _gameStateInputStream = new ObjectInputStream(_gameStateSocket.getInputStream());
+        new Thread(new GameStateUpdateThread()).start(); // Listen for game state updates
+        System.out.println("== Client subscribed to game state update channel");
+
         _scanner = new Scanner(System.in);
     }
 
@@ -42,11 +56,11 @@ public class Client implements Runnable {
     }
 
     public static Client getInstance(String serverHost) throws IOException {
-        if(client == null) {
-            if (serverHost.length() > 0) client = new Client(serverHost);
-            else client = new Client();
+        if(instance == null) {
+            if (serverHost.length() > 0) instance = new Client(serverHost);
+            else instance = new Client();
         };
-        return client;
+        return instance;
     }
 
     public GameCommand sendCommand(GameCommand command) {
@@ -139,6 +153,20 @@ public class Client implements Runnable {
                 try {
                     GameCommand command = (GameCommand) _subscribeInputStream.readObject();
                     System.out.println("== Subscription thread: " + command);
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private class GameStateUpdateThread implements Runnable {
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    ExternalGameState externalGameState = (ExternalGameState) _gameStateInputStream.readObject();
+                    System.out.println(externalGameState);
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }

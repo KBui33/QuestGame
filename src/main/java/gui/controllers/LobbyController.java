@@ -4,7 +4,7 @@ import gui.main.ClientApplication;
 import gui.panes.LobbyPane;
 import gui.scenes.ConnectScene;
 import gui.scenes.GameScene;
-import logic.GameCommand;
+import model.GameCommand;
 import networking.Client;
 
 import java.io.IOException;
