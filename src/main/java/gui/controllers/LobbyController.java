@@ -6,8 +6,8 @@ import gui.scenes.ConnectScene;
 import gui.scenes.GameScene;
 import model.ExternalGameState;
 import model.GameCommand;
-import networking.Client;
-import networking.ClientEventListener;
+import networking.client.Client;
+import networking.client.ClientEventListener;
 
 import java.io.IOException;
 
@@ -37,7 +37,7 @@ public class LobbyController {
             System.out.println("Ready clicked");
 
             // Send a ready command to the server
-            GameCommand command = new GameCommand(GameCommand.Command.READY);
+            GameCommand sentCommand = new GameCommand(GameCommand.Command.READY);
             try {
                 Client client = Client.getInstance();
                 client.clientEvents.subscribe(Client.ClientEvent.EXTERNAL_GAME_STATE_UPDATED, new ClientEventListener() {
@@ -47,7 +47,8 @@ public class LobbyController {
                         System.out.println("== Connect Controller says: " + externalGameState);
                     }
                 });
-                client.sendCommand(command);
+                GameCommand returnedCommand =  client.sendCommand(sentCommand);
+                client.setPlayerId(returnedCommand.getPlayerId()); // Set id of player/client
             } catch(IOException err) {
                 err.printStackTrace();
             }

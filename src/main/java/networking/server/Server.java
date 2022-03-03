@@ -1,4 +1,4 @@
-package networking;
+package networking.server;
 // CODE FROM::https://tianpan.co/blog/2015-01-13-understanding-reactor-pattern-for-highly-scalable-i-o-bound-web-server
 
 import model.ExternalGameState;
@@ -110,8 +110,8 @@ public class Server implements Runnable {
                 Socket gameStateUpdateSocket = _serverGameStateUpdateSocket.accept();
                 registerClientForGameStateUpdates(gameStateUpdateSocket);
                 if(socketChannel != null) new Handler(Server.this, _selector, socketChannel);
-                notifyClients(new GameCommand(GameCommand.Command.IS_READY));
                 lastClientIndex++;
+                notifyClients(new GameCommand(GameCommand.Command.JOINED));
                 System.out.println("== New client connected");
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
@@ -136,6 +136,7 @@ public class Server implements Runnable {
     }
 
     public void notifyClients(GameCommand command) {
+        command.setJoinedPlayers(lastClientIndex);
         try {
             for (ObjectOutputStream oos : _gameStateUpdateOutputStreams) {
                 oos.reset();

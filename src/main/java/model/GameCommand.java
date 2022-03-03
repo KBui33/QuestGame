@@ -13,7 +13,9 @@ public class GameCommand implements Serializable {
         QUITED
     };
 
-    private int playerId;
+    private int playerId = 0;
+    private int readyPlayers = 0;
+    private int joinedPlayers = 0;
     private Command command;
 
     public GameCommand() {
@@ -26,6 +28,16 @@ public class GameCommand implements Serializable {
     public GameCommand(int playerId, Command command) {
         this.playerId = playerId;
         this.command = command;
+    }
+
+    public GameCommand(int playerId, Command command, int readyPlayers) {
+        this(playerId, command);
+        this.readyPlayers = readyPlayers;
+    }
+
+    public GameCommand(int playerId, Command command, int readyPlayers, int joinedPlayers) {
+        this(playerId, command, readyPlayers);
+        this.joinedPlayers = joinedPlayers;
     }
 
     public void setCommand(Command command) {
@@ -44,12 +56,31 @@ public class GameCommand implements Serializable {
         return playerId;
     }
 
+    public void setReadyPlayers(int readyPlayers) {
+        this.readyPlayers = readyPlayers;
+    }
+
+    public int getReadyPlayers() {
+        return readyPlayers;
+    }
+
+    public void setJoinedPlayers(int joinedPlayers) {
+        this.joinedPlayers = joinedPlayers;
+    }
+
+    public int getJoinedPlayers() {
+        return joinedPlayers;
+    }
+
     @Override
     public String toString() {
-        return "GameCommand{" +
-                "playerId=" + playerId +
-                ", command=" + command +
-                '}';
+        String strCmd = "GameCommand{";
+        if(playerId > 0) strCmd += "playerId=" + playerId + ", ";
+        strCmd += "command=" + command + ", ";
+        strCmd += "readyPlayers=" + readyPlayers + ", ";
+        strCmd += "joinedPlayers=" + joinedPlayers;
+        strCmd += '}';
+        return strCmd;
     }
 
     public static GameCommand fromBytesArray(byte[] bytes) throws IOException, ClassNotFoundException {

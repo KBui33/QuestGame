@@ -28,13 +28,13 @@ public class GameState implements Serializable {
                 "\tMax players: " + MAX_PLAYERS;
     }
 
-    public boolean addPlayer(Player player) {
-        if(players.size() >= MAX_PLAYERS) return false;
+    public int addPlayer(Player player) {
+        if(players.size() >= MAX_PLAYERS) return 0;
 
         players.add(numPlayers++, player);
-        player.setPlayerNumber(numPlayers);
+        player.setPlayerId(numPlayers);
 
-        return true;
+        return numPlayers;
     }
 
 

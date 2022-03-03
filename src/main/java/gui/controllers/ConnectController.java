@@ -4,8 +4,8 @@ import gui.main.ClientApplication;
 import gui.panes.ConnectPane;
 import gui.scenes.LobbyScene;
 import model.ExternalGameState;
-import networking.Client;
-import networking.ClientEventListener;
+import networking.client.Client;
+import networking.client.ClientEventListener;
 
 import java.io.IOException;
 

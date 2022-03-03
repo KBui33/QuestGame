@@ -1,7 +1,9 @@
-package networking;
+package networking.server;
 // CODE FROM::https://tianpan.co/blog/2015-01-13-understanding-reactor-pattern-for-highly-scalable-i-o-bound-web-server
 
 import model.GameCommand;
+import networking.GameCommandHandler;
+import networking.server.Server;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -29,7 +31,7 @@ public class Handler implements Runnable {
         _selectionKey.attach(this);
         selector.wakeup();
 
-        _gameCommandHandler =  new GameCommandHandler();
+        _gameCommandHandler =  new GameCommandHandler(server);
     }
 
     @Override
@@ -47,13 +49,12 @@ public class Handler implements Runnable {
             _readBuffer.flip();
             byte[] bytes = new byte[_readBuffer.limit()];
             _readBuffer.get(bytes);
-            System.out.println("== Processing: " + new String(bytes));
 
             // Convert input to game command and send for processing
             GameCommand receivedCommand = GameCommand.fromBytesArray(bytes);
             System.out.println("== Received command: " + receivedCommand);
             GameCommand sentCommand = _gameCommandHandler.processGameCommand(receivedCommand);
-
+            System.out.println("== Send command: " + sentCommand);
             _writeBuffer = ByteBuffer.wrap(GameCommand.toBytesArray(sentCommand));
 
             _selectionKey.interestOps(SelectionKey.OP_WRITE);

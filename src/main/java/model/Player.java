@@ -3,21 +3,19 @@ package model;
 import java.io.Serializable;
 
 public class Player implements Serializable {
-    private int playerNumber;
+    private int playerId;
 
     // -- TODO:: Add cards array list
     // -- TODO:: Add weapons array list
 
-    public Player() {
+    public Player() {}
 
-    }
-
-    public Player(int playerNumber) {
+    public Player(int playerId) {
         this();
-        this.playerNumber = playerNumber;
+        this.playerId = playerId;
     }
 
-    public void setPlayerNumber(int playerNumber) {
-        this.playerNumber = playerNumber;
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
     }
 }

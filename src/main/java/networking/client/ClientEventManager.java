@@ -1,4 +1,4 @@
-package networking;
+package networking.client;
 
 import java.util.*;
 

@@ -1,8 +1,7 @@
-package networking;
+package networking.client;
 
 import model.ExternalGameState;
 import model.GameCommand;
-import model.GameState;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -36,6 +35,8 @@ public class Client implements Runnable {
     private ByteBuffer _readBuffer = ByteBuffer.allocate(READ_BUFFER_SIZE);
     private ByteBuffer _writeBuffer = ByteBuffer.allocate(WRITE_BUFFER_SIZE);
 
+    private int playerId;
+
     public ClientEventManager clientEvents;
 
     public Client(String serverHost) throws IOException {
@@ -47,9 +48,7 @@ public class Client implements Runnable {
         clientEvents = new ClientEventManager(new ClientEvent[] {ClientEvent.EXTERNAL_GAME_STATE_UPDATED, ClientEvent.GAME_COMMAND_RECEIVED});
 
         _subscribeSocket = new Socket(serverHost, 5050);
-        System.out.println("== 1");
         _subscribeInputStream = new ObjectInputStream(_subscribeSocket.getInputStream());
-        System.out.println("== 2");
         new Thread(new SocketSubscriptionThread()).start(); // Listen for server broadcasts
         System.out.println("== Client subscribed to server broadcast channel");
 
@@ -67,15 +66,20 @@ public class Client implements Runnable {
     }
 
     public static Client initialize(String serverHost) throws IOException {
-        if(instance == null) {
-            instance = new Client(serverHost);
-        }
-
+        if(instance == null) instance = new Client(serverHost);
         return instance;
     }
 
     public static Client getInstance() throws IOException {
         return instance;
+    }
+
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
+    }
+
+    public int getPlayerId() {
+        return playerId;
     }
 
     public GameCommand sendCommand(GameCommand command) {
