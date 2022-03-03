@@ -1,4 +1,4 @@
-package networking.game;
+package game;
 
 public class GameLogic {
 

@@ -1,4 +1,4 @@
-package networking.game.components.deck;
+package game.components.deck;
 
 import java.util.ArrayList;
 

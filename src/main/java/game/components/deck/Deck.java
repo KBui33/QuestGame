@@ -1,6 +1,6 @@
-package networking.game.components.deck;
+package game.components.deck;
 
-import networking.game.components.card.Card;
+import game.components.card.Card;
 
 import java.util.ArrayList;
 import java.util.Collections;

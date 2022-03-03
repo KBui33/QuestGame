@@ -1,4 +1,4 @@
-package networking.game.components.card;
+package game.components.card;
 
 
 import javafx.scene.image.Image;

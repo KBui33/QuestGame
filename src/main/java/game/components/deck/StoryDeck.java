@@ -1,8 +1,8 @@
-package networking.game.components.deck;
+package game.components.deck;
 
 import java.util.ArrayList;
 
-public class RankDeck extends Deck{
+public class StoryDeck extends Deck{
     @Override
     void init() {
         cards = new ArrayList<>();
