@@ -4,6 +4,12 @@ import gui.main.ClientApplication;
 import gui.panes.LobbyPane;
 import gui.scenes.ConnectScene;
 import gui.scenes.GameScene;
+import model.ExternalGameState;
+import model.GameCommand;
+import networking.client.Client;
+import networking.client.ClientEventListener;
+
+import java.io.IOException;
 
 /**
  * @author James DiNovo
@@ -29,6 +35,24 @@ public class LobbyController {
         // link controller to view
         view.getReadyButton().setOnAction(e -> {
             System.out.println("Ready clicked");
+
+            // Send a ready command to the server
+            GameCommand sentCommand = new GameCommand(GameCommand.Command.READY);
+            try {
+                Client client = Client.getInstance();
+                client.clientEvents.subscribe(Client.ClientEvent.EXTERNAL_GAME_STATE_UPDATED, new ClientEventListener() {
+                    @Override
+                    public void update(Client.ClientEvent eventType, Object o) {
+                        ExternalGameState externalGameState = (ExternalGameState) o;
+                        System.out.println("== Connect Controller says: " + externalGameState);
+                    }
+                });
+                GameCommand returnedCommand =  client.sendCommand(sentCommand);
+                client.setPlayerId(returnedCommand.getPlayerId()); // Set id of player/client
+            } catch(IOException err) {
+                err.printStackTrace();
+            }
+
 
             // skip to game scene *this is only for testing gui* to be removed later
             ClientApplication.window.setScene(new GameScene());
