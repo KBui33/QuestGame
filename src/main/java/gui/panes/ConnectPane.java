@@ -1,5 +1,6 @@
 package gui.panes;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -8,9 +9,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-import static gui.main.Const.BODY_FONT;
-import static gui.main.Const.HEADER_FONT;
-
 /**
  * @author James DiNovo
  *
@@ -18,33 +16,49 @@ import static gui.main.Const.HEADER_FONT;
  *
  */
 public class ConnectPane extends BorderPane {
+
+    private VBox mainColumn;
+    private Text header;
+    private Label serverAddressLabel;
+    private TextField serverAddress;
+    private Button connectButton;
+
+    public TextField getServerAddress() {
+        return serverAddress;
+    }
+
+    public Button getConnectButton() {
+        return connectButton;
+    }
+
     public ConnectPane() {
 
-        VBox vBox = new VBox();
+        VBox mainColumn = new VBox();
 
-        Text header = new Text("Quest");
-        header.setFont(HEADER_FONT);
+        header = new Text("Quest");
+        header.getStyleClass().add("header-font");
 
-        Label serverAddressLabel = new Label("Server Address");
-        serverAddressLabel.setFont(BODY_FONT);
+        serverAddressLabel = new Label("Server Address");
+        serverAddressLabel.getStyleClass().add("body-font");
 
-        TextField serverAddress = new TextField();
+        serverAddress = new TextField();
         serverAddress.setMaxWidth(200);
         serverAddress.setAlignment(Pos.CENTER);
         serverAddress.setText("127.0.0.1");
 
-        Button connectButton = new Button("Connect");
-        connectButton.setPrefSize(100, 50);
-        connectButton.setOnAction(e -> {
-            System.out.println("Connecting to " + serverAddress.getText().trim() + "...");
-        });
+        connectButton = new Button("Connect");
+        connectButton.setPrefSize(100, 25);
+        connectButton.getStyleClass().add("success");
 
 
-        vBox.getChildren().addAll(header, serverAddressLabel, serverAddress, connectButton);
-        vBox.setSpacing(10);
-        vBox.setAlignment(Pos.CENTER);
+        mainColumn.getChildren().addAll(serverAddressLabel, serverAddress, connectButton);
+        mainColumn.setSpacing(10);
+        mainColumn.setAlignment(Pos.CENTER);
 
-        this.setCenter(vBox);
+        this.setTop(header);
+        setAlignment(header, Pos.CENTER);
+        setMargin(header, new Insets(20));
+        this.setCenter(mainColumn);
 
     }
 }

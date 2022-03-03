@@ -1,8 +1,52 @@
+.root{
+    -fx-background-color:
+            linear-gradient(rgba(170, 255, 170, 0.5), rgba(255, 255, 170, 0.5)),
+            /*repeating-image-pattern("someurl"),*/
+            radial-gradient(center 50% 50%, radius 50%, #FFFFFF33, #00000033);
+}
+
+.header-font {
+    -fx-font-family: Impact;
+    -fx-font-size: 40;
+    -fx-font-weight: bold;
+    -fx-font-style: normal;
+}
+
+.body-font {
+    -fx-font-family: Impact;
+    -fx-font-size: 25;
+    -fx-font-weight: normal;
+    -fx-font-style: normal;
+}
+
+.stats-font {
+    -fx-font-family: Impact;
+    -fx-font-size: 15;
+    -fx-font-weight: lighter;
+    -fx-font-style: normal;
+}
+
 .button {
-    -fx-background-color: #aaffaa;
+    -fx-font-family: Impact;
+    -fx-font-weight: lighter;
     -fx-border-radius: 10;
     -fx-background-radius: 10;
+    -fx-background-color: #ffffff;
     -fx-border-color: #000000;
     -fx-border-width: 0.5;
     -fx-font-size: 18;
+    -fx-pref-width: 150;
+    -fx-pref-height: 25;
+}
+
+.success {
+    -fx-background-color: #aaffaa;
+}
+
+.caution {
+    -fx-background-color: #ffffaa;
+}
+
+.warn {
+    -fx-background-color: #ffaaaa;
 }
