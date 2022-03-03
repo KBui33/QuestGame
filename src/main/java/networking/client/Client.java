@@ -187,7 +187,6 @@ public class Client implements Runnable {
                 try {
                     ExternalGameState externalGameState = (ExternalGameState) _gameStateInputStream.readObject();
                     clientEvents.notify(ClientEvent.EXTERNAL_GAME_STATE_UPDATED, externalGameState);
-                    System.out.println(externalGameState);
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
