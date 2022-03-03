@@ -23,9 +23,9 @@ public class Server implements Runnable {
     private static Server instance;
 
     private static final int WORKER_POOL_SIZE = 10;
-    private final int SERVER_PORT = 5000;
-    private final int SERVER_BROADCAST_PORT = 5050;
-    private final int SERVER_GAME_STATE_UPDATE_PORT = 5080;
+    private final int SERVER_PORT = 5700;
+    private final int SERVER_BROADCAST_PORT = 5710;
+    private final int SERVER_GAME_STATE_UPDATE_PORT = 5720;
     private static ExecutorService _workerPool;
 
     private final Selector _selector;
