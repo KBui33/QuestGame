@@ -1,8 +1,8 @@
 package gui.partials;
 
+import game.components.card.Card;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -11,10 +11,7 @@ public class CardView extends StackPane {
     private ImageView imageView;
     private VBox buttonBox;
     private Button discardButton, playButton;
-
-    public ImageView getImageView() {
-        return imageView;
-    }
+    private Card card;
 
     public VBox getButtonBox() {
         return buttonBox;
@@ -28,10 +25,19 @@ public class CardView extends StackPane {
         return playButton;
     }
 
+    public Card getCard() {
+        return card;
+    }
+
+    public void setCard(Card card) {
+        this.card = card;
+        this.imageView.setImage(this.card.getCardImg());
+    }
+
     // will take Card object once cards are implemented
-    public CardView(Image img) {
+    public CardView(Card card) {
         this();
-        this.imageView.setImage(img);
+        setCard(card);
     }
 
     public CardView() {
@@ -60,7 +66,4 @@ public class CardView extends StackPane {
         this.getChildren().addAll(imageView, buttonBox);
     }
 
-    public CardView(String url) {
-        this(new Image(String.valueOf(CardView.class.getResource(url))));
-    }
 }
