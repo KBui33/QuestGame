@@ -22,12 +22,12 @@ import java.util.concurrent.Executors;
 public class Server implements Runnable {
     private static Server instance;
 
-    public static final int MAX_CLIENTS = 4;
+    public static final int MAX_CLIENTS = 1;
 
     private static final int WORKER_POOL_SIZE = 10;
-    private final int SERVER_PORT = 5700;
-    private final int SERVER_BROADCAST_PORT = 5710;
-    private final int SERVER_GAME_STATE_UPDATE_PORT = 5720;
+    private static final int SERVER_PORT = 5700;
+    private static final int SERVER_BROADCAST_PORT = 5710;
+    private static final int SERVER_GAME_STATE_UPDATE_PORT = 5720;
     private static ExecutorService _workerPool;
 
     private final Selector _selector;
@@ -108,20 +108,25 @@ public class Server implements Runnable {
         @Override
         public void run() {
             try {
-                if(lastClientIndex >= MAX_CLIENTS) {
-                    System.out.println("== Server says:  Client limit reached");
-                    return;
-                }
+                    if (lastClientIndex >= MAX_CLIENTS) {
+                        System.out.println("== Server says:  Client limit reached");
+                        return;
+                    }
 
-                SocketChannel socketChannel = _serverSocketChannel.accept();
-                Socket broadcastSocket = _serverBroadcastSocket.accept();
-                registerClientForBroadcasts(broadcastSocket);
-                Socket gameStateUpdateSocket = _serverGameStateUpdateSocket.accept();
-                registerClientForGameStateUpdates(gameStateUpdateSocket);
-                if (socketChannel != null) new Handler(Server.this, _selector, socketChannel);
-                lastClientIndex++;
-                notifyClients(new GameCommand(GameCommand.Command.JOINED));
-                System.out.println("== Server Says: New client connected");
+                    if (gameState.getGameStatus().equals(GameState.GameStatus.STARTED)) {
+                        System.out.println("== Server says:  Game has already started. No longer accepting players");
+                        return;
+                    }
+
+                    SocketChannel socketChannel = _serverSocketChannel.accept();
+                    Socket broadcastSocket = _serverBroadcastSocket.accept();
+                    registerClientForBroadcasts(broadcastSocket);
+                    Socket gameStateUpdateSocket = _serverGameStateUpdateSocket.accept();
+                    registerClientForGameStateUpdates(gameStateUpdateSocket);
+                    if (socketChannel != null) new Handler(Server.this, _selector, socketChannel);
+                    lastClientIndex++;
+                    notifyClients(new GameCommand(GameCommand.Command.JOINED));
+                    System.out.println("== Server Says: New client connected");
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }

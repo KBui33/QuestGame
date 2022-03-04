@@ -1,7 +1,10 @@
 package model;
 
+import game.components.card.Card;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ExternalGameState implements Serializable {
     private GameState gameState;
@@ -13,6 +16,8 @@ public class ExternalGameState implements Serializable {
     public ArrayList<Player> getGamePlayers() {
         return gameState.getPlayers();
     }
+
+    public List<Card> getDiscardedCards() {return gameState.getDiscardedCards();}
 
     public int getGameNumPlayers() {
         return gameState.getNumPlayers();

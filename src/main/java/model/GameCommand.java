@@ -13,6 +13,8 @@ public class GameCommand implements Serializable {
         QUITED,
         GET_LOBBY_STATE,
         RETURN_LOBBY_STATE,
+        GET_ATTACHED_PLAYER,
+        RETURN_ATTACHED_PLAYER,
         GAME_STARTED
     };
 
@@ -20,6 +22,7 @@ public class GameCommand implements Serializable {
     private int readyPlayers = 0;
     private int joinedPlayers = 0;
     private Command command;
+    private Player player;
 
     public GameCommand() {
     }
@@ -73,6 +76,14 @@ public class GameCommand implements Serializable {
 
     public int getJoinedPlayers() {
         return joinedPlayers;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 
     @Override

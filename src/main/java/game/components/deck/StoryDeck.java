@@ -1,22 +1,18 @@
 package game.components.deck;
 
 import game.components.card.QuestCard;
-import gui.scenes.ConnectScene;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Iterator;
 
 public class StoryDeck extends Deck{
     @Override
-    void init() {
+    public void init() {
         try {
 
             Object ob = new JSONParser().parse(new FileReader(String.valueOf(StoryDeck.class.getResource("/json/story_deck_specs.json").getFile())));
@@ -37,11 +33,5 @@ public class StoryDeck extends Deck{
         } catch(ParseException | IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) {
-        StoryDeck storyDeck = new StoryDeck();
-        storyDeck.init();
-
     }
 }

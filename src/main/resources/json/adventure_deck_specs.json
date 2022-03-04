@@ -1,0 +1,40 @@
+{
+  "weapons": [
+    {
+      "title": "Horse",
+      "image": "",
+      "frequency": 11,
+      "battlePoints": 10
+    },
+    {
+      "title": "Sword",
+      "image": "",
+      "frequency": 16,
+      "battlePoints": 10
+    },
+    {
+      "title": "Excalibur",
+      "image": "",
+      "frequency": 2,
+      "battlePoints": 30
+    },
+    {
+      "title": "Lance",
+      "image": "",
+      "frequency": 6,
+      "battlePoints": 20
+    },
+    {
+      "title": "Dagger",
+      "image": "",
+      "frequency": 6,
+      "battlePoints": 5
+    },
+    {
+      "title": "Battle-ax",
+      "image": "",
+      "frequency": 8,
+      "battlePoints": 15
+    }
+  ]
+}

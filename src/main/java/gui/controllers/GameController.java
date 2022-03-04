@@ -8,7 +8,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
+import model.GameCommand;
+import model.Player;
+import networking.client.Client;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -26,6 +30,19 @@ public class GameController {
     }
 
     public void setView(GamePane view) {
+
+        // Fetch corresponding player
+        try {
+            Client client = Client.getInstance();
+            GameCommand getAttachedPlayerCommand = new GameCommand(GameCommand.Command.GET_ATTACHED_PLAYER);
+            getAttachedPlayerCommand.setPlayerId(client.getPlayerId());
+            GameCommand returnedAttachedPlayerCommand = client.sendCommand(getAttachedPlayerCommand);
+            Player player = (Player) returnedAttachedPlayerCommand.getPlayer();
+            System.out.println(player);
+
+        } catch(IOException err) {
+            err.printStackTrace();
+        }
 
         myHand = FXCollections.observableArrayList();
         view.getMyHand().setListViewItems(myHand);

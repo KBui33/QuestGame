@@ -2,7 +2,7 @@
   "quests": [
     {
       "title": "Search for the Holy Grail",
-      "image": "",
+      "image": "/quests/quest_quest_9.png",
       "frequency": 1,
       "stages": 5,
       "foe": "All"
