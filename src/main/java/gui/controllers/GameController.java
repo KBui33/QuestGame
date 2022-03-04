@@ -1,11 +1,11 @@
 package gui.controllers;
 
+import game.components.card.AllyCard;
+import game.components.card.Card;
+import game.components.card.QuestCard;
 import gui.panes.GamePane;
 import gui.partials.CardView;
-import gui.partials.DeckView;
-import javafx.beans.InvalidationListener;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import model.GameCommand;
@@ -13,7 +13,6 @@ import model.Player;
 import networking.client.Client;
 
 import java.io.IOException;
-import java.util.*;
 
 /**
  * @author James DiNovo
@@ -54,28 +53,37 @@ public class GameController {
         view.getCurrentStateText().setText("Your turn!");
         view.getShieldsView().setShields(1);
 
-        for (int i = 1; i <= 11; i++) {
-            addCardToHand(myHand, new Image(String.valueOf(getClass().getResource("/specials/quest_ally_" + i + ".png"))));
-        }
-
-        for (int i = 1; i <= 11; i++) {
-            CardView cardView = new CardView(new Image(String.valueOf(getClass().getResource("/foes/quest_foe_" + i + ".png"))));
-            discarded.add(0, cardView);
-        }
+//        for (int i = 1; i <= 11; i++) {
+//            addCardToHand(myHand, new AllyCard(
+//                    new Image(String.valueOf(getClass().getResource("/specials/quest_ally_" + i + ".png"))),
+//                    "card",
+//                    ""));
+//        }
+//
+//        for (int i = 1; i <= 10; i++) {
+//            CardView cardView = new CardView(new QuestCard(
+//                    new Image(String.valueOf(getClass().getResource("/quests/quest_quest_" + i + ".png"))),
+//                    "card", 3, ""));
+//            discarded.add(0, cardView);
+//        }
 
 
         // set action for draw card button
         view.getDrawCardButton().setOnAction(e -> {
             // draw a card from server
+//            Card drawnCard = new AllyCard(
+//                    new Image(String.valueOf(getClass().getResource("/specials/quest_ally_3.png"))),
+//                    "card",
+//                    "");
 
             // once hand has more than 12 cards every next card drawn must be either played or discarded
             if (myHand.size() < 12) {
-                addCardToHand(myHand, new Image(String.valueOf(getClass().getResource("/specials/quest_ally_4.png"))));
+//                addCardToHand(myHand, drawnCard);
             } else {
                 // display card with option to play it or discard it
-                view.getDrawnCard().getImageView().setImage(new Image(String.valueOf(getClass().getResource("/specials/quest_ally_4.png"))));
-                view.setCenter(view.getDrawnCard());
-                view.getDrawCardButton().setDisable(true);
+//                view.getDrawnCard().setCard(drawnCard);
+//                view.setCenter(view.getDrawnCard());
+//                view.getDrawCardButton().setDisable(true);
             }
         });
 
@@ -122,11 +130,10 @@ public class GameController {
         });
     }
 
-    // will be replaced with card object instead of image
-    private void addCardToHand(ObservableList<CardView> hand, Image card) {
+    private void addCardToHand(ObservableList<CardView> hand, Card card) {
         CardView newcard = new CardView(card);
         setCardViewButtonActions(hand, newcard);
-        myHand.add(0, newcard);
+        hand.add(0, newcard);
     }
 
     private void setCardViewButtonActions(ObservableList<CardView> deckView, CardView cardView) {
