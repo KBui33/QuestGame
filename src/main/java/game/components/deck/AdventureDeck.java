@@ -27,7 +27,7 @@ public class AdventureDeck extends Deck{
                 JSONObject obj = (JSONObject) it.next();
                 Long freq = (Long)  obj.get("frequency");
                 String title = (String)  obj.get("title");
-                String image = title.replace(' ', '_') + ".png";
+                String image = (String)  obj.get("image");
                 Long battlePoints = (Long) obj.get("battlePoints");
                 for (int i = 0; i < freq; i++) {
                     this.cards.add(new WeaponCard(title, image, Math.toIntExact(battlePoints)));

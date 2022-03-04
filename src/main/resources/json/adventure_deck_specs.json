@@ -2,37 +2,37 @@
   "weapons": [
     {
       "title": "Horse",
-      "image": "",
+      "image": "/weapons/quest_weapon_1.png",
       "frequency": 11,
       "battlePoints": 10
     },
     {
       "title": "Sword",
-      "image": "",
+      "image": "/weapons/quest_weapon_2.png",
       "frequency": 16,
       "battlePoints": 10
     },
     {
       "title": "Excalibur",
-      "image": "",
+      "image": "/weapons/quest_weapon_3.png",
       "frequency": 2,
       "battlePoints": 30
     },
     {
       "title": "Lance",
-      "image": "",
+      "image": "/weapons/quest_weapon_4.png",
       "frequency": 6,
       "battlePoints": 20
     },
     {
       "title": "Dagger",
-      "image": "",
+      "image": "/weapons/quest_weapon_5.png",
       "frequency": 6,
       "battlePoints": 5
     },
     {
       "title": "Battle-ax",
-      "image": "",
+      "image": "/weapons/quest_weapon_6.png",
       "frequency": 8,
       "battlePoints": 15
     }

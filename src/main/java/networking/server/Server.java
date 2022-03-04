@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
 public class Server implements Runnable {
     private static Server instance;
 
-    public static final int MAX_CLIENTS = 1;
+    public static final int MAX_CLIENTS = 4;
 
     private static final int WORKER_POOL_SIZE = 10;
     private static final int SERVER_PORT = 5700;

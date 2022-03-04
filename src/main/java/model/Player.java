@@ -34,6 +34,10 @@ public class Player implements Serializable {
         this.playerId = playerId;
     }
 
+    public List<Card> getCards() {
+        return cards;
+    }
+
     @Override
     public String toString() {
         return "Player{" +

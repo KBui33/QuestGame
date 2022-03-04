@@ -13,6 +13,7 @@ import model.Player;
 import networking.client.Client;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * @author James DiNovo
@@ -38,6 +39,9 @@ public class GameController {
             GameCommand returnedAttachedPlayerCommand = client.sendCommand(getAttachedPlayerCommand);
             Player player = (Player) returnedAttachedPlayerCommand.getPlayer();
             System.out.println(player);
+
+            // Add player cards to gui cards
+            ArrayList<Card> cards = (ArrayList<Card>) player.getCards();
 
         } catch(IOException err) {
             err.printStackTrace();
