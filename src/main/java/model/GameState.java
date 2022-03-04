@@ -1,17 +1,25 @@
 package model;
 
+import game.components.card.Card;
+import game.components.deck.Deck;
+import game.components.deck.StoryDeck;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public class GameState implements Serializable {
     public static final int MAX_PLAYERS = 4;
 
     private ArrayList<Player> players;
     private int numPlayers = 0;
-    // TODO::Add array list of discarded cards
+    private List<Card> discardedCards;
+    private Deck storyDeck;
 
     public GameState() {
         players = new ArrayList<Player>();
+        discardedCards = new ArrayList<Card>();
+        storyDeck = new StoryDeck();
     }
 
     public ArrayList<Player> getPlayers() {
@@ -35,6 +43,14 @@ public class GameState implements Serializable {
         player.setPlayerId(numPlayers);
 
         return numPlayers;
+    }
+
+    public void startGame() {
+        storyDeck.shuffle();
+    }
+
+    public void discardCard(Card card) {
+        discardedCards.add(card);
     }
 
 

@@ -1,78 +1,99 @@
 {
-  "quests": {
-    "Search for the Holy Grail": {
+  "quests": [
+    {
+      "title": "Search for the Holy Grail",
       "image": "",
-      "frequency": 1
+      "frequency": 1,
+      "stages": 5,
+      "foe": "All"
     },
-    "Test of the Green Knight": {
+    {"title": "Test of the Green Knight",
       "image": "",
-      "frequency": 1
-    }, "Search for the Questing Beast": {
+      "frequency": 1,
+      "stages": 4,
+      "foe": "Green Knight"
+    }, {"title": "Search for the Questing Beast",
       "image": "",
-      "frequency": 1
-    }, "Defend the Queen's Honor": {
+      "frequency": 1,
+      "stages": 4,
+      "foe": null
+    }, {"title":"Defend the Queen's Honor",
       "image": "",
-      "frequency": 1
-    }, "Rescue the Fair Maiden": {
+      "frequency": 1,
+      "stages": 4,
+      "foe": "All"
+    }, {"title":"Rescue the Fair Maiden",
       "image": "",
-      "frequency": 1
-    }, "Journey Through the Enchanted Forest": {
+      "frequency": 1,
+      "stages": 3,
+      "foe": "Black Knight"
+    }, {"title":"Journey through the Enchanted Forest",
       "image": "",
-      "frequency": 1
-    }, "Vanquish King Arthur's Enemies": {
+      "frequency": 1,
+      "stages": 3,
+      "foe": "Evil Knight"
+    }, {"title":"Vanquish King Arthur's Enemies",
       "image": "",
-      "frequency": 2
-    }, "Slay the Dragon": {
+      "frequency": 2,
+      "stages": 3,
+      "foe": null
+    }, {"title":"Slay the Dragon",
       "image": "",
-      "frequency": 1
-    }, "Boar Hunt": {
+      "frequency": 1,
+      "stages": 3,
+      "foe": "Dragon"
+    }, {"title":"Boar Hunt",
       "image": "",
-      "frequency": 2
-    }, "Repel the Saxon Raiders": {
+      "frequency": 2,
+      "stages": 2,
+      "foe": "Boar"
+    }, {"title":"Repel the Saxon Raiders",
       "image": "",
-      "frequency": 2
+      "frequency": 2,
+      "stages": 2,
+      "foe": "All Saxons"
     }
-  },
-  "events": {
-    "King's Recognition": {
+  ],
+  "events": [
+    {"title":"King's Recognition",
       "image": "",
       "frequency": 2
-    }, "Queen's Favor": {
+    }, {"title":"Queen's Favor",
       "image": "",
       "frequency": 2
-    }, "Court Called to Camelot": {
+    }, {"title":"Court Called to Camelot",
       "image": "",
       "frequency": 2
-    }, "Pox": {
+    }, {"title":"Pox",
       "image": "",
       "frequency": 1
-    }, "Plague": {
+    }, {"title":"Plague",
       "image": "",
       "frequency": 1
-    }, "Chivalrous Deed": {
+    }, {"title":"Chivalrous Deed",
       "image": "",
       "frequency": 1
-    }, "Prosperity Throughout the Realm": {
+    }, {"title": "Prosperity Throughout the Realm",
       "image": "",
       "frequency": 1
-    }, "King's Call to Arms": {
+    }, {"title": "King's Call to Arms",
       "image": "",
       "frequency": 1
     }
-  },
-  "tournaments": {
-    "Tournament at Camelot": {
+  ],
+  "tournaments": [
+    {"title": "Tournament at Camelot",
       "image": "",
       "frequency": 1
-    }, "Tournament at Orkney": {
+    }, {"title": "Tournament at Orkney",
       "image": "",
       "frequency": 1
-    }, "Tournament at Tintagel": {
+    }, {"title": "Tournament at Tintagel",
       "image": "",
       "frequency": 1
-    }, "Tournament at York": {
+    }, {"title": "Tournament at York",
       "image": "",
       "frequency": 1
     }
-  }
+  ]
 }

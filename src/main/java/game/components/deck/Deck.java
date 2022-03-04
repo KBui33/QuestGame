@@ -4,10 +4,15 @@ import game.components.card.Card;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public abstract class Deck {
 
-    ArrayList<Card> cards;
+    List<Card> cards;
+
+    public Deck() {
+        cards = new ArrayList<Card>();
+    }
 
     abstract void init();
 

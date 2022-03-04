@@ -7,8 +7,12 @@ import java.util.Map;
 public abstract class Card {
 
     private String title;
-    private String description;
-    private Image cardImg;
+    private String cardImg;
+
+    public Card(String title, String cardImg) {
+        this.title = title;
+        this.cardImg = cardImg;
+    }
 
     public String getTitle() {
         return title;
@@ -18,20 +22,12 @@ public abstract class Card {
         this.title = title;
     }
 
-    public Image getCardImg() {
+    public String getCardImg() {
         return cardImg;
     }
 
-    public void setCardImg(Image cardImg) {
+    public void setCardImg(String cardImg) {
         this.cardImg = cardImg;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
 }
