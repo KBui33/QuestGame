@@ -2,14 +2,9 @@ package gui.controllers;
 
 import gui.panes.GamePane;
 import gui.partials.CardView;
-import gui.partials.DeckView;
-import javafx.beans.InvalidationListener;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
-
-import java.util.*;
 
 /**
  * @author James DiNovo

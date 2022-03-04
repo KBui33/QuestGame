@@ -4,12 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.geometry.Orientation;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.image.Image;
-import javafx.util.Callback;
-
-import java.util.ArrayList;
 
 /**
  * @author James DiNovo
