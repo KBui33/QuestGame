@@ -23,7 +23,7 @@ public class Client implements Runnable {
 
     private static Client instance = null;
 
-    private SocketChannel _socketChannel;
+    private final SocketChannel _socketChannel;
     private final ObjectInputStream _subscribeInputStream;
     private final ObjectInputStream _gameStateInputStream;
 
@@ -41,18 +41,18 @@ public class Client implements Runnable {
 
     public Client(String serverHost) throws IOException {
         this.serverHost = serverHost;
-        InetSocketAddress address = new InetSocketAddress(serverHost, 5000);
+        InetSocketAddress address = new InetSocketAddress(serverHost, 5700);
         _socketChannel = SocketChannel.open(address);
         System.out.println("== Client connected to server socket");
 
         clientEvents = new ClientEventManager(new ClientEvent[] {ClientEvent.EXTERNAL_GAME_STATE_UPDATED, ClientEvent.GAME_COMMAND_RECEIVED});
 
-        _subscribeSocket = new Socket(serverHost, 5050);
+        _subscribeSocket = new Socket(serverHost, 5710);
         _subscribeInputStream = new ObjectInputStream(_subscribeSocket.getInputStream());
         new Thread(new SocketSubscriptionThread()).start(); // Listen for server broadcasts
         System.out.println("== Client subscribed to server broadcast channel");
 
-        _gameStateSocket = new Socket(serverHost, 5080);
+        _gameStateSocket = new Socket(serverHost, 5720);
         _gameStateInputStream = new ObjectInputStream(_gameStateSocket.getInputStream());
         new Thread(new GameStateUpdateThread()).start(); // Listen for game state updates
         System.out.println("== Client subscribed to game state update channel");
@@ -187,7 +187,6 @@ public class Client implements Runnable {
                 try {
                     ExternalGameState externalGameState = (ExternalGameState) _gameStateInputStream.readObject();
                     clientEvents.notify(ClientEvent.EXTERNAL_GAME_STATE_UPDATED, externalGameState);
-                    System.out.println(externalGameState);
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }

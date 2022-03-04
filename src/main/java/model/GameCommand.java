@@ -10,7 +10,10 @@ public class GameCommand implements Serializable {
         READY,
         IS_READY,
         QUIT,
-        QUITED
+        QUITED,
+        GET_LOBBY_STATE,
+        RETURN_LOBBY_STATE,
+        GAME_STARTED
     };
 
     private int playerId = 0;

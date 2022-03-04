@@ -1,0 +1,78 @@
+{
+  "quests": {
+    "Search for the Holy Grail": {
+      "image": "",
+      "frequency": 1
+    },
+    "Test of the Green Knight": {
+      "image": "",
+      "frequency": 1
+    }, "Search for the Questing Beast": {
+      "image": "",
+      "frequency": 1
+    }, "Defend the Queen's Honor": {
+      "image": "",
+      "frequency": 1
+    }, "Rescue the Fair Maiden": {
+      "image": "",
+      "frequency": 1
+    }, "Journey Through the Enchanted Forest": {
+      "image": "",
+      "frequency": 1
+    }, "Vanquish King Arthur's Enemies": {
+      "image": "",
+      "frequency": 2
+    }, "Slay the Dragon": {
+      "image": "",
+      "frequency": 1
+    }, "Boar Hunt": {
+      "image": "",
+      "frequency": 2
+    }, "Repel the Saxon Raiders": {
+      "image": "",
+      "frequency": 2
+    }
+  },
+  "events": {
+    "King's Recognition": {
+      "image": "",
+      "frequency": 2
+    }, "Queen's Favor": {
+      "image": "",
+      "frequency": 2
+    }, "Court Called to Camelot": {
+      "image": "",
+      "frequency": 2
+    }, "Pox": {
+      "image": "",
+      "frequency": 1
+    }, "Plague": {
+      "image": "",
+      "frequency": 1
+    }, "Chivalrous Deed": {
+      "image": "",
+      "frequency": 1
+    }, "Prosperity Throughout the Realm": {
+      "image": "",
+      "frequency": 1
+    }, "King's Call to Arms": {
+      "image": "",
+      "frequency": 1
+    }
+  },
+  "tournaments": {
+    "Tournament at Camelot": {
+      "image": "",
+      "frequency": 1
+    }, "Tournament at Orkney": {
+      "image": "",
+      "frequency": 1
+    }, "Tournament at Tintagel": {
+      "image": "",
+      "frequency": 1
+    }, "Tournament at York": {
+      "image": "",
+      "frequency": 1
+    }
+  }
+}
