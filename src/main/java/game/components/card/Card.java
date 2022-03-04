@@ -2,9 +2,10 @@ package game.components.card;
 
 import javafx.scene.image.Image;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public abstract class Card {
+public abstract class Card implements Serializable {
 
     private String title;
     private String cardImg;

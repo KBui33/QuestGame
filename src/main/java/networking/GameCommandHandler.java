@@ -27,7 +27,17 @@ public class GameCommandHandler {
                 returnCommand.setReadyPlayers(gameState.getNumPlayers());
 
                 // If all lobby players ready, start the game
-                if(server.getNumClients() >= 2 && gameState.getNumPlayers() == server.getNumClients()) server.notifyClients(new GameCommand(GameCommand.Command.GAME_STARTED));
+                if(server.getNumClients() >= 2 && gameState.getNumPlayers() == server.getNumClients()) {
+                    gameState.startGame();
+                    server.notifyClients(new GameCommand(GameCommand.Command.GAME_STARTED));
+                }
+                break;
+            }
+
+            case GET_ATTACHED_PLAYER: {
+                System.out.println("== Command handler says: Fetching player attached to client");
+                returnCommand.setCommand(GameCommand.Command.RETURN_ATTACHED_PLAYER);
+                returnCommand.setPlayer(gameState.getPlayer(gameCommand.getPlayerId()));
                 break;
             }
 
