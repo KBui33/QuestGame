@@ -9,9 +9,8 @@ public class FoeCard extends Card{
     private String extra; // Special description for foe (See for_11.png)
     private Map<Integer, Integer> dmg;
 
-    public FoeCard(Image cardImg, String title, String spDesc, Map<Integer, Integer> dmg) {
-        this.setCardImg(cardImg);
-        this.setTitle(title);
+    public FoeCard(String title, String cardImg, String spDesc, Map<Integer, Integer> dmg) {
+        super(title, cardImg);
         this.dmg = dmg;
         this.extra = spDesc;
     }

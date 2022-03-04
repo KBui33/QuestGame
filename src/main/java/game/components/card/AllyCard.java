@@ -3,9 +3,9 @@ package game.components.card;
 import javafx.scene.image.Image;
 
 public class AllyCard extends Card{
-    public AllyCard(Image cardImg, String title, String desc) {
-        this.setCardImg(cardImg);
-        this.setTitle(title);
-        this.setDescription(desc);
+    private String description;
+    public AllyCard( String title, String cardImg, String desc) {
+        super(title, cardImg);
+        this.description = desc;
     }
 }

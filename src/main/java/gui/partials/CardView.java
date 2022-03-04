@@ -3,6 +3,7 @@ package gui.partials;
 import game.components.card.Card;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -31,7 +32,7 @@ public class CardView extends StackPane {
 
     public void setCard(Card card) {
         this.card = card;
-        this.imageView.setImage(this.card.getCardImg());
+        this.imageView.setImage(new Image(String.valueOf(getClass().getResource(this.card.getCardImg()))));
     }
 
     // will take Card object once cards are implemented

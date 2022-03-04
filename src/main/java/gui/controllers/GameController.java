@@ -8,6 +8,11 @@ import gui.partials.CardView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
+import model.GameCommand;
+import model.Player;
+import networking.client.Client;
+
+import java.io.IOException;
 
 /**
  * @author James DiNovo
@@ -25,6 +30,19 @@ public class GameController {
 
     public void setView(GamePane view) {
 
+        // Fetch corresponding player
+        try {
+            Client client = Client.getInstance();
+            GameCommand getAttachedPlayerCommand = new GameCommand(GameCommand.Command.GET_ATTACHED_PLAYER);
+            getAttachedPlayerCommand.setPlayerId(client.getPlayerId());
+            GameCommand returnedAttachedPlayerCommand = client.sendCommand(getAttachedPlayerCommand);
+            Player player = (Player) returnedAttachedPlayerCommand.getPlayer();
+            System.out.println(player);
+
+        } catch(IOException err) {
+            err.printStackTrace();
+        }
+
         myHand = FXCollections.observableArrayList();
         view.getMyHand().setListViewItems(myHand);
 
@@ -35,37 +53,37 @@ public class GameController {
         view.getCurrentStateText().setText("Your turn!");
         view.getShieldsView().setShields(1);
 
-        for (int i = 1; i <= 11; i++) {
-            addCardToHand(myHand, new AllyCard(
-                    new Image(String.valueOf(getClass().getResource("/specials/quest_ally_" + i + ".png"))),
-                    "card",
-                    ""));
-        }
-
-        for (int i = 1; i <= 10; i++) {
-            CardView cardView = new CardView(new QuestCard(
-                    new Image(String.valueOf(getClass().getResource("/quests/quest_quest_" + i + ".png"))),
-                    "card", 3, ""));
-            discarded.add(0, cardView);
-        }
+//        for (int i = 1; i <= 11; i++) {
+//            addCardToHand(myHand, new AllyCard(
+//                    new Image(String.valueOf(getClass().getResource("/specials/quest_ally_" + i + ".png"))),
+//                    "card",
+//                    ""));
+//        }
+//
+//        for (int i = 1; i <= 10; i++) {
+//            CardView cardView = new CardView(new QuestCard(
+//                    new Image(String.valueOf(getClass().getResource("/quests/quest_quest_" + i + ".png"))),
+//                    "card", 3, ""));
+//            discarded.add(0, cardView);
+//        }
 
 
         // set action for draw card button
         view.getDrawCardButton().setOnAction(e -> {
             // draw a card from server
-            Card drawnCard = new AllyCard(
-                    new Image(String.valueOf(getClass().getResource("/specials/quest_ally_3.png"))),
-                    "card",
-                    "");
+//            Card drawnCard = new AllyCard(
+//                    new Image(String.valueOf(getClass().getResource("/specials/quest_ally_3.png"))),
+//                    "card",
+//                    "");
 
             // once hand has more than 12 cards every next card drawn must be either played or discarded
             if (myHand.size() < 12) {
-                addCardToHand(myHand, drawnCard);
+//                addCardToHand(myHand, drawnCard);
             } else {
                 // display card with option to play it or discard it
-                view.getDrawnCard().setCard(drawnCard);
-                view.setCenter(view.getDrawnCard());
-                view.getDrawCardButton().setDisable(true);
+//                view.getDrawnCard().setCard(drawnCard);
+//                view.setCenter(view.getDrawnCard());
+//                view.getDrawCardButton().setDisable(true);
             }
         });
 
