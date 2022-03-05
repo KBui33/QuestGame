@@ -20,6 +20,7 @@ import java.io.IOException;
 public class LobbyController {
 
     // need model
+    private Client client;
 
     public LobbyController(LobbyPane view) {
         setView(view);
@@ -33,7 +34,7 @@ public class LobbyController {
         // ensure view is updated whenever model changes
 
         try {
-            Client client = Client.getInstance();
+            client = Client.getInstance();
             // Get current lobby state
             GameCommand initLobbyStateCommand =  client.sendCommand(new GameCommand(GameCommand.Command.GET_LOBBY_STATE));
             if(initLobbyStateCommand.getCommand().equals(GameCommand.Command.RETURN_LOBBY_STATE)) {
@@ -85,9 +86,12 @@ public class LobbyController {
             err.printStackTrace();
         }
 
+        view.getServerText().setText("Server Address: " + client.getServerHost());
+
         view.getLeaveButton().setOnAction(e -> {
             System.out.println("Disconnecting");
             ClientApplication.window.setScene(new ConnectScene());
+            // should send disconnect notification to server and remove player from game
         });
     }
 }

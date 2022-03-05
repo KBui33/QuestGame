@@ -11,6 +11,10 @@ import model.Player;
 import networking.client.Client;
 
 import java.io.IOException;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author James DiNovo
@@ -19,6 +23,9 @@ import java.io.IOException;
  *
  */
 public class GameController {
+
+    private Client client;
+    private Player player;
     private ObservableList<CardView> myHand;
     private ObservableList<CardView> discarded;
 
@@ -28,27 +35,28 @@ public class GameController {
 
         discarded = FXCollections.observableArrayList();
         view.getDiscardedCards().setListViewItems(discarded);
+
+        // Fetch corresponding player
+        try {
+            client = Client.getInstance();
+            GameCommand getAttachedPlayerCommand = new GameCommand(GameCommand.Command.GET_ATTACHED_PLAYER);
+            getAttachedPlayerCommand.setPlayerId(client.getPlayerId());
+            GameCommand returnedAttachedPlayerCommand = client.sendCommand(getAttachedPlayerCommand);
+            player = (Player) returnedAttachedPlayerCommand.getPlayer();
+            System.out.println(player);
+
+        } catch(IOException err) {
+            err.printStackTrace();
+        }
+
         setView(view);
     }
 
     public void setView(GamePane view) {
 
-        // Fetch corresponding player
-        try {
-            Client client = Client.getInstance();
-            GameCommand getAttachedPlayerCommand = new GameCommand(GameCommand.Command.GET_ATTACHED_PLAYER);
-            getAttachedPlayerCommand.setPlayerId(client.getPlayerId());
-            GameCommand returnedAttachedPlayerCommand = client.sendCommand(getAttachedPlayerCommand);
-            Player player = (Player) returnedAttachedPlayerCommand.getPlayer();
-            System.out.println(player);
-
-            // Add player cards to gui cards
-            for (Card card : player.getCards()) {
-                addCardToHand(myHand, card);
-            }
-
-        } catch(IOException err) {
-            err.printStackTrace();
+        // Add player cards to gui cards
+        for (Card card : player.getCards()) {
+            addCardToHand(myHand, card);
         }
 
         // a lot of this is just for laying out gui will be removed later
@@ -60,9 +68,10 @@ public class GameController {
         view.getDrawCardButton().setOnAction(e -> {
             // draw a card from server
             // hardcoded for testing
+            Random r = new Random();
             Card drawnCard = new AllyCard(
                     "card",
-                    "/specials/quest_ally_3.png",
+                    "/specials/quest_ally_" + (r.nextInt(10) + 1) + ".png",
                     "");
 
 
@@ -87,10 +96,27 @@ public class GameController {
             System.out.println("discarded card");
             view.setCenter(null);
             view.getDrawCardButton().setDisable(false);
+
+            // temp behaviour for testing/demo
+            discarded.add(new CardView(view.getDrawnCard().getCard()));
         });
 
         view.getEndTurnButton().setOnAction(e -> {
             System.out.println("Turn ended");
+            disableView(view, true);
+            view.getCurrentStateText().setText("Player " + client.getPlayerId() + "'s turn...");
+            // just for demonstration
+            Timer t = new Timer();
+            TimerTask tt = new TimerTask() {
+                @Override
+                public void run() {
+                    disableView(view, false);
+                    view.getCurrentStateText().setText("Your turn!");
+                }
+            };
+
+            t.schedule(tt, 5000);
+
         });
 
         view.getShowHandButton().setOnAction(e -> {
@@ -145,6 +171,9 @@ public class GameController {
         cardView.getDiscardButton().setOnAction(e -> {
             // send delete signal to server and await response
             deckView.remove(cardView);
+
+            // TEMPORARY BEHAVIOUR FOR LAYOUT TESTING
+            discarded.add(cardView);
         });
 
         cardView.getPlayButton().setOnAction(e -> {

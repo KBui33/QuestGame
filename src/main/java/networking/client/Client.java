@@ -82,6 +82,10 @@ public class Client implements Runnable {
         return playerId;
     }
 
+    public String getServerHost() {
+        return serverHost;
+    }
+
     public GameCommand sendCommand(GameCommand command) {
         GameCommand receivedCommand = null;
         try {
