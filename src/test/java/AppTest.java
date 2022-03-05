@@ -1,8 +1,16 @@
-import junit.framework.TestCase;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
-public class AppTest extends TestCase {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+
+public class AppTest {
 
     public AppTest() {}
 
-    public void test() {}
+    @Test
+    @DisplayName("Test test")
+    public void test() {
+        assertEquals("thing", "thing");
+    }
 }
