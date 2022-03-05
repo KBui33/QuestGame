@@ -8,47 +8,47 @@
       "foe": "All"
     },
     {"title": "Test of the Green Knight",
-      "image": "",
+      "image": "/quests/quest_quest_10.png",
       "frequency": 1,
       "stages": 4,
       "foe": "Green Knight"
     }, {"title": "Search for the Questing Beast",
-      "image": "",
+      "image": "/quests/quest_quest_5.png",
       "frequency": 1,
       "stages": 4,
       "foe": null
     }, {"title":"Defend the Queen's Honor",
-      "image": "",
+      "image": "/quests/quest_quest_6.png",
       "frequency": 1,
       "stages": 4,
       "foe": "All"
     }, {"title":"Rescue the Fair Maiden",
-      "image": "",
+      "image": "/quests/quest_quest_8.png",
       "frequency": 1,
       "stages": 3,
       "foe": "Black Knight"
     }, {"title":"Journey through the Enchanted Forest",
-      "image": "",
+      "image": "/quests/quest_quest_1.png",
       "frequency": 1,
       "stages": 3,
       "foe": "Evil Knight"
     }, {"title":"Vanquish King Arthur's Enemies",
-      "image": "",
+      "image": "/quests/quest_quest_2.png",
       "frequency": 2,
       "stages": 3,
       "foe": null
     }, {"title":"Slay the Dragon",
-      "image": "",
+      "image": "/quests/quest_quest_7.png",
       "frequency": 1,
       "stages": 3,
       "foe": "Dragon"
     }, {"title":"Boar Hunt",
-      "image": "",
+      "image": "/quests/quest_quest_4.png",
       "frequency": 2,
       "stages": 2,
       "foe": "Boar"
     }, {"title":"Repel the Saxon Raiders",
-      "image": "",
+      "image": "/quests/quest_quest_3.png",
       "frequency": 2,
       "stages": 2,
       "foe": "All Saxons"
@@ -56,43 +56,43 @@
   ],
   "events": [
     {"title":"King's Recognition",
-      "image": "",
+      "image": "/quests/quest_event_4.png",
       "frequency": 2
     }, {"title":"Queen's Favor",
-      "image": "",
+      "image": "/quests/quest_event_5.png",
       "frequency": 2
     }, {"title":"Court Called to Camelot",
-      "image": "",
+      "image": "/quests/quest_event_6.png",
       "frequency": 2
     }, {"title":"Pox",
-      "image": "",
+      "image": "/quests/quest_event_2.png",
       "frequency": 1
     }, {"title":"Plague",
-      "image": "",
+      "image": "/quests/quest_event_3.png",
       "frequency": 1
     }, {"title":"Chivalrous Deed",
-      "image": "",
+      "image": "/quests/quest_event_1.png",
       "frequency": 1
     }, {"title": "Prosperity Throughout the Realm",
-      "image": "",
+      "image": "/quests/quest_event_8.png",
       "frequency": 1
     }, {"title": "King's Call to Arms",
-      "image": "",
+      "image": "/quests/quest_event_7.png",
       "frequency": 1
     }
   ],
   "tournaments": [
     {"title": "Tournament at Camelot",
-      "image": "",
+      "image": "/quests/quest_tournament_4.png",
       "frequency": 1
     }, {"title": "Tournament at Orkney",
-      "image": "",
+      "image": "/quests/quest_tournament_3.png",
       "frequency": 1
     }, {"title": "Tournament at Tintagel",
-      "image": "",
+      "image": "/quests/quest_tournament_2.png",
       "frequency": 1
     }, {"title": "Tournament at York",
-      "image": "",
+      "image": "/quests/quest_tournament_1.png",
       "frequency": 1
     }
   ]
