@@ -173,7 +173,7 @@ public class GameController {
             deckView.remove(cardView);
 
             // TEMPORARY BEHAVIOUR FOR LAYOUT TESTING
-            discarded.add(cardView);
+            discarded.add(new CardView(cardView.getCard()));
         });
 
         cardView.getPlayButton().setOnAction(e -> {
