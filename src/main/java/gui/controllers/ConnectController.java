@@ -23,16 +23,9 @@ public class ConnectController {
         view.getConnectButton().setOnAction(e -> {
             String serverHost = view.getServerAddress().getText().trim();
             System.out.println("Connecting to " + serverHost + "...");
-            // Create new client instance to connect to server
             try {
+                // Create new client instance to connect to server
                 Client client = Client.initialize(serverHost);
-                /*client.clientEvents.subscribe(Client.ClientEvent.EXTERNAL_GAME_STATE_UPDATED, new ClientEventListener() {
-                    @Override
-                    public void update(Client.ClientEvent eventType, Object o) {
-                        ExternalGameState externalGameState = (ExternalGameState) o;
-                        System.out.println("== Connect Controller says: \n" + externalGameState);
-                    }
-                });*/
                 System.out.println("== Connect Controller says: Loading lobby scene...");
                 ClientApplication.window.setScene(new LobbyScene());
             } catch(IOException err) {

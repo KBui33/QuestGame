@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Scanner;
 
-public class Client implements Runnable {
+public class Client  {
     private final int PORT = 80;
     private static final int READ_BUFFER_SIZE = 2048;
     private static final int WRITE_BUFFER_SIZE = 2048;
@@ -105,10 +105,6 @@ public class Client implements Runnable {
         return receivedCommand;
     }
 
-    @Override
-    public void run() {
-    }
-
     private class SocketSubscriptionThread implements Runnable {
         @Override
         public void run() {
@@ -135,16 +131,6 @@ public class Client implements Runnable {
                     e.printStackTrace();
                 }
             }
-        }
-    }
-
-
-
-    public static void main(String[] args) {
-        try {
-            new Thread(new Client()).start();
-        } catch(IOException e) {
-            e.printStackTrace();
         }
     }
 }

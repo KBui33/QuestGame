@@ -5,7 +5,6 @@ import model.GameState;
 import model.Player;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 public class GameRunner implements Runnable {
@@ -23,6 +22,7 @@ public class GameRunner implements Runnable {
     @Override
     public void run() {
         try {
+            Thread.sleep(5000);
             gameLoop();
         } catch (IOException e) {
             e.printStackTrace();

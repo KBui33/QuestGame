@@ -108,7 +108,6 @@ public class Server implements Runnable {
         @Override
         public void run() {
             try {
-                    System.out.println("== HEYEYE");
                     if (lastClientIndex >= MAX_CLIENTS) {
                         System.out.println("== Server says:  Client limit reached");
                         return;
@@ -184,8 +183,6 @@ public class Server implements Runnable {
         _workerPool = Executors.newFixedThreadPool(WORKER_POOL_SIZE);
 
         try {
-            //Integer port = Integer.parseInt(System.getenv("PORT"));
-            //int port = 5000;
             new Thread(Server.getInstance()).start();
             System.out.println("== Server started on port 5000");
         } catch(IOException e) {

@@ -40,12 +40,21 @@ public class GameController {
         try {
             Client client = Client.getInstance();
 
+            GameCommand getAttachedPlayerCommand = new GameCommand(GameCommand.Command.GET_ATTACHED_PLAYER);
+            getAttachedPlayerCommand.setPlayerId(client.getPlayerId());
+            GameCommand returnedAttachedPlayerCommand = client.sendCommand(getAttachedPlayerCommand);
+            Player player = (Player) returnedAttachedPlayerCommand.getPlayer();
+            System.out.println("== My Player: \n\t" + player);
+
             // Subscribe to command updates
             client.clientEvents.subscribe(Client.ClientEvent.GAME_COMMAND_RECEIVED, new ClientEventListener() {
                 @Override
                 public void update(Client.ClientEvent eventType, Object o) {
                     GameCommand receivedCommand = (GameCommand) o;
-                    System.out.println("== Game Controller says: " + receivedCommand);
+                    System.out.println("== Game Controller command update says: " + receivedCommand);
+                    if(receivedCommand.getCommand().equals(GameCommand.Command.PLAYER_TURN) && receivedCommand.getPlayerId() == client.getPlayerId()) { // Take turn if it's player's turn
+                        System.out.println("== It's my turn. Player: " + receivedCommand.getPlayerId());
+                    }
                 }
             });
 
@@ -54,23 +63,9 @@ public class GameController {
                 @Override
                 public void update(Client.ClientEvent eventType, Object o) {
                     ExternalGameState externalGameState = (ExternalGameState) o;
-                    System.out.println("== Game Controller says: " + externalGameState);
+                    System.out.println("== Game Controller game state update says: " + externalGameState);
                 }
             });
-
-            // Send a ready command to the server
-            GameCommand command = new GameCommand(GameCommand.Command.READY);
-            command =  client.sendCommand(command);
-            client.setPlayerId(command.getPlayerId()); // Set id of player/client
-
-            GameCommand getAttachedPlayerCommand = new GameCommand(GameCommand.Command.GET_ATTACHED_PLAYER);
-            getAttachedPlayerCommand.setPlayerId(client.getPlayerId());
-            GameCommand returnedAttachedPlayerCommand = client.sendCommand(getAttachedPlayerCommand);
-            Player player = (Player) returnedAttachedPlayerCommand.getPlayer();
-            System.out.println(player);
-
-            // Add player cards to gui cards
-            ArrayList<Card> cards = (ArrayList<Card>) player.getCards();
 
         } catch(IOException err) {
             err.printStackTrace();
