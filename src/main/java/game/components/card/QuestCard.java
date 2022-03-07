@@ -1,6 +1,5 @@
 package game.components.card;
 
-import javafx.scene.image.Image;
 
 public class QuestCard extends Card{
 
