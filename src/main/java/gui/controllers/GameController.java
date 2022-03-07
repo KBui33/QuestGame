@@ -56,6 +56,7 @@ public class GameController {
                     if(receivedCommand.getCommand().equals(GameCommand.Command.PLAYER_TURN) && receivedCommand.getPlayerId() == client.getPlayerId()) { // Take turn if it's player's turn
                         System.out.println("== It's my turn. Player: " + receivedCommand.getPlayerId());
                         view.getCurrentStateText().setText("Take your turn!");
+                        disableView(view, false);
                     }
                 }
             });
@@ -87,8 +88,10 @@ public class GameController {
             addCardToHand(myHand, card);
         }
 
-        // a lot of this is just for laying out gui will be removed later
+        disableView(view, true);
         view.getCurrentStateText().setText("Wait for your turn!");
+
+        // a lot of this is just for laying out gui will be removed later
         view.getShieldsView().setShields(1);
 
 
