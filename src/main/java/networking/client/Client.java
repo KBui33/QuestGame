@@ -62,7 +62,7 @@ public class Client implements Runnable {
     }
 
     public Client() throws IOException {
-        this("localhost");
+        this("192.168.122.1");
     }
 
     public static Client initialize(String serverHost) throws IOException {
