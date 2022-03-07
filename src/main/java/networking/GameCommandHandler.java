@@ -1,5 +1,6 @@
 package networking;
 
+import game.components.card.Card;
 import model.ExternalGameState;
 import model.GameCommand;
 import model.GameState;
@@ -19,6 +20,7 @@ public class GameCommandHandler {
         GameCommand.Command command =  gameCommand.getCommand();
         GameCommand returnCommand = new GameCommand();
         GameState gameState = server.getGameState();
+        Player player = gameCommand.getPlayer();
         ExternalGameState externalGameState = server.getExternalGameState();
         boolean startGame = false;
 
@@ -52,10 +54,14 @@ public class GameCommandHandler {
 
             case DISCARD_CARD: {
                 int playerId = gameCommand.getPlayerId();
+                Card card = gameCommand.getCard();
                 System.out.println("== Command handler says: Player " + playerId + " is discarding a card");
-                gameState.discardCard(gameCommand.getCard());
-                System.out.println("== Command handler says: Discard pile " + gameState.getDiscardedCards().size());
+                System.out.println("== Player discard before: " +  player.getCards().size());
+                System.out.println("== Player discard res: " +  player.discardCard(card));
+                System.out.println("== Player discard after: " +  player.getCards().size());
+                gameState.discardCard(card);
                 returnCommand.setCommand(GameCommand.Command.DISCARDED_CARD);
+                returnCommand.setPlayer(player);
                 returnCommand.setPlayerId(playerId);
                 break;
             }
@@ -63,13 +69,13 @@ public class GameCommandHandler {
             case END_TURN: {
                 int playerId = gameCommand.getPlayerId();
                 System.out.println("== Command handler says: Player took " + playerId);
-                returnCommand.setCommand(GameCommand.Command.TOOK_TURN);
+                gameState.setGameStatus(GameState.GameStatus.RUNNING); // Update game status
+                returnCommand.setCommand(GameCommand.Command.ENDED_TURN);
                 returnCommand.setPlayerId(playerId);
                 break;
             }
         }
 
-        externalGameState.setGameState(gameState);
         server.notifyClients(returnCommand);
         if(startGame)  new Thread(new GameRunner(server)).start();
         return returnCommand;

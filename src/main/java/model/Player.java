@@ -30,6 +30,10 @@ public class Player implements Serializable {
         return cards.remove(cardIndex);
     }
 
+    public boolean discardCard(Card card) {
+        return cards.remove(card);
+    }
+
     public int getPlayerId() {
         return playerId;
     }

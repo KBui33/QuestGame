@@ -59,6 +59,10 @@ public class GameState implements Serializable {
         return players.get(playerId - 1);
     }
 
+    public Player setPlayer(int playerId, Player player) {
+        return players.set(playerId, player);
+    }
+
     public void startGame() {
         storyDeck.init();
         adventureDeck.init();

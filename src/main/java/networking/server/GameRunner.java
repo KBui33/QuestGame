@@ -57,6 +57,8 @@ public class GameRunner implements Runnable {
                 endTurnCommand.setPlayerId(playerId);
 
                 server.notifyClients(endTurnCommand);
+
+                Thread.sleep(2000);
             }
 
             System.out.println("== All players have taken a turn");
