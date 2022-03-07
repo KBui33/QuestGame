@@ -14,6 +14,7 @@ public abstract class Deck  implements Serializable {
 
     public Deck() {
         cards = new ArrayList<Card>();
+        discarded = new ArrayList<Card>();
     }
 
     public abstract void init();
@@ -25,6 +26,7 @@ public abstract class Deck  implements Serializable {
     public Card draw(){
         if (cards.size() == 0) {
             cards = new ArrayList<Card>(discarded);
+            discarded.clear();
             shuffle();
         }
         return cards.remove(cards.size() - 1);

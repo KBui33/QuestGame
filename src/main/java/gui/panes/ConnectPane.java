@@ -44,7 +44,7 @@ public class ConnectPane extends BorderPane {
         serverAddress = new TextField();
         serverAddress.setMaxWidth(200);
         serverAddress.setAlignment(Pos.CENTER);
-        serverAddress.setText("192.168.122.1");
+        serverAddress.setText("127.0.0.1");
 
         connectButton = new Button("Connect");
         connectButton.setPrefSize(100, 25);
