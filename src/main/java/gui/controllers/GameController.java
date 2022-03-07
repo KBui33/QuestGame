@@ -4,11 +4,15 @@ import game.components.card.AllyCard;
 import game.components.card.Card;
 import gui.panes.GamePane;
 import gui.partials.CardView;
+import gui.scenes.GameScene;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import model.ExternalGameState;
 import model.GameCommand;
 import model.Player;
 import networking.client.Client;
+import networking.client.ClientEventListener;
 
 import java.io.IOException;
 import java.util.Random;
@@ -36,14 +40,37 @@ public class GameController {
         discarded = FXCollections.observableArrayList();
         view.getDiscardedCards().setListViewItems(discarded);
 
-        // Fetch corresponding player
         try {
             client = Client.getInstance();
+
+            // Fetch corresponding player
             GameCommand getAttachedPlayerCommand = new GameCommand(GameCommand.Command.GET_ATTACHED_PLAYER);
             getAttachedPlayerCommand.setPlayerId(client.getPlayerId());
             GameCommand returnedAttachedPlayerCommand = client.sendCommand(getAttachedPlayerCommand);
             player = (Player) returnedAttachedPlayerCommand.getPlayer();
-            System.out.println(player);
+            System.out.println("== My Player: \n\t" + player);
+
+                        // Subscribe to command updates
+            client.clientEvents.subscribe(Client.ClientEvent.GAME_COMMAND_RECEIVED, new ClientEventListener() {
+                @Override
+                public void update(Client.ClientEvent eventType, Object o) {
+                    GameCommand receivedCommand = (GameCommand) o;
+                    System.out.println("== Game Controller command update says: " + receivedCommand);
+                    if(receivedCommand.getCommand().equals(GameCommand.Command.PLAYER_TURN) && receivedCommand.getPlayerId() == client.getPlayerId()) { // Take turn if it's player's turn
+                        System.out.println("== It's my turn. Player: " + receivedCommand.getPlayerId());
+                        view.getCurrentStateText().setText("Take your turn!");
+                    }
+                }
+            });
+
+            // Subscribe to game state updates
+            client.clientEvents.subscribe(Client.ClientEvent.EXTERNAL_GAME_STATE_UPDATED, new ClientEventListener() {
+                @Override
+                public void update(Client.ClientEvent eventType, Object o) {
+                    ExternalGameState externalGameState = (ExternalGameState) o;
+                    System.out.println("== Game Controller game state update says: " + externalGameState);
+                }
+            });
 
         } catch(IOException err) {
             err.printStackTrace();
@@ -60,7 +87,7 @@ public class GameController {
         }
 
         // a lot of this is just for laying out gui will be removed later
-        view.getCurrentStateText().setText("Your turn!");
+        view.getCurrentStateText().setText("Wait for your turn!");
         view.getShieldsView().setShields(1);
 
 
@@ -96,6 +123,8 @@ public class GameController {
             System.out.println("discarded card");
             view.setCenter(null);
             view.getDrawCardButton().setDisable(false);
+
+            // Send discard command
 
             // temp behaviour for testing/demo
             discarded.add(new CardView(view.getDrawnCard().getCard()));
@@ -170,6 +199,13 @@ public class GameController {
     private void setCardViewButtonActions(ObservableList<CardView> deckView, CardView cardView) {
         cardView.getDiscardButton().setOnAction(e -> {
             // send delete signal to server and await response
+            System.out.println("Discarding card");
+
+            // Send discard card command
+            GameCommand discardCardCommand = new GameCommand(GameCommand.Command.DISCARD_CARD);
+            discardCardCommand.setPlayerId(client.getPlayerId());
+            discardCardCommand.setCard(cardView.getCard());
+            client.sendCommand(discardCardCommand);
             deckView.remove(cardView);
 
             // TEMPORARY BEHAVIOUR FOR LAYOUT TESTING

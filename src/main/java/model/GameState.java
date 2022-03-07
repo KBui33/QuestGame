@@ -13,7 +13,9 @@ public class GameState implements Serializable {
     public static final int MAX_PLAYERS = 4;
     public static enum GameStatus {
         READY,
-        STARTED
+        STARTED,
+        RUNNING,
+        TAKING_TURN
     }
 
     private ArrayList<Player> players;
@@ -86,5 +88,9 @@ public class GameState implements Serializable {
 
     public GameStatus getGameStatus() {
         return gameStatus;
+    }
+
+    public void setGameStatus(GameStatus gameStatus) {
+        this.gameStatus = gameStatus;
     }
 }
