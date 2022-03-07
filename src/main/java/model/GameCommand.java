@@ -15,7 +15,10 @@ public class GameCommand implements Serializable {
         RETURN_LOBBY_STATE,
         GET_ATTACHED_PLAYER,
         RETURN_ATTACHED_PLAYER,
-        GAME_STARTED
+        GAME_STARTED,
+        PLAYER_TURN,
+        TAKE_TURN,
+        TOOK_TURN
     };
 
     private int playerId = 0;

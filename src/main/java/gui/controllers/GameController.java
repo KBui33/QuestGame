@@ -3,14 +3,19 @@ package gui.controllers;
 import game.components.card.AllyCard;
 import game.components.card.Card;
 import game.components.card.QuestCard;
+import gui.main.ClientApplication;
 import gui.panes.GamePane;
 import gui.partials.CardView;
+import gui.scenes.GameScene;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
+import model.ExternalGameState;
 import model.GameCommand;
 import model.Player;
 import networking.client.Client;
+import networking.client.ClientEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,6 +39,30 @@ public class GameController {
         // Fetch corresponding player
         try {
             Client client = Client.getInstance();
+
+            // Subscribe to command updates
+            client.clientEvents.subscribe(Client.ClientEvent.GAME_COMMAND_RECEIVED, new ClientEventListener() {
+                @Override
+                public void update(Client.ClientEvent eventType, Object o) {
+                    GameCommand receivedCommand = (GameCommand) o;
+                    System.out.println("== Game Controller says: " + receivedCommand);
+                }
+            });
+
+            // Subscribe to game state updates
+            client.clientEvents.subscribe(Client.ClientEvent.EXTERNAL_GAME_STATE_UPDATED, new ClientEventListener() {
+                @Override
+                public void update(Client.ClientEvent eventType, Object o) {
+                    ExternalGameState externalGameState = (ExternalGameState) o;
+                    System.out.println("== Game Controller says: " + externalGameState);
+                }
+            });
+
+            // Send a ready command to the server
+            GameCommand command = new GameCommand(GameCommand.Command.READY);
+            command =  client.sendCommand(command);
+            client.setPlayerId(command.getPlayerId()); // Set id of player/client
+
             GameCommand getAttachedPlayerCommand = new GameCommand(GameCommand.Command.GET_ATTACHED_PLAYER);
             getAttachedPlayerCommand.setPlayerId(client.getPlayerId());
             GameCommand returnedAttachedPlayerCommand = client.sendCommand(getAttachedPlayerCommand);

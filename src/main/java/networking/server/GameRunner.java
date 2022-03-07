@@ -1,4 +1,4 @@
-package json;
+package networking.server;
 
 import model.GameCommand;
 import model.GameState;
