@@ -53,10 +53,10 @@ public class GameRunner implements Runnable {
                 }
 
                 // Notify clients
-                GameCommand tookTurnCommand = new GameCommand(GameCommand.Command.TOOK_TURN);
-                tookTurnCommand.setPlayerId(playerId);
+                GameCommand endTurnCommand = new GameCommand(GameCommand.Command.TOOK_TURN);
+                endTurnCommand.setPlayerId(playerId);
 
-                server.notifyClients(tookTurnCommand);
+                server.notifyClients(endTurnCommand);
             }
 
             System.out.println("== All players have taken a turn");

@@ -1,5 +1,6 @@
 package networking;
 
+import model.ExternalGameState;
 import model.GameCommand;
 import model.GameState;
 import model.Player;
@@ -18,6 +19,7 @@ public class GameCommandHandler {
         GameCommand.Command command =  gameCommand.getCommand();
         GameCommand returnCommand = new GameCommand();
         GameState gameState = server.getGameState();
+        ExternalGameState externalGameState = server.getExternalGameState();
         boolean startGame = false;
 
         switch (command) {
@@ -48,7 +50,17 @@ public class GameCommandHandler {
                 break;
             }
 
-            case TAKE_TURN: {
+            case DISCARD_CARD: {
+                int playerId = gameCommand.getPlayerId();
+                System.out.println("== Command handler says: Player " + playerId + " is discarding a card");
+                gameState.discardCard(gameCommand.getCard());
+                System.out.println("== Command handler says: Discard pile " + gameState.getDiscardedCards().size());
+                returnCommand.setCommand(GameCommand.Command.DISCARDED_CARD);
+                returnCommand.setPlayerId(playerId);
+                break;
+            }
+
+            case END_TURN: {
                 int playerId = gameCommand.getPlayerId();
                 System.out.println("== Command handler says: Player took " + playerId);
                 returnCommand.setCommand(GameCommand.Command.TOOK_TURN);
@@ -57,6 +69,7 @@ public class GameCommandHandler {
             }
         }
 
+        externalGameState.setGameState(gameState);
         server.notifyClients(returnCommand);
         if(startGame)  new Thread(new GameRunner(server)).start();
         return returnCommand;

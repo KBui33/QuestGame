@@ -81,6 +81,10 @@ public class Server implements Runnable {
         return gameState;
     }
 
+    public ExternalGameState getExternalGameState() {
+        return externalGameState;
+    }
+
     public int getNumClients() {return lastClientIndex;}
 
     @Override

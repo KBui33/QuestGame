@@ -8,6 +8,7 @@ import gui.scenes.GameScene;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import model.ExternalGameState;
 import model.GameCommand;
 import model.Player;
 import networking.client.Client;
@@ -57,6 +58,7 @@ public class GameController {
                     System.out.println("== Game Controller command update says: " + receivedCommand);
                     if(receivedCommand.getCommand().equals(GameCommand.Command.PLAYER_TURN) && receivedCommand.getPlayerId() == client.getPlayerId()) { // Take turn if it's player's turn
                         System.out.println("== It's my turn. Player: " + receivedCommand.getPlayerId());
+                        view.getCurrentStateText().setText("Take your turn!");
                     }
                 }
             });
@@ -85,7 +87,7 @@ public class GameController {
         }
 
         // a lot of this is just for laying out gui will be removed later
-        view.getCurrentStateText().setText("Your turn!");
+        view.getCurrentStateText().setText("Wait for your turn!");
         view.getShieldsView().setShields(1);
 
 
@@ -121,6 +123,8 @@ public class GameController {
             System.out.println("discarded card");
             view.setCenter(null);
             view.getDrawCardButton().setDisable(false);
+
+            // Send discard command
 
             // temp behaviour for testing/demo
             discarded.add(new CardView(view.getDrawnCard().getCard()));
@@ -195,6 +199,13 @@ public class GameController {
     private void setCardViewButtonActions(ObservableList<CardView> deckView, CardView cardView) {
         cardView.getDiscardButton().setOnAction(e -> {
             // send delete signal to server and await response
+            System.out.println("Discarding card");
+
+            // Send discard card command
+            GameCommand discardCardCommand = new GameCommand(GameCommand.Command.DISCARD_CARD);
+            discardCardCommand.setPlayerId(client.getPlayerId());
+            discardCardCommand.setCard(cardView.getCard());
+            client.sendCommand(discardCardCommand);
             deckView.remove(cardView);
 
             // TEMPORARY BEHAVIOUR FOR LAYOUT TESTING
