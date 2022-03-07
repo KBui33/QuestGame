@@ -29,6 +29,7 @@ public class ConnectController {
                 System.out.println("== Connect Controller says: Loading lobby scene...");
                 ClientApplication.window.setScene(new LobbyScene());
             } catch(IOException err) {
+                // display error to user later on
                 err.printStackTrace();
             }
 

@@ -64,6 +64,22 @@ public class GamePane extends BorderPane {
         return endTurnButton;
     }
 
+    public BorderPane getTopBar() {
+        return topBar;
+    }
+
+    public VBox getDeckButtons() {
+        return deckButtons;
+    }
+
+    public VBox getCardButtons() {
+        return cardButtons;
+    }
+
+    public HBox getRankInfoBox() {
+        return rankInfoBox;
+    }
+
     public CardView getDrawnCard() {
         return drawnCard;
     }
