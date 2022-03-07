@@ -132,19 +132,25 @@ public class GameController {
 
         view.getEndTurnButton().setOnAction(e -> {
             System.out.println("Turn ended");
-            disableView(view, true);
-            view.getCurrentStateText().setText("Player " + client.getPlayerId() + "'s turn...");
-            // just for demonstration
-            Timer t = new Timer();
-            TimerTask tt = new TimerTask() {
-                @Override
-                public void run() {
-                    disableView(view, false);
-                    view.getCurrentStateText().setText("Your turn!");
-                }
-            };
+            // Send end turn command
+            GameCommand endTurnCommand = new GameCommand(GameCommand.Command.END_TURN);
+            endTurnCommand.setPlayerId(client.getPlayerId());
+            endTurnCommand.setPlayer(player);
+            client.sendCommand(endTurnCommand);
 
-            t.schedule(tt, 5000);
+            disableView(view, true);
+            view.getCurrentStateText().setText("Wait for your turn");
+            // just for demonstration
+            //Timer t = new Timer();
+            //TimerTask tt = new TimerTask() {
+                //@Override
+                //public void run() {
+                    //disableView(view, false);
+                    // view.getCurrentStateText().setText("Your turn!");
+                //}
+            //};
+
+           // t.schedule(tt, 5000);
 
         });
 
@@ -204,12 +210,14 @@ public class GameController {
             // Send discard card command
             GameCommand discardCardCommand = new GameCommand(GameCommand.Command.DISCARD_CARD);
             discardCardCommand.setPlayerId(client.getPlayerId());
+            discardCardCommand.setPlayer(player);
             discardCardCommand.setCard(cardView.getCard());
-            client.sendCommand(discardCardCommand);
+            GameCommand discardedCardCommand =  client.sendCommand(discardCardCommand);
+            player = discardedCardCommand.getPlayer();
             deckView.remove(cardView);
 
             // TEMPORARY BEHAVIOUR FOR LAYOUT TESTING
-            discarded.add(new CardView(cardView.getCard()));
+            //discarded.add(new CardView(cardView.getCard()));
         });
 
         cardView.getPlayButton().setOnAction(e -> {

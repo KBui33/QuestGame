@@ -21,6 +21,7 @@ public class GameCommand implements Serializable {
         PLAYER_TURN,
         TAKE_TURN,
         END_TURN,
+        ENDED_TURN,
         TOOK_TURN,
         DISCARD_CARD,
         DISCARDED_CARD
