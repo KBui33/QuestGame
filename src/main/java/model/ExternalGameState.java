@@ -23,6 +23,14 @@ public class ExternalGameState implements Serializable {
         return gameState.getNumPlayers();
     }
 
+    public GameState getGameState() {
+        return gameState;
+    }
+
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
+    }
+
     public String toString() {
         return "== External Game State ==\n" +
                 "\tNum Players: " + gameState.getNumPlayers() + "\n" +

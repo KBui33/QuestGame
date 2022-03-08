@@ -13,19 +13,20 @@ public class GameState implements Serializable {
     public static final int MAX_PLAYERS = 4;
     public static enum GameStatus {
         READY,
-        STARTED
+        STARTED,
+        RUNNING,
+        TAKING_TURN,
+        IN_QUEST
     }
 
     private ArrayList<Player> players;
     private int numPlayers = 0;
-    private List<Card> discardedCards;
     private Deck storyDeck;
     private Deck adventureDeck;
     private GameStatus gameStatus;
 
     public GameState() {
         players = new ArrayList<Player>();
-        discardedCards = new ArrayList<Card>();
         storyDeck = new StoryDeck();
         adventureDeck = new AdventureDeck();
         gameStatus = GameStatus.READY;
@@ -59,6 +60,10 @@ public class GameState implements Serializable {
         return players.get(playerId - 1);
     }
 
+    public Player setPlayer(int playerId, Player player) {
+        return players.set(playerId, player);
+    }
+
     public void startGame() {
         storyDeck.init();
         adventureDeck.init();
@@ -77,14 +82,31 @@ public class GameState implements Serializable {
     }
 
     public List<Card> getDiscardedCards() {
-        return discardedCards;
+        ArrayList<Card> discardPile = new ArrayList<>();
+        discardPile.addAll(adventureDeck.getDiscarded());
+        discardPile.addAll(storyDeck.getDiscarded());
+        return discardPile;
     }
 
-    public void discardCard(Card card) {
-        discardedCards.add(card);
+    public boolean discardAdventureCard(Card card) {
+        return adventureDeck.discard(card);
+    }
+
+    public boolean discardStoryCard(Card card) {return storyDeck.discard(card);}
+
+    public Card drawAdventureCard() {
+        return adventureDeck.draw();
+    }
+
+    public Card drawStoryCard() {
+        return storyDeck.draw();
     }
 
     public GameStatus getGameStatus() {
         return gameStatus;
+    }
+
+    public void setGameStatus(GameStatus gameStatus) {
+        this.gameStatus = gameStatus;
     }
 }

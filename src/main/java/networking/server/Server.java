@@ -81,6 +81,10 @@ public class Server implements Runnable {
         return gameState;
     }
 
+    public ExternalGameState getExternalGameState() {
+        return externalGameState;
+    }
+
     public int getNumClients() {return lastClientIndex;}
 
     @Override
@@ -133,6 +137,14 @@ public class Server implements Runnable {
         }
     }
 
+    public ArrayList<ObjectOutputStream> getBroadcastClientOutputStreams() {
+        return _gameStateUpdateOutputStreams;
+    }
+
+    public ArrayList<ObjectOutputStream> getGameStateUpdateOutputStreams() {
+        return _gameStateUpdateOutputStreams;
+    }
+
     public void registerClientForBroadcasts(Socket broadcastSocket)  throws IOException{
         _broadcastClients.add(lastClientIndex, broadcastSocket);
         _broadcastClientOutputStreams.add(lastClientIndex, new ObjectOutputStream(broadcastSocket.getOutputStream()));
@@ -149,17 +161,18 @@ public class Server implements Runnable {
         _broadcastClients.remove(index);
     }
 
-    public void notifyClients(GameCommand command) {
+    public synchronized void notifyClients(GameCommand command) {
+        System.out.println("== Server notifier says: " + command);
         command.setJoinedPlayers(lastClientIndex);
         try {
             for (ObjectOutputStream oos : _gameStateUpdateOutputStreams) {
-                oos.reset();
                 oos.writeObject(externalGameState);
+                oos.flush();
             }
 
             for (ObjectOutputStream oos : _broadcastClientOutputStreams) {
-                oos.reset();
                 oos.writeObject(command);
+                oos.flush();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -170,13 +183,10 @@ public class Server implements Runnable {
         return _workerPool;
     }
 
-
     public static void main(String[] args) {
         _workerPool = Executors.newFixedThreadPool(WORKER_POOL_SIZE);
 
         try {
-            //Integer port = Integer.parseInt(System.getenv("PORT"));
-            //int port = 5000;
             new Thread(Server.getInstance()).start();
             System.out.println("== Server started on port 5000");
         } catch(IOException e) {

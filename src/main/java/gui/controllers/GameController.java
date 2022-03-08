@@ -6,15 +6,16 @@ import gui.panes.GamePane;
 import gui.partials.CardView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import model.ExternalGameState;
 import model.GameCommand;
 import model.Player;
 import networking.client.Client;
+import networking.client.ClientEventListener;
 
 import java.io.IOException;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author James DiNovo
@@ -36,14 +37,42 @@ public class GameController {
         discarded = FXCollections.observableArrayList();
         view.getDiscardedCards().setListViewItems(discarded);
 
-        // Fetch corresponding player
         try {
             client = Client.getInstance();
+
+            // Fetch corresponding player
             GameCommand getAttachedPlayerCommand = new GameCommand(GameCommand.Command.GET_ATTACHED_PLAYER);
             getAttachedPlayerCommand.setPlayerId(client.getPlayerId());
             GameCommand returnedAttachedPlayerCommand = client.sendCommand(getAttachedPlayerCommand);
             player = (Player) returnedAttachedPlayerCommand.getPlayer();
-            System.out.println(player);
+            System.out.println("== My Player: \n\t" + player);
+
+                        // Subscribe to command updates
+            client.clientEvents.subscribe(Client.ClientEvent.GAME_COMMAND_RECEIVED, new ClientEventListener() {
+                @Override
+                public void update(Client.ClientEvent eventType, Object o) {
+                    GameCommand receivedCommand = (GameCommand) o;
+                    System.out.println("== Game Controller command update says: " + receivedCommand);
+                    if(receivedCommand.getCommand().equals(GameCommand.Command.PLAYER_TURN) && receivedCommand.getPlayerId() == client.getPlayerId()) { // Take turn if it's player's turn
+                        System.out.println("== It's my turn. Player: " + receivedCommand.getPlayerId());
+                        view.getCurrentStateText().setText("Take your turn!");
+                        disableView(view, false);
+                    }
+                }
+            });
+
+            // Subscribe to game state updates
+            client.clientEvents.subscribe(Client.ClientEvent.EXTERNAL_GAME_STATE_UPDATED, new ClientEventListener() {
+                @Override
+                public void update(Client.ClientEvent eventType, Object o) {
+                    ExternalGameState externalGameState = (ExternalGameState) o;
+                    discarded.clear();
+                    for (Card card : externalGameState.getDiscardedCards()) {
+                        discarded.add(new CardView(card));
+                    }
+                    System.out.println("== Game Controller game state update says: " + externalGameState);
+                }
+            });
 
         } catch(IOException err) {
             err.printStackTrace();
@@ -59,8 +88,10 @@ public class GameController {
             addCardToHand(myHand, card);
         }
 
+        disableView(view, true);
+        view.getCurrentStateText().setText("Wait for your turn!");
+
         // a lot of this is just for laying out gui will be removed later
-        view.getCurrentStateText().setText("Your turn!");
         view.getShieldsView().setShields(1);
 
 
@@ -72,7 +103,7 @@ public class GameController {
             Card drawnCard = new AllyCard(
                     "card",
                     "/specials/quest_ally_" + (r.nextInt(10) + 1) + ".png",
-                    "");
+                    "", "");
 
 
             // once hand has more than 12 cards every next card drawn must be either played or discarded
@@ -97,25 +128,38 @@ public class GameController {
             view.setCenter(null);
             view.getDrawCardButton().setDisable(false);
 
+            // Send discard command
+            // Send discard card command
+            GameCommand discardCardCommand = new GameCommand(GameCommand.Command.DISCARD_CARD);
+            discardCardCommand.setPlayerId(client.getPlayerId());
+            discardCardCommand.setCard(view.getDrawnCard().getCard());
+            client.sendCommand(discardCardCommand);
+
             // temp behaviour for testing/demo
-            discarded.add(new CardView(view.getDrawnCard().getCard()));
+            //discarded.add(new CardView(view.getDrawnCard().getCard()));
         });
 
         view.getEndTurnButton().setOnAction(e -> {
             System.out.println("Turn ended");
-            disableView(view, true);
-            view.getCurrentStateText().setText("Player " + client.getPlayerId() + "'s turn...");
-            // just for demonstration
-            Timer t = new Timer();
-            TimerTask tt = new TimerTask() {
-                @Override
-                public void run() {
-                    disableView(view, false);
-                    view.getCurrentStateText().setText("Your turn!");
-                }
-            };
+            // Send end turn command
+            GameCommand endTurnCommand = new GameCommand(GameCommand.Command.END_TURN);
+            endTurnCommand.setPlayerId(client.getPlayerId());
+            endTurnCommand.setPlayer(player);
+            client.sendCommand(endTurnCommand);
 
-            t.schedule(tt, 5000);
+            disableView(view, true);
+            view.getCurrentStateText().setText("Wait for your turn");
+            // just for demonstration
+            //Timer t = new Timer();
+            //TimerTask tt = new TimerTask() {
+                //@Override
+                //public void run() {
+                    //disableView(view, false);
+                    // view.getCurrentStateText().setText("Your turn!");
+                //}
+            //};
+
+           // t.schedule(tt, 5000);
 
         });
 
@@ -170,10 +214,19 @@ public class GameController {
     private void setCardViewButtonActions(ObservableList<CardView> deckView, CardView cardView) {
         cardView.getDiscardButton().setOnAction(e -> {
             // send delete signal to server and await response
+            System.out.println("Discarding card");
+
+            // Send discard card command
+            GameCommand discardCardCommand = new GameCommand(GameCommand.Command.DISCARD_CARD);
+            discardCardCommand.setPlayerId(client.getPlayerId());
+            discardCardCommand.setPlayer(player);
+            discardCardCommand.setCard(cardView.getCard());
+            GameCommand discardedCardCommand =  client.sendCommand(discardCardCommand);
+            player = discardedCardCommand.getPlayer();
             deckView.remove(cardView);
 
             // TEMPORARY BEHAVIOUR FOR LAYOUT TESTING
-            discarded.add(cardView);
+            //discarded.add(new CardView(cardView.getCard()));
         });
 
         cardView.getPlayButton().setOnAction(e -> {

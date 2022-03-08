@@ -1,17 +1,19 @@
 package game.components.card;
 
-import javafx.scene.image.Image;
-
-import java.util.Map;
-
 public class FoeCard extends Card{
 
     private String extra; // Special description for foe (See for_11.png)
-    private Map<Integer, Integer> dmg;
+    private int[] bp;
 
-    public FoeCard(String title, String cardImg, String spDesc, Map<Integer, Integer> dmg) {
+    public FoeCard(String title, String cardImg, int[] bp, String extra) {
         super(title, cardImg);
-        this.dmg = dmg;
-        this.extra = spDesc;
+        this.bp = bp;
+        this.extra = extra;
+    }
+
+    public FoeCard(String title, String cardImg, int[] bp) {
+        super(title, cardImg);
+        this.bp = bp;
+        this.extra = "";
     }
 }
