@@ -115,7 +115,7 @@ public class GameController {
             } else {
                 // display card with option to play it or discard it
                 view.getDrawnCard().setCard(drawnCard);
-                view.addToCenterScreen(view.getDrawnCard(), Pos.CENTER);
+                view.addToCenterScreen(view.getDrawnCard(), Pos.CENTER, 100);
                 view.getDrawCardButton().setDisable(true);
             }
         });

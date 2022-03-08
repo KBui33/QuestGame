@@ -91,8 +91,9 @@ public class GamePane extends BorderPane {
         return centerScreen;
     }
 
-    public void addToCenterScreen(Node node, Pos pos) {
+    public void addToCenterScreen(Node node, Pos pos, double z) {
         setAlignment(node, pos);
+        node.setScaleZ(z);
         centerScreen.getChildren().add(node);
     }
 
