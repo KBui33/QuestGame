@@ -167,12 +167,12 @@ public class Server implements Runnable {
         try {
             for (ObjectOutputStream oos : _gameStateUpdateOutputStreams) {
                 oos.writeObject(externalGameState);
-                oos.flush();
+                oos.reset();
             }
 
             for (ObjectOutputStream oos : _broadcastClientOutputStreams) {
                 oos.writeObject(command);
-                oos.flush();
+                oos.reset();
             }
         } catch (IOException e) {
             e.printStackTrace();

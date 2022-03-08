@@ -62,7 +62,6 @@ public class GameRunner implements Runnable {
             }
 
             System.out.println("== All players have taken a turn");
-            break;
         }
     }
 }

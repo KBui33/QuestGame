@@ -56,10 +56,8 @@ public class GameCommandHandler {
                 int playerId = gameCommand.getPlayerId();
                 Card card = gameCommand.getCard();
                 System.out.println("== Command handler says: Player " + playerId + " is discarding a card");
-                System.out.println("== Player discard before: " +  player.getCards().size());
-                System.out.println("== Player discard res: " +  player.discardCard(card));
-                System.out.println("== Player discard after: " +  player.getCards().size());
-                gameState.discardCard(card);
+                player.discardCard(card);
+                gameState.discardAdventureCard(card);
                 returnCommand.setCommand(GameCommand.Command.DISCARDED_CARD);
                 returnCommand.setPlayer(player);
                 returnCommand.setPlayerId(playerId);
