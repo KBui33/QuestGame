@@ -48,7 +48,7 @@ public class GameRunner implements Runnable {
                 server.notifyClients(playerTurnCommand);
                 System.out.println("== Game runner says: take turn command sent");
                 // Wait for player to play
-                while(gameState.getGameStatus().equals(GameState.GameStatus.TAKING_TURN)) {
+                while(!gameState.getGameStatus().equals(GameState.GameStatus.RUNNING)) {
                     Thread.sleep(1000);
                 }
 

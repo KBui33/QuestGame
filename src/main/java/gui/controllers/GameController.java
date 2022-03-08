@@ -103,7 +103,7 @@ public class GameController {
             Card drawnCard = new AllyCard(
                     "card",
                     "/specials/quest_ally_" + (r.nextInt(10) + 1) + ".png",
-                    "");
+                    "", "");
 
 
             // once hand has more than 12 cards every next card drawn must be either played or discarded

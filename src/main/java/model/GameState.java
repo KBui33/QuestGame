@@ -15,7 +15,8 @@ public class GameState implements Serializable {
         READY,
         STARTED,
         RUNNING,
-        TAKING_TURN
+        TAKING_TURN,
+        IN_QUEST
     }
 
     private ArrayList<Player> players;
@@ -81,11 +82,24 @@ public class GameState implements Serializable {
     }
 
     public List<Card> getDiscardedCards() {
-        return adventureDeck.getDiscarded();
+        ArrayList<Card> discardPile = new ArrayList<>();
+        discardPile.addAll(adventureDeck.getDiscarded());
+        discardPile.addAll(storyDeck.getDiscarded());
+        return discardPile;
     }
 
-    public void discardCard(Card card) {
-        adventureDeck.discard(card);
+    public boolean discardAdventureCard(Card card) {
+        return adventureDeck.discard(card);
+    }
+
+    public boolean discardStoryCard(Card card) {return storyDeck.discard(card);}
+
+    public Card drawAdventureCard() {
+        return adventureDeck.draw();
+    }
+
+    public Card drawStoryCard() {
+        return storyDeck.draw();
     }
 
     public GameStatus getGameStatus() {
