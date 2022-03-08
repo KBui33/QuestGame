@@ -69,7 +69,6 @@ public class GameController {
                     for (Card card : externalGameState.getDiscardedCards()) {
                         discarded.add(new CardView(card));
                     }
-                    System.out.println("== Game Controller game state update says: " + externalGameState);
                 }
             });
 
