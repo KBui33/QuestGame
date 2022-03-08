@@ -5,9 +5,11 @@ import gui.partials.DeckView;
 import gui.partials.ShieldsView;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
@@ -31,6 +33,7 @@ public class GamePane extends BorderPane {
     private Text currentStateText;
     private Button showHandButton, showDiscardedButton, drawCardButton, endTurnButton;
     private CardView drawnCard;
+    private StackPane centerScreen;
 
     public DeckView getMyHand() {
         return myHand;
@@ -84,6 +87,19 @@ public class GamePane extends BorderPane {
         return drawnCard;
     }
 
+    public StackPane getCenterScreen() {
+        return centerScreen;
+    }
+
+    public void addToCenterScreen(Node node, Pos pos) {
+        setAlignment(node, pos);
+        centerScreen.getChildren().add(node);
+    }
+
+    public void removeFromCenterScreen(Node node) {
+        centerScreen.getChildren().remove(node);
+    }
+
     public GamePane() {
 
         topBar = new BorderPane();
@@ -109,6 +125,8 @@ public class GamePane extends BorderPane {
 
         drawnCard = new CardView();
         drawnCard.getButtonBox().setVisible(true);
+
+        centerScreen = new StackPane();
 
         currentStateText = new Text();
         currentStateText.getStyleClass().add("body-font");
@@ -136,5 +154,7 @@ public class GamePane extends BorderPane {
         setAlignment(shieldsView, Pos.TOP_LEFT);
         setAlignment(currentStateText, Pos.TOP_RIGHT);
         this.setTop(topBar);
+        setAlignment(centerScreen, Pos.CENTER);
+        this.setCenter(centerScreen);
     }
 }

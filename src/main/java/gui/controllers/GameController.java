@@ -6,6 +6,7 @@ import gui.panes.GamePane;
 import gui.partials.CardView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import model.ExternalGameState;
 import model.GameCommand;
 import model.Player;
@@ -32,10 +33,7 @@ public class GameController {
 
     public GameController (GamePane view) {
         myHand = FXCollections.observableArrayList();
-        view.getMyHand().setListViewItems(myHand);
-
         discarded = FXCollections.observableArrayList();
-        view.getDiscardedCards().setListViewItems(discarded);
 
         try {
             client = Client.getInstance();
@@ -67,6 +65,7 @@ public class GameController {
                 public void update(Client.ClientEvent eventType, Object o) {
                     ExternalGameState externalGameState = (ExternalGameState) o;
                     discarded.clear();
+                    System.out.println(externalGameState.getDiscardedCards().size());
                     for (Card card : externalGameState.getDiscardedCards()) {
                         discarded.add(new CardView(card));
                     }
@@ -82,6 +81,10 @@ public class GameController {
     }
 
     public void setView(GamePane view) {
+
+        // link lists to listviews
+        view.getMyHand().setListViewItems(myHand);
+        view.getDiscardedCards().setListViewItems(discarded);
 
         // Add player cards to gui cards
         for (Card card : player.getCards()) {
@@ -112,28 +115,30 @@ public class GameController {
             } else {
                 // display card with option to play it or discard it
                 view.getDrawnCard().setCard(drawnCard);
-                view.setCenter(view.getDrawnCard());
+                view.addToCenterScreen(view.getDrawnCard(), Pos.CENTER);
                 view.getDrawCardButton().setDisable(true);
             }
         });
 
         view.getDrawnCard().getPlayButton().setOnAction(e -> {
             System.out.println("played card");
-            view.setCenter(null);
+            view.removeFromCenterScreen(view.getDrawnCard());
             view.getDrawCardButton().setDisable(false);
         });
 
         view.getDrawnCard().getDiscardButton().setOnAction(e -> {
             System.out.println("discarded card");
-            view.setCenter(null);
+            view.removeFromCenterScreen(view.getDrawnCard());
             view.getDrawCardButton().setDisable(false);
 
             // Send discard command
             // Send discard card command
             GameCommand discardCardCommand = new GameCommand(GameCommand.Command.DISCARD_CARD);
             discardCardCommand.setPlayerId(client.getPlayerId());
+            discardCardCommand.setPlayer(player);
             discardCardCommand.setCard(view.getDrawnCard().getCard());
-            client.sendCommand(discardCardCommand);
+            GameCommand discardedCardCommand =  client.sendCommand(discardCardCommand);
+            player = discardedCardCommand.getPlayer();
 
             // temp behaviour for testing/demo
             //discarded.add(new CardView(view.getDrawnCard().getCard()));
