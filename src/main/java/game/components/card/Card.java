@@ -1,9 +1,7 @@
 package game.components.card;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import java.io.Serializable;
-
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public abstract class Card implements Serializable {
 

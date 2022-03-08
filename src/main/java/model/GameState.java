@@ -20,14 +20,12 @@ public class GameState implements Serializable {
 
     private ArrayList<Player> players;
     private int numPlayers = 0;
-    private List<Card> discardedCards;
     private Deck storyDeck;
     private Deck adventureDeck;
     private GameStatus gameStatus;
 
     public GameState() {
         players = new ArrayList<Player>();
-        discardedCards = new ArrayList<Card>();
         storyDeck = new StoryDeck();
         adventureDeck = new AdventureDeck();
         gameStatus = GameStatus.READY;
@@ -83,11 +81,11 @@ public class GameState implements Serializable {
     }
 
     public List<Card> getDiscardedCards() {
-        return discardedCards;
+        return adventureDeck.getDiscarded();
     }
 
     public void discardCard(Card card) {
-        discardedCards.add(card);
+        adventureDeck.discard(card);
     }
 
     public GameStatus getGameStatus() {

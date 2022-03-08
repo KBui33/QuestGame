@@ -36,5 +36,84 @@
       "frequency": 8,
       "battlePoints": 15
     }
+  ],
+  "foes" : [
+    {
+      "title": "Robber Knight",
+      "image": "/foes/quest_foe_1.png",
+      "frequency": 7,
+      "highBp": 0,
+      "lowBp": 15
+    },
+    {
+      "title": "Saxons",
+      "image": "/foes/quest_foe_2.png",
+      "frequency": 5,
+      "highBp": 20,
+      "lowBp": 10
+    },
+    {
+      "title": "Boar",
+      "image": "/foes/quest_foe_3.png",
+      "frequency": 4,
+      "highBp": 15,
+      "lowBp": 5
+    },
+    {
+      "title": "Thieves",
+      "image": "/foes/quest_foe_4.png",
+      "frequency": 8,
+      "highBp": 0,
+      "lowBp": 5
+    },
+    {
+      "title": "Green Knight",
+      "image": "/foes/quest_foe_5.png",
+      "frequency": 2,
+      "highBp": 40,
+      "lowBp": 25
+    },
+    {
+      "title": "Black Knight",
+      "image": "/foes/quest_foe_6.png",
+      "frequency": 3,
+      "highBp": 35,
+      "lowBp": 25
+    },
+    {
+      "title": "Evil Knight",
+      "image": "/foes/quest_foe_7.png",
+      "frequency": 6,
+      "highBp": 30,
+      "lowBp": 20
+    },
+    {
+      "title": "Saxon Knight",
+      "image": "/foes/quest_foe_8.png",
+      "frequency": 8,
+      "highBp": 25,
+      "lowBp": 15
+    },
+    {
+      "title": "Dragon",
+      "image": "/foes/quest_foe_9.png",
+      "frequency": 1,
+      "highBp": 70,
+      "lowBp": 50
+    },
+    {
+      "title": "Giant",
+      "image": "/foes/quest_foe_10.png",
+      "frequency": 2,
+      "highBp": 0,
+      "lowBp": 40
+    },
+    {
+      "title": "Mordred",
+      "image": "/foes/quest_foe_11.png",
+      "frequency": 4,
+      "highBp": 0,
+      "lowBp": 30
+    }
   ]
 }

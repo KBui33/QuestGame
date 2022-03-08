@@ -4,8 +4,6 @@ import game.components.card.AllyCard;
 import game.components.card.Card;
 import gui.panes.GamePane;
 import gui.partials.CardView;
-import gui.scenes.GameScene;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.ExternalGameState;
@@ -18,7 +16,6 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author James DiNovo
@@ -59,6 +56,7 @@ public class GameController {
                     if(receivedCommand.getCommand().equals(GameCommand.Command.PLAYER_TURN) && receivedCommand.getPlayerId() == client.getPlayerId()) { // Take turn if it's player's turn
                         System.out.println("== It's my turn. Player: " + receivedCommand.getPlayerId());
                         view.getCurrentStateText().setText("Take your turn!");
+                        disableView(view, false);
                     }
                 }
             });
@@ -68,6 +66,10 @@ public class GameController {
                 @Override
                 public void update(Client.ClientEvent eventType, Object o) {
                     ExternalGameState externalGameState = (ExternalGameState) o;
+                    discarded.clear();
+                    for (Card card : externalGameState.getDiscardedCards()) {
+                        discarded.add(new CardView(card));
+                    }
                     System.out.println("== Game Controller game state update says: " + externalGameState);
                 }
             });
@@ -86,8 +88,10 @@ public class GameController {
             addCardToHand(myHand, card);
         }
 
-        // a lot of this is just for laying out gui will be removed later
+        disableView(view, true);
         view.getCurrentStateText().setText("Wait for your turn!");
+
+        // a lot of this is just for laying out gui will be removed later
         view.getShieldsView().setShields(1);
 
 
@@ -125,9 +129,14 @@ public class GameController {
             view.getDrawCardButton().setDisable(false);
 
             // Send discard command
+            // Send discard card command
+            GameCommand discardCardCommand = new GameCommand(GameCommand.Command.DISCARD_CARD);
+            discardCardCommand.setPlayerId(client.getPlayerId());
+            discardCardCommand.setCard(view.getDrawnCard().getCard());
+            client.sendCommand(discardCardCommand);
 
             // temp behaviour for testing/demo
-            discarded.add(new CardView(view.getDrawnCard().getCard()));
+            //discarded.add(new CardView(view.getDrawnCard().getCard()));
         });
 
         view.getEndTurnButton().setOnAction(e -> {
