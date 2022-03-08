@@ -120,23 +120,105 @@
     {
       "title": "Test of Valor",
       "image": "/tests/quest_test_3.png",
+      "frequency": 2,
       "description": ""
     },
     {
       "title": "Test of Temptation",
       "image": "/tests/quest_test_2.png",
+      "frequency": 2,
       "description": ""
     },
     {
       "title" : "Test of Morgan Le Fey",
       "image" : "/tests/quest_test_4.png",
+      "frequency": 2,
       "description" : "Minimum 3 bid"
     },
     {
       "title" : "Test of the Questing Beast",
       "image" : "/tests/quest_test_1.png",
+      "frequency": 2,
       "description" : "Minimum 4 bid on the search for the questing beast quest"
     }
   ],
-  "allies" : []
+  "allies" : [
+    {
+      "title" : "Sir Gawain",
+      "image": "/specials/quest_ally_1.png",
+      "frequency": 1,
+      "buff": "10",
+      "extra" : "+20 on the test of the green knight quest"
+    },
+    {
+      "title" : "King Pellinore",
+      "image": "/specials/quest_ally_2.png",
+      "frequency": 1,
+      "buff": "10",
+      "extra" : "4 bids on the search for the questing beast quest"
+    },
+    {
+      "title" : "Sir Percival",
+      "image": "/specials/quest_ally_3.png",
+      "frequency": 1,
+      "buff": "5",
+      "extra" : "+20 on the search for the holy grail quest"
+    },
+    {
+      "title" : "Amour",
+      "image": "/specials/quest_ally_4.png",
+      "frequency": 1,
+      "buff": "10",
+      "extra" : "1 bid"
+    },
+    {
+      "title" : "Sir Tristan",
+      "image": "/specials/quest_ally_5.png",
+      "frequency": 1,
+      "buff": "10",
+      "extra" : "+20 when queen iseult is in play"
+    },
+    {
+      "title" : "King Arthur",
+      "image": "/specials/quest_ally_6.png",
+      "frequency": 1,
+      "buff": "10",
+      "extra" : "2 bids"
+    },
+    {
+      "title" : "Queen Guinevere",
+      "image": "/specials/quest_ally_7.png",
+      "frequency": 1,
+      "buff": "3 bids",
+      "extra" : ""
+    },
+    {
+      "title" : "Merlin",
+      "image": "/specials/quest_ally_8.png",
+      "frequency": 1,
+      "buff": "",
+      "extra" : "Player may preview any one stage per quest"
+    },
+    {
+      "title" : "Queen Iseult",
+      "image": "/specials/quest_ally_9.png",
+      "frequency": 1,
+      "buff": "2 Bids",
+      "extra" : "4 Bids when Tristan is in play"
+    },
+    {
+      "title" : "Sir Lancelot",
+      "image": "/specials/quest_ally_10.png",
+      "frequency": 1,
+      "buff": "15",
+      "extra" : "+25 when the quest to defend the queen's honor"
+    },
+    {
+      "title" : "Sir Galahad",
+      "image": "/specials/quest_ally_11.png",
+      "frequency": 1,
+      "buff": "15",
+      "extra" : ""
+    }
+  ]
 }
