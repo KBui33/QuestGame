@@ -3,6 +3,7 @@
 module gui {
     requires javafx.controls;
     requires json.simple;
+    requires org.apache.commons.lang3;
     opens gui.main;
     exports gui.main;
 }

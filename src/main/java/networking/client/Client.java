@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Scanner;
 
-public class Client implements Runnable {
+public class Client  {
     private final int PORT = 80;
     private static final int READ_BUFFER_SIZE = 2048;
     private static final int WRITE_BUFFER_SIZE = 2048;
@@ -62,7 +62,7 @@ public class Client implements Runnable {
     }
 
     public Client() throws IOException {
-        this("localhost");
+        this("192.168.122.1");
     }
 
     public static Client initialize(String serverHost) throws IOException {
@@ -80,6 +80,10 @@ public class Client implements Runnable {
 
     public int getPlayerId() {
         return playerId;
+    }
+
+    public String getServerHost() {
+        return serverHost;
     }
 
     public GameCommand sendCommand(GameCommand command) {
@@ -105,10 +109,6 @@ public class Client implements Runnable {
         return receivedCommand;
     }
 
-    @Override
-    public void run() {
-    }
-
     private class SocketSubscriptionThread implements Runnable {
         @Override
         public void run() {
@@ -131,20 +131,11 @@ public class Client implements Runnable {
                 try {
                     ExternalGameState externalGameState = (ExternalGameState) _gameStateInputStream.readObject();
                     clientEvents.notify(ClientEvent.EXTERNAL_GAME_STATE_UPDATED, externalGameState);
+                    System.out.println("== Game state update thread: Updating game state");
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
             }
-        }
-    }
-
-
-
-    public static void main(String[] args) {
-        try {
-            new Thread(new Client()).start();
-        } catch(IOException e) {
-            e.printStackTrace();
         }
     }
 }

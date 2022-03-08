@@ -1,9 +1,9 @@
 package game.components.card;
 
-import javafx.scene.image.Image;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.Serializable;
-import java.util.Map;
+
 
 public abstract class Card implements Serializable {
 
@@ -29,6 +29,20 @@ public abstract class Card implements Serializable {
 
     public void setCardImg(String cardImg) {
         this.cardImg = cardImg;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(o == null) return false;
+        if(o == this) return true;
+        if(!(o instanceof Card)) return false;
+        Card c = (Card) o;
+        return c.cardImg.equals(this.cardImg) && c.title.equals(this.title);
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(cardImg).append(title).toHashCode();
     }
 
 }

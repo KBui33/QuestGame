@@ -20,6 +20,7 @@ import java.io.IOException;
 public class LobbyController {
 
     // need model
+    private Client client;
 
     public LobbyController(LobbyPane view) {
         setView(view);
@@ -33,12 +34,13 @@ public class LobbyController {
         // ensure view is updated whenever model changes
 
         try {
-            Client client = Client.getInstance();
+            client = Client.getInstance();
             // Get current lobby state
             GameCommand initLobbyStateCommand =  client.sendCommand(new GameCommand(GameCommand.Command.GET_LOBBY_STATE));
             if(initLobbyStateCommand.getCommand().equals(GameCommand.Command.RETURN_LOBBY_STATE)) {
                 view.getPlayersText().setText("Players Connected: " + initLobbyStateCommand.getJoinedPlayers());
             }
+
             // Subscribe to game updates
             client.clientEvents.subscribe(Client.ClientEvent.GAME_COMMAND_RECEIVED, new ClientEventListener() {
                 @Override
@@ -48,9 +50,16 @@ public class LobbyController {
                     if(receivedCommand.getCommand().equals(GameCommand.Command.JOINED)) { // Update players connected
                         view.getPlayersText().setText("Players Connected: " + receivedCommand.getJoinedPlayers());
                     } else if(receivedCommand.getCommand().equals(GameCommand.Command.GAME_STARTED)) { // Load game view
-                        // skip to game scene *this is only for testing gui* to be removed later
                         Platform.runLater(() ->ClientApplication.window.setScene(new GameScene()));
                     }
+                }
+            });
+
+            client.clientEvents.subscribe(Client.ClientEvent.EXTERNAL_GAME_STATE_UPDATED, new ClientEventListener() {
+                @Override
+                public void update(Client.ClientEvent eventType, Object o) {
+                    ExternalGameState externalGameState = (ExternalGameState) o;
+                    System.out.println("== Lobby Controller says: " + externalGameState);
                 }
             });
 
@@ -60,13 +69,6 @@ public class LobbyController {
 
                 // Send a ready command to the server
                 GameCommand command = new GameCommand(GameCommand.Command.READY);
-                client.clientEvents.subscribe(Client.ClientEvent.EXTERNAL_GAME_STATE_UPDATED, new ClientEventListener() {
-                    @Override
-                    public void update(Client.ClientEvent eventType, Object o) {
-                        ExternalGameState externalGameState = (ExternalGameState) o;
-                        System.out.println("== Lobby Controller says: " + externalGameState);
-                    }
-                });
                 command =  client.sendCommand(command);
                 client.setPlayerId(command.getPlayerId()); // Set id of player/client
 
@@ -85,9 +87,12 @@ public class LobbyController {
             err.printStackTrace();
         }
 
+        view.getServerText().setText("Server Address: " + client.getServerHost());
+
         view.getLeaveButton().setOnAction(e -> {
             System.out.println("Disconnecting");
             ClientApplication.window.setScene(new ConnectScene());
+            // should send disconnect notification to server and remove player from game
         });
     }
 }

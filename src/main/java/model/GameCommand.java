@@ -1,5 +1,7 @@
 package model;
 
+import game.components.card.Card;
+
 import java.io.*;
 
 public class GameCommand implements Serializable {
@@ -15,7 +17,14 @@ public class GameCommand implements Serializable {
         RETURN_LOBBY_STATE,
         GET_ATTACHED_PLAYER,
         RETURN_ATTACHED_PLAYER,
-        GAME_STARTED
+        GAME_STARTED,
+        PLAYER_TURN,
+        TAKE_TURN,
+        END_TURN,
+        ENDED_TURN,
+        TOOK_TURN,
+        DISCARD_CARD,
+        DISCARDED_CARD
     };
 
     private int playerId = 0;
@@ -23,6 +32,7 @@ public class GameCommand implements Serializable {
     private int joinedPlayers = 0;
     private Command command;
     private Player player;
+    private Card card;
 
     public GameCommand() {
     }
@@ -84,6 +94,14 @@ public class GameCommand implements Serializable {
 
     public Player getPlayer() {
         return player;
+    }
+
+    public void setCard(Card card) {
+        this.card = card;
+    }
+
+    public Card getCard() {
+        return card;
     }
 
     @Override
