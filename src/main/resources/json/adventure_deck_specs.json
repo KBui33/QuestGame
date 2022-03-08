@@ -115,5 +115,28 @@
       "highBp": 0,
       "lowBp": 30
     }
-  ]
+  ],
+  "test" : [
+    {
+      "title": "Test of Valor",
+      "image": "/tests/quest_test_3.png",
+      "description": ""
+    },
+    {
+      "title": "Test of Temptation",
+      "image": "/tests/quest_test_2.png",
+      "description": ""
+    },
+    {
+      "title" : "Test of Morgan Le Fey",
+      "image" : "/tests/quest_test_4.png",
+      "description" : "Minimum 3 bid"
+    },
+    {
+      "title" : "Test of the Questing Beast",
+      "image" : "/tests/quest_test_1.png",
+      "description" : "Minimum 4 bid on the search for the questing beast quest"
+    }
+  ],
+  "allies" : []
 }
