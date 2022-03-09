@@ -18,6 +18,7 @@ public class InternalGameState implements BaseGameState, Serializable {
     private Deck adventureDeck;
     private GameStatus gameStatus;
     private Card currentStoryCard;
+    private Player currentTurnPlayer;
 
     public InternalGameState() {
         players = new ArrayList<Player>();
@@ -25,6 +26,7 @@ public class InternalGameState implements BaseGameState, Serializable {
         adventureDeck = new AdventureDeck();
         gameStatus = GameStatus.READY;
         currentStoryCard = null;
+        currentTurnPlayer = null;
     }
 
     public ArrayList<Player> getPlayers() {
@@ -112,5 +114,14 @@ public class InternalGameState implements BaseGameState, Serializable {
     @Override
     public Card getCurrentStoryCard() {
         return currentStoryCard;
+    }
+
+    public void setCurrentTurnPlayer(Player currentTurnPlayer) {
+        this.currentTurnPlayer = currentTurnPlayer;
+    }
+
+    @Override
+    public Player getCurrentTurnPlayer() {
+        return currentTurnPlayer;
     }
 }

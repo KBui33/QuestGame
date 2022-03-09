@@ -42,6 +42,11 @@ public class ExternalGameState implements BaseGameState, Serializable {
     }
 
     @Override
+    public Player getCurrentTurnPlayer() {
+        return internalGameState.getCurrentTurnPlayer();
+    }
+
+    @Override
     public String toString() {
         return "== External Game State ==\n" +
                 "\tNum Players: " + internalGameState.getNumPlayers() + "\n" +

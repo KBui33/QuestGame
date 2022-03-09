@@ -33,12 +33,17 @@ public class GameRunner extends Runner {
                 // Iterate over clients and instruct them to take turns
                 for (Player player : players) {
                     gameState.setGameStatus(GameStatus.TAKING_TURN);
+
                     int playerId = player.getPlayerId();
+
                     GameCommand playerTurnCommand = new GameCommand(Command.PLAYER_TURN); // Broadcast take turn command
                     playerTurnCommand.setPlayerId(playerId);
+                    gameState.setCurrentTurnPlayer(player);
+
                     Card currentStoryCard = gameState.drawStoryCard();
                     gameState.setCurrentStoryCard(currentStoryCard);
                     playerTurnCommand.setCard(currentStoryCard); // Deal story card to current player
+
                     server.notifyClients(playerTurnCommand);
                     System.out.println("== Game runner says: take turn command sent");
                     // Wait for player to play
