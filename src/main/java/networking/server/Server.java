@@ -3,7 +3,7 @@ package networking.server;
 
 import model.ExternalGameState;
 import model.GameCommand;
-import model.GameState;
+import model.InternalGameState;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -43,13 +43,13 @@ public class Server implements Runnable {
     private final ArrayList<ObjectOutputStream> _broadcastClientOutputStreams;
     private final ArrayList<ObjectOutputStream> _gameStateUpdateOutputStreams;
 
-    private GameState gameState;
+    private InternalGameState internalGameState;
     private ExternalGameState externalGameState;
 
     Server() throws IOException {
         // Initialize game state
-        gameState = new GameState();
-        externalGameState = new ExternalGameState(gameState);
+        internalGameState = new InternalGameState();
+        externalGameState = new ExternalGameState(internalGameState);
 
         _serverBroadcastSocket = new ServerSocket(SERVER_BROADCAST_PORT);
         _serverGameStateUpdateSocket = new ServerSocket(SERVER_GAME_STATE_UPDATE_PORT);
@@ -77,8 +77,8 @@ public class Server implements Runnable {
         return instance;
     }
 
-    public GameState getGameState() {
-        return gameState;
+    public InternalGameState getGameState() {
+        return internalGameState;
     }
 
     public ExternalGameState getExternalGameState() {
@@ -117,7 +117,7 @@ public class Server implements Runnable {
                         return;
                     }
 
-                    if (gameState.getGameStatus().equals(GameState.GameStatus.STARTED)) {
+                    if (internalGameState.getGameStatus().equals(InternalGameState.GameStatus.STARTED)) {
                         System.out.println("== Server says:  Game has already started. No longer accepting players");
                         return;
                     }

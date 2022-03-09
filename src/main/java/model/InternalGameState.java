@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameState implements Serializable {
+public class InternalGameState implements BaseGameState, Serializable {
     public static final int MAX_PLAYERS = 4;
     public static enum GameStatus {
         READY,
@@ -25,7 +25,7 @@ public class GameState implements Serializable {
     private Deck adventureDeck;
     private GameStatus gameStatus;
 
-    public GameState() {
+    public InternalGameState() {
         players = new ArrayList<Player>();
         storyDeck = new StoryDeck();
         adventureDeck = new AdventureDeck();

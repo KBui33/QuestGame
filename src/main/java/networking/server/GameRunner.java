@@ -1,7 +1,7 @@
 package networking.server;
 
 import model.GameCommand;
-import model.GameState;
+import model.InternalGameState;
 import model.Player;
 
 import java.io.IOException;
@@ -34,21 +34,21 @@ public class GameRunner implements Runnable {
     public void gameLoop() throws IOException, InterruptedException {
         System.out.println("== Game runner says: Starting game loop");
 
-        GameState gameState = this.server.getGameState();
-        ArrayList<Player> players = gameState.getPlayers();
-        gameState.setGameStatus(GameState.GameStatus.RUNNING);
+        InternalGameState internalGameState = this.server.getGameState();
+        ArrayList<Player> players = internalGameState.getPlayers();
+        internalGameState.setGameStatus(InternalGameState.GameStatus.RUNNING);
 
         while(true) {
             // Iterate over clients and instruct them to take turns
             for (Player player: players) {
-                gameState.setGameStatus(GameState.GameStatus.TAKING_TURN);
+                internalGameState.setGameStatus(InternalGameState.GameStatus.TAKING_TURN);
                 int playerId = player.getPlayerId();
                 GameCommand playerTurnCommand = new GameCommand(GameCommand.Command.PLAYER_TURN); // Broadcast take turn command
                 playerTurnCommand.setPlayerId(playerId);
                 server.notifyClients(playerTurnCommand);
                 System.out.println("== Game runner says: take turn command sent");
                 // Wait for player to play
-                while(!gameState.getGameStatus().equals(GameState.GameStatus.RUNNING)) {
+                while(!internalGameState.getGameStatus().equals(InternalGameState.GameStatus.RUNNING)) {
                     Thread.sleep(1000);
                 }
 

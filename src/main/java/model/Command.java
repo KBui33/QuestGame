@@ -1,0 +1,22 @@
+package model;
+
+public enum Command {
+    JOIN,
+    JOINED,
+    READY,
+    IS_READY,
+    QUIT,
+    QUITED,
+    GET_LOBBY_STATE,
+    RETURN_LOBBY_STATE,
+    GET_ATTACHED_PLAYER,
+    RETURN_ATTACHED_PLAYER,
+    GAME_STARTED,
+    PLAYER_TURN,
+    TAKE_TURN,
+    END_TURN,
+    ENDED_TURN,
+    TOOK_TURN,
+    DISCARD_CARD,
+    DISCARDED_CARD
+}
