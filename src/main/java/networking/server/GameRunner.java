@@ -1,5 +1,6 @@
 package networking.server;
 
+import game.components.card.Card;
 import model.*;
 
 import java.util.ArrayList;
@@ -35,7 +36,10 @@ public class GameRunner extends Runner {
                     int playerId = player.getPlayerId();
                     GameCommand playerTurnCommand = new GameCommand(Command.PLAYER_TURN); // Broadcast take turn command
                     playerTurnCommand.setPlayerId(playerId);
-                    server.notifyClient(playerId, playerTurnCommand);
+                    Card currentStoryCard = gameState.drawStoryCard();
+                    gameState.setCurrentStoryCard(currentStoryCard);
+                    playerTurnCommand.setCard(currentStoryCard); // Deal story card to current player
+                    server.notifyClients(playerTurnCommand);
                     System.out.println("== Game runner says: take turn command sent");
                     // Wait for player to play
                     while (!gameState.getGameStatus().equals(GameStatus.RUNNING)) {

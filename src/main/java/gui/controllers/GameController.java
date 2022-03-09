@@ -71,6 +71,9 @@ public class GameController {
                     for (Card card : externalGameState.getDiscardedCards()) {
                         discarded.add(new CardView(card));
                     }
+                    Card currentStoryCard = externalGameState.getCurrentStoryCard();
+                    if(currentStoryCard != null) // Display this on GUI
+                        System.out.println("Game Controller state update says: Current story " + currentStoryCard.getClass() + " -> " +  currentStoryCard.getTitle());
                 }
             });
 

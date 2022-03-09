@@ -31,7 +31,7 @@ public class QuestSponsorRunner extends Runner {
                     GameCommand playerShouldSponsorQuestCommand = new GameCommand(Command.SHOULD_SPONSOR_QUEST);
                     playerShouldSponsorQuestCommand.setPlayerId(playerId);
 
-                    server.notifyClient(playerId, playerShouldSponsorQuestCommand);
+                    server.notifyClient(playerId - 1, playerShouldSponsorQuestCommand);
                     System.out.println("== Quest Sponsor runner says: should sponsor command sent");
                     // Wait for player to make decision
                     while (gameState.getGameStatus().equals(GameStatus.PROMPTING_QUEST_SPONSOR)) {

@@ -17,4 +17,6 @@ public interface BaseGameState {
     public List<Card> getDiscardedCards();
 
     public GameStatus getGameStatus();
+
+    public Card getCurrentStoryCard();
 }
