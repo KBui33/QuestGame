@@ -5,61 +5,57 @@ import model.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class GameRunner implements Runnable {
+public class GameRunner extends Runner {
     private Server server;
+    private InternalGameState gameState;
 
-    public GameRunner(Server server) {
+    public GameRunner(Server server, InternalGameState gameState) {
         this.server = server;
+        this.gameState = gameState;
 
         // Start game
         System.out.println("== Game runner says: Starting game");
-        server.getGameState().startGame();
-        server.notifyClients(new GameCommand(Command.GAME_STARTED));
+        this.gameState.startGame();
+        this.server.notifyClients(new GameCommand(Command.GAME_STARTED));
     }
 
-    @Override
-    public void run() {
-        try {
-            Thread.sleep(5000);
-            gameLoop();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void gameLoop() throws IOException, InterruptedException {
+    public void loop() {
         System.out.println("== Game runner says: Starting game loop");
 
-        InternalGameState internalGameState = this.server.getGameState();
-        ArrayList<Player> players = internalGameState.getPlayers();
-        internalGameState.setGameStatus(GameStatus.RUNNING);
+        try {
+        Thread.sleep(5000);
 
-        while(true) {
-            // Iterate over clients and instruct them to take turns
-            for (Player player: players) {
-                internalGameState.setGameStatus(GameStatus.TAKING_TURN);
-                int playerId = player.getPlayerId();
-                GameCommand playerTurnCommand = new GameCommand(Command.PLAYER_TURN); // Broadcast take turn command
-                playerTurnCommand.setPlayerId(playerId);
-                server.notifyClients(playerTurnCommand);
-                System.out.println("== Game runner says: take turn command sent");
-                // Wait for player to play
-                while(!internalGameState.getGameStatus().equals(GameStatus.RUNNING)) {
-                    Thread.sleep(1000);
+        ArrayList<Player> players = gameState.getPlayers();
+            gameState.setGameStatus(GameStatus.RUNNING);
+
+
+            while (true) {
+                // Iterate over clients and instruct them to take turns
+                for (Player player : players) {
+                    gameState.setGameStatus(GameStatus.TAKING_TURN);
+                    int playerId = player.getPlayerId();
+                    GameCommand playerTurnCommand = new GameCommand(Command.PLAYER_TURN); // Broadcast take turn command
+                    playerTurnCommand.setPlayerId(playerId);
+                    server.notifyClients(playerTurnCommand);
+                    System.out.println("== Game runner says: take turn command sent");
+                    // Wait for player to play
+                    while (!gameState.getGameStatus().equals(GameStatus.RUNNING)) {
+                        Thread.sleep(1000);
+                    }
+
+                    // Notify clients
+                    GameCommand endTurnCommand = new GameCommand(Command.TOOK_TURN);
+                    endTurnCommand.setPlayerId(playerId);
+
+                    server.notifyClients(endTurnCommand);
+
+                    Thread.sleep(2000);
                 }
 
-                // Notify clients
-                GameCommand endTurnCommand = new GameCommand(Command.TOOK_TURN);
-                endTurnCommand.setPlayerId(playerId);
-
-                server.notifyClients(endTurnCommand);
-
-                Thread.sleep(2000);
+                System.out.println("== All players have taken a turn");
             }
-
-            System.out.println("== All players have taken a turn");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

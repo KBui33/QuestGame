@@ -72,7 +72,7 @@ public class GameCommandHandler {
         }
 
         server.notifyClients(returnCommand);
-        if(startGame)  new Thread(new GameRunner(server)).start();
+        if(startGame)  new Thread(new GameRunner(server, server.getGameState())).start();
         return returnCommand;
     }
 }
