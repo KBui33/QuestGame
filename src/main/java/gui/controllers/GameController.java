@@ -6,6 +6,7 @@ import gui.panes.GamePane;
 import gui.partials.CardView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import model.Command;
 import model.ExternalGameState;
 import model.GameCommand;
 import model.Player;
@@ -41,7 +42,7 @@ public class GameController {
             client = Client.getInstance();
 
             // Fetch corresponding player
-            GameCommand getAttachedPlayerCommand = new GameCommand(GameCommand.Command.GET_ATTACHED_PLAYER);
+            GameCommand getAttachedPlayerCommand = new GameCommand(Command.GET_ATTACHED_PLAYER);
             getAttachedPlayerCommand.setPlayerId(client.getPlayerId());
             GameCommand returnedAttachedPlayerCommand = client.sendCommand(getAttachedPlayerCommand);
             player = (Player) returnedAttachedPlayerCommand.getPlayer();
@@ -53,7 +54,7 @@ public class GameController {
                 public void update(Client.ClientEvent eventType, Object o) {
                     GameCommand receivedCommand = (GameCommand) o;
                     System.out.println("== Game Controller command update says: " + receivedCommand);
-                    if(receivedCommand.getCommand().equals(GameCommand.Command.PLAYER_TURN) && receivedCommand.getPlayerId() == client.getPlayerId()) { // Take turn if it's player's turn
+                    if(receivedCommand.getCommand().equals(Command.PLAYER_TURN) && receivedCommand.getPlayerId() == client.getPlayerId()) { // Take turn if it's player's turn
                         System.out.println("== It's my turn. Player: " + receivedCommand.getPlayerId());
                         view.getCurrentStateText().setText("Take your turn!");
                         disableView(view, false);
@@ -129,7 +130,7 @@ public class GameController {
 
             // Send discard command
             // Send discard card command
-            GameCommand discardCardCommand = new GameCommand(GameCommand.Command.DISCARD_CARD);
+            GameCommand discardCardCommand = new GameCommand(Command.DISCARD_CARD);
             discardCardCommand.setPlayerId(client.getPlayerId());
             discardCardCommand.setCard(view.getDrawnCard().getCard());
             client.sendCommand(discardCardCommand);
@@ -141,7 +142,7 @@ public class GameController {
         view.getEndTurnButton().setOnAction(e -> {
             System.out.println("Turn ended");
             // Send end turn command
-            GameCommand endTurnCommand = new GameCommand(GameCommand.Command.END_TURN);
+            GameCommand endTurnCommand = new GameCommand(Command.END_TURN);
             endTurnCommand.setPlayerId(client.getPlayerId());
             endTurnCommand.setPlayer(player);
             client.sendCommand(endTurnCommand);
@@ -216,7 +217,7 @@ public class GameController {
             System.out.println("Discarding card");
 
             // Send discard card command
-            GameCommand discardCardCommand = new GameCommand(GameCommand.Command.DISCARD_CARD);
+            GameCommand discardCardCommand = new GameCommand(Command.DISCARD_CARD);
             discardCardCommand.setPlayerId(client.getPlayerId());
             discardCardCommand.setPlayer(player);
             discardCardCommand.setCard(cardView.getCard());

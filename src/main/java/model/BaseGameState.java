@@ -16,5 +16,5 @@ public interface BaseGameState {
 
     public List<Card> getDiscardedCards();
 
-    public InternalGameState.GameStatus getGameStatus();
+    public GameStatus getGameStatus();
 }

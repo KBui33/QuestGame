@@ -1,10 +1,7 @@
 package networking;
 
 import game.components.card.Card;
-import model.ExternalGameState;
-import model.GameCommand;
-import model.InternalGameState;
-import model.Player;
+import model.*;
 import networking.server.GameRunner;
 import networking.server.Server;
 
@@ -17,7 +14,7 @@ public class GameCommandHandler {
     }
 
     public GameCommand processGameCommand(GameCommand gameCommand) throws IOException {
-        GameCommand.Command command =  gameCommand.getCommand();
+        Command command =  gameCommand.getCommand();
         GameCommand returnCommand = new GameCommand();
         InternalGameState internalGameState = server.getGameState();
         Player player = gameCommand.getPlayer();
@@ -28,7 +25,7 @@ public class GameCommandHandler {
             case READY: {
                 System.out.println("== Command handler says:  Adding new player");
                 int playerId = internalGameState.addPlayer(new Player());
-                returnCommand.setCommand(GameCommand.Command.IS_READY);
+                returnCommand.setCommand(Command.IS_READY);
                 returnCommand.setPlayerId(playerId);
                 returnCommand.setReadyPlayers(internalGameState.getNumPlayers());
 
@@ -39,14 +36,14 @@ public class GameCommandHandler {
 
             case GET_ATTACHED_PLAYER: {
                 System.out.println("== Command handler says: Fetching player attached to client");
-                returnCommand.setCommand(GameCommand.Command.RETURN_ATTACHED_PLAYER);
+                returnCommand.setCommand(Command.RETURN_ATTACHED_PLAYER);
                 returnCommand.setPlayer(internalGameState.getPlayer(gameCommand.getPlayerId()));
                 break;
             }
 
             case GET_LOBBY_STATE: {
                 System.out.println("== Command handler says: Fetching lobby state");
-                returnCommand.setCommand(GameCommand.Command.RETURN_LOBBY_STATE);
+                returnCommand.setCommand(Command.RETURN_LOBBY_STATE);
                 returnCommand.setReadyPlayers(internalGameState.getNumPlayers());
                 returnCommand.setJoinedPlayers(server.getNumClients());
                 break;
@@ -58,7 +55,7 @@ public class GameCommandHandler {
                 System.out.println("== Command handler says: Player " + playerId + " is discarding a card");
                 player.discardCard(card);
                 internalGameState.discardAdventureCard(card);
-                returnCommand.setCommand(GameCommand.Command.DISCARDED_CARD);
+                returnCommand.setCommand(Command.DISCARDED_CARD);
                 returnCommand.setPlayer(player);
                 returnCommand.setPlayerId(playerId);
                 break;
@@ -67,8 +64,8 @@ public class GameCommandHandler {
             case END_TURN: {
                 int playerId = gameCommand.getPlayerId();
                 System.out.println("== Command handler says: Player took " + playerId);
-                internalGameState.setGameStatus(InternalGameState.GameStatus.RUNNING); // Update game status
-                returnCommand.setCommand(GameCommand.Command.ENDED_TURN);
+                internalGameState.setGameStatus(GameStatus.RUNNING); // Update game status
+                returnCommand.setCommand(Command.ENDED_TURN);
                 returnCommand.setPlayerId(playerId);
                 break;
             }

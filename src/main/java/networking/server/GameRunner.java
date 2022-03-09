@@ -1,8 +1,6 @@
 package networking.server;
 
-import model.GameCommand;
-import model.InternalGameState;
-import model.Player;
+import model.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,7 +14,7 @@ public class GameRunner implements Runnable {
         // Start game
         System.out.println("== Game runner says: Starting game");
         server.getGameState().startGame();
-        server.notifyClients(new GameCommand(GameCommand.Command.GAME_STARTED));
+        server.notifyClients(new GameCommand(Command.GAME_STARTED));
     }
 
     @Override
@@ -36,24 +34,24 @@ public class GameRunner implements Runnable {
 
         InternalGameState internalGameState = this.server.getGameState();
         ArrayList<Player> players = internalGameState.getPlayers();
-        internalGameState.setGameStatus(InternalGameState.GameStatus.RUNNING);
+        internalGameState.setGameStatus(GameStatus.RUNNING);
 
         while(true) {
             // Iterate over clients and instruct them to take turns
             for (Player player: players) {
-                internalGameState.setGameStatus(InternalGameState.GameStatus.TAKING_TURN);
+                internalGameState.setGameStatus(GameStatus.TAKING_TURN);
                 int playerId = player.getPlayerId();
-                GameCommand playerTurnCommand = new GameCommand(GameCommand.Command.PLAYER_TURN); // Broadcast take turn command
+                GameCommand playerTurnCommand = new GameCommand(Command.PLAYER_TURN); // Broadcast take turn command
                 playerTurnCommand.setPlayerId(playerId);
                 server.notifyClients(playerTurnCommand);
                 System.out.println("== Game runner says: take turn command sent");
                 // Wait for player to play
-                while(!internalGameState.getGameStatus().equals(InternalGameState.GameStatus.RUNNING)) {
+                while(!internalGameState.getGameStatus().equals(GameStatus.RUNNING)) {
                     Thread.sleep(1000);
                 }
 
                 // Notify clients
-                GameCommand endTurnCommand = new GameCommand(GameCommand.Command.TOOK_TURN);
+                GameCommand endTurnCommand = new GameCommand(Command.TOOK_TURN);
                 endTurnCommand.setPlayerId(playerId);
 
                 server.notifyClients(endTurnCommand);

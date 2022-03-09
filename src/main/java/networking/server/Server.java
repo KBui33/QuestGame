@@ -1,9 +1,7 @@
 package networking.server;
 // CODE FROM::https://tianpan.co/blog/2015-01-13-understanding-reactor-pattern-for-highly-scalable-i-o-bound-web-server
 
-import model.ExternalGameState;
-import model.GameCommand;
-import model.InternalGameState;
+import model.*;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -117,7 +115,7 @@ public class Server implements Runnable {
                         return;
                     }
 
-                    if (internalGameState.getGameStatus().equals(InternalGameState.GameStatus.STARTED)) {
+                    if (internalGameState.getGameStatus().equals(GameStatus.STARTED)) {
                         System.out.println("== Server says:  Game has already started. No longer accepting players");
                         return;
                     }
@@ -129,7 +127,7 @@ public class Server implements Runnable {
                     registerClientForGameStateUpdates(gameStateUpdateSocket);
                     if (socketChannel != null) new Handler(Server.this, _selector, socketChannel);
                     lastClientIndex++;
-                    notifyClients(new GameCommand(GameCommand.Command.JOINED));
+                    notifyClients(new GameCommand(Command.JOINED));
                     System.out.println("== Server Says: New client connected");
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();

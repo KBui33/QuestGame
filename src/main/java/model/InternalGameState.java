@@ -11,13 +11,6 @@ import java.util.List;
 
 public class InternalGameState implements BaseGameState, Serializable {
     public static final int MAX_PLAYERS = 4;
-    public static enum GameStatus {
-        READY,
-        STARTED,
-        RUNNING,
-        TAKING_TURN,
-        IN_QUEST
-    }
 
     private ArrayList<Player> players;
     private int numPlayers = 0;

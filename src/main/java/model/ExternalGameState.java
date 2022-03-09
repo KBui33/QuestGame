@@ -27,7 +27,7 @@ public class ExternalGameState implements BaseGameState, Serializable {
     }
 
     @Override
-    public InternalGameState.GameStatus getGameStatus() {
+    public GameStatus getGameStatus() {
         return internalGameState.getGameStatus();
     }
 
