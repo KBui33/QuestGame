@@ -159,6 +159,16 @@ public class Server implements Runnable {
         _broadcastClients.remove(index);
     }
 
+    public synchronized  void notifyClient(int clientIndex, GameCommand command) {
+        try {
+            ObjectOutputStream oos = _broadcastClientOutputStreams.get(clientIndex);
+            oos.writeObject(command);
+            oos.reset();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public synchronized void notifyClients(GameCommand command) {
         System.out.println("== Server notifier says: " + command);
         command.setJoinedPlayers(lastClientIndex);

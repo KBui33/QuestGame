@@ -3,6 +3,7 @@ package networking;
 import game.components.card.Card;
 import model.*;
 import networking.server.GameRunner;
+import networking.server.QuestRunner;
 import networking.server.Server;
 
 import java.io.IOException;
@@ -20,6 +21,7 @@ public class GameCommandHandler {
         Player player = gameCommand.getPlayer();
         ExternalGameState externalGameState = server.getExternalGameState();
         boolean startGame = false;
+        boolean startQuest = false;
 
         switch (command) {
             case READY: {
@@ -61,6 +63,26 @@ public class GameCommandHandler {
                 break;
             }
 
+            case WILL_SPONSOR_QUEST: {
+                int playerId = gameCommand.getPlayerId();
+                System.out.println("== Command handler says: Player " + playerId + " agreed to sponsor quest");
+                returnCommand.setCommand(Command.FOUND_QUEST_SPONSOR);
+                returnCommand.setPlayer(player);
+                returnCommand.setPlayerId(playerId);
+                startQuest = true;
+                break;
+            }
+
+            case WILL_NOT_SPONSOR_QUEST: {
+                int playerId = gameCommand.getPlayerId();
+                System.out.println("== Command handler says: Player " + playerId + " refused to sponsor quest");
+                returnCommand.setCommand(Command.FIND_QUEST_SPONSOR);
+                returnCommand.setPlayer(player);
+                returnCommand.setPlayerId(playerId);
+                internalGameState.setGameStatus(GameStatus.FINDING_QUEST_SPONSOR);
+                break;
+            }
+
             case END_TURN: {
                 int playerId = gameCommand.getPlayerId();
                 System.out.println("== Command handler says: Player took " + playerId);
@@ -72,7 +94,10 @@ public class GameCommandHandler {
         }
 
         server.notifyClients(returnCommand);
+
         if(startGame)  new Thread(new GameRunner(server, server.getGameState())).start();
+        if(startQuest)  new Thread(new QuestRunner(server)).start();
+
         return returnCommand;
     }
 }

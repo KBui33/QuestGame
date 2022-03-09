@@ -2,7 +2,6 @@ package networking.server;
 
 import model.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class GameRunner extends Runner {
@@ -12,22 +11,22 @@ public class GameRunner extends Runner {
     public GameRunner(Server server, InternalGameState gameState) {
         this.server = server;
         this.gameState = gameState;
-
-        // Start game
-        System.out.println("== Game runner says: Starting game");
-        this.gameState.startGame();
-        this.server.notifyClients(new GameCommand(Command.GAME_STARTED));
     }
 
     public void loop() {
-        System.out.println("== Game runner says: Starting game loop");
+        // Start game
+        System.out.println("== Game runner says: Starting game");
+        gameState.startGame();
+        server.notifyClients(new GameCommand(Command.GAME_STARTED));
+
 
         try {
-        Thread.sleep(5000);
+            Thread.sleep(5000);
 
-        ArrayList<Player> players = gameState.getPlayers();
+            ArrayList<Player> players = gameState.getPlayers();
             gameState.setGameStatus(GameStatus.RUNNING);
 
+            System.out.println("== Game runner says: Starting game loop");
 
             while (true) {
                 // Iterate over clients and instruct them to take turns
@@ -36,7 +35,7 @@ public class GameRunner extends Runner {
                     int playerId = player.getPlayerId();
                     GameCommand playerTurnCommand = new GameCommand(Command.PLAYER_TURN); // Broadcast take turn command
                     playerTurnCommand.setPlayerId(playerId);
-                    server.notifyClients(playerTurnCommand);
+                    server.notifyClient(playerId, playerTurnCommand);
                     System.out.println("== Game runner says: take turn command sent");
                     // Wait for player to play
                     while (!gameState.getGameStatus().equals(GameStatus.RUNNING)) {
@@ -57,5 +56,7 @@ public class GameRunner extends Runner {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        this.shouldStopRunner();
     }
 }

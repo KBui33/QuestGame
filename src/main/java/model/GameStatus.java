@@ -5,5 +5,7 @@ public enum GameStatus {
     STARTED,
     RUNNING,
     TAKING_TURN,
+    FINDING_QUEST_SPONSOR,
+    PROMPTING_QUEST_SPONSOR,
     IN_QUEST
 }
