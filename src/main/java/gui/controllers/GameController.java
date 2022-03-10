@@ -53,10 +53,16 @@ public class GameController {
                 @Override
                 public void update(Client.ClientEvent eventType, Object o) {
                     GameCommand receivedCommand = (GameCommand) o;
+                    Command command = receivedCommand.getCommand();
                     System.out.println("== Game Controller command update says: " + receivedCommand);
-                    if(receivedCommand.getCommand().equals(Command.PLAYER_TURN) && receivedCommand.getPlayerId() == client.getPlayerId()) { // Take turn if it's player's turn
+                    if(command.equals(Command.PLAYER_TURN) && receivedCommand.getPlayerId() == client.getPlayerId()) { // Take turn if it's player's turn
                         System.out.println("== It's my turn. Player: " + receivedCommand.getPlayerId());
                         view.getCurrentStateText().setText("Take your turn!");
+                        disableView(view, false);
+                    } else if(command.equals(Command.SHOULD_SPONSOR_QUEST)) { // Prompt player to sponsor quest
+                        System.out.println("== It's my turn to decide to sponsor the quest");
+                        Card questCard = receivedCommand.getCard();
+                        view.getCurrentStateText().setText("Quest: " + questCard.getTitle() + "\nDo you want to sponsor this quest?");
                         disableView(view, false);
                     }
                 }
