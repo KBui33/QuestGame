@@ -12,13 +12,13 @@ import java.util.stream.Collectors;
 
 public class Quest {
 
-    private QuestCard quest;
-    private ArrayList<Stage> stages;
-    private ArrayList<QuestPlayer> questPlayers;
+    private QuestCard quest; //Current sponsored quest
+    private List<Stage> stages; // Total amount of stages
+    private List<QuestPlayer> questPlayers; //Players that participate in the quest
 
-    public Quest(QuestCard quest) {
+    public Quest(QuestCard quest, List<QuestPlayer> questPlayers) {
         this.stages = new ArrayList<>();
-        this.questPlayers = new ArrayList<>();
+        this.questPlayers = questPlayers;
         this.quest = quest;
     }
 
@@ -43,5 +43,24 @@ public class Quest {
         }
     }
 
-    public void startQuest(){}
+    public void startQuest(){
+        /*
+        * - Sponsor hands one card to players in quest(from adventure deck)
+        * - Players who participate must place card(s) against the quest card(s)
+        *  for each stage
+        *        flip the card(s)
+        *        if FOE (and weapons)
+        *           for each player participating
+        *                flip their card(s)
+        *                if player card(s) >= stage card(s)
+        *                   - player proceeds to next stage
+        *                   - draw one card (from adventure)
+        *                else
+        *                   - player cannot go to next stage
+        *       else TEST
+        *            *** Impl later ***
+        *
+        * - Discard all cards in stage and sponsor gains new cards
+        * */
+    }
 }

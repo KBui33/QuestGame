@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class Deck  implements Serializable {
+public abstract class Deck implements Serializable {
 
     protected List<Card>  cards;
     protected List<Card> discarded;

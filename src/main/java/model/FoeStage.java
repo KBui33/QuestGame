@@ -21,11 +21,7 @@ public class FoeStage extends Stage{
 
     public Integer calculateBattlePoints(){
         int[] totalBp = {0};
-
-        if(questCardFoe != null && questCardFoe.equals(foe.getTitle())){
-            totalBp[0] = foe.getBp()[1];
-        }
-
+        if(questCardFoe != null && questCardFoe.equals(foe.getTitle())){totalBp[0] = foe.getBp()[1];}
         weapons.forEach(w -> totalBp[0] += w.getBattlePoints());
         return totalBp[0];
     }
