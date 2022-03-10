@@ -33,9 +33,7 @@ public class Quest {
                                     stageWeapons =
                                     value
                                             .stream()
-                                            .map(
-                                                    c -> (WeaponCard) c
-                                            )
+                                            .map(c -> (WeaponCard) c)
                                             .collect(Collectors.toList());
                             FoeStage s = new FoeStage((FoeCard) key, stageWeapons);
                             stages.add(s);
