@@ -9,26 +9,22 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameState implements Serializable {
+public class InternalGameState implements BaseGameState, Serializable {
     public static final int MAX_PLAYERS = 4;
-    public static enum GameStatus {
-        READY,
-        STARTED,
-        RUNNING,
-        TAKING_TURN
-    }
 
     private ArrayList<Player> players;
     private int numPlayers = 0;
     private Deck storyDeck;
     private Deck adventureDeck;
     private GameStatus gameStatus;
+    private Card currentStoryCard;
 
-    public GameState() {
+    public InternalGameState() {
         players = new ArrayList<Player>();
         storyDeck = new StoryDeck();
         adventureDeck = new AdventureDeck();
         gameStatus = GameStatus.READY;
+        currentStoryCard = null;
     }
 
     public ArrayList<Player> getPlayers() {
@@ -81,11 +77,24 @@ public class GameState implements Serializable {
     }
 
     public List<Card> getDiscardedCards() {
-        return adventureDeck.getDiscarded();
+        ArrayList<Card> discardPile = new ArrayList<>();
+        discardPile.addAll(adventureDeck.getDiscarded());
+        discardPile.addAll(storyDeck.getDiscarded());
+        return discardPile;
     }
 
-    public void discardCard(Card card) {
-        adventureDeck.discard(card);
+    public boolean discardAdventureCard(Card card) {
+        return adventureDeck.discard(card);
+    }
+
+    public boolean discardStoryCard(Card card) {return storyDeck.discard(card);}
+
+    public Card drawAdventureCard() {
+        return adventureDeck.draw();
+    }
+
+    public Card drawStoryCard() {
+        return storyDeck.draw();
     }
 
     public GameStatus getGameStatus() {
@@ -94,5 +103,14 @@ public class GameState implements Serializable {
 
     public void setGameStatus(GameStatus gameStatus) {
         this.gameStatus = gameStatus;
+    }
+
+    public void setCurrentStoryCard(Card currentStoryCard) {
+        this.currentStoryCard = currentStoryCard;
+    }
+
+    @Override
+    public Card getCurrentStoryCard() {
+        return currentStoryCard;
     }
 }
