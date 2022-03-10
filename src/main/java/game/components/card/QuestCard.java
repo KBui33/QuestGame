@@ -11,4 +11,12 @@ public class QuestCard extends Card{
         this.stages = stages;
         this.foe = foe;
     }
+
+    public Integer getStages() {
+        return stages;
+    }
+
+    public String getFoe() {
+        return foe;
+    }
 }
