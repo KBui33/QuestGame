@@ -22,7 +22,7 @@ public class FoeStage extends Stage{
     public Integer calculateBattlePoints(){
         int[] totalBp = {0};
 
-        if(questCardFoe.equals(foe.getTitle())){
+        if(questCardFoe != null && questCardFoe.equals(foe.getTitle())){
             totalBp[0] = foe.getBp()[1];
         }
 
