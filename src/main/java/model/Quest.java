@@ -24,7 +24,6 @@ public class Quest {
 
     public void setupQuest(Map<Card, List<Card>> stageCards){
         // Adding stages to the current quest
-        // Map<The main card for the stage, extra cards (i.e. weapons)>
         for(int i = 0; i < quest.getStages(); i++){
             stageCards
                     .forEach((key, value) -> {
@@ -35,7 +34,7 @@ public class Quest {
                                             .stream()
                                             .map(c -> (WeaponCard) c)
                                             .collect(Collectors.toList());
-                            FoeStage s = new FoeStage((FoeCard) key, stageWeapons);
+                            FoeStage s = new FoeStage((FoeCard) key, stageWeapons, quest.getFoe());
                             stages.add(s);
                         } else {
                             // Add Test Stage

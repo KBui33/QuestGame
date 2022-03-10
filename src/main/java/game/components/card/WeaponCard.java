@@ -7,4 +7,8 @@ public class WeaponCard extends Card{
         super(title, cardImg);
         this.battlePoints = battlePoints;
     }
+
+    public Integer getBattlePoints() {
+        return battlePoints;
+    }
 }

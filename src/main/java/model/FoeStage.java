@@ -9,16 +9,25 @@ import java.util.List;
 
 public class FoeStage extends Stage{
 
-    private Card foe;
+    private FoeCard foe;
     private List<WeaponCard> weapons;
+    private String questCardFoe;
 
-    public FoeStage(FoeCard foe, List<WeaponCard> weapons){
+    public FoeStage(FoeCard foe, List<WeaponCard> weapons, String questCardFoe){
         this.foe = foe;
         this.weapons = weapons;
+        this.questCardFoe = questCardFoe;
     }
 
-    public void calculateBattlePoints(){
+    public Integer calculateBattlePoints(){
+        int[] totalBp = {0};
 
+        if(questCardFoe.equals(foe.getTitle())){
+            totalBp[0] = foe.getBp()[1];
+        }
+
+        weapons.forEach(w -> totalBp[0] += w.getBattlePoints());
+        return totalBp[0];
     }
 
 }
