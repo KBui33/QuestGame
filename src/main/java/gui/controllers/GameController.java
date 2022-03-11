@@ -15,8 +15,6 @@ import networking.client.ClientEventListener;
 
 import java.io.IOException;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * @author James DiNovo
@@ -130,17 +128,7 @@ public class GameController {
             view.removeFromCenterScreen(view.getDrawnCard());
             view.getDrawCardButton().setDisable(false);
 
-            // Send discard command
-            // Send discard card command
-            GameCommand discardCardCommand = new GameCommand(GameCommand.Command.DISCARD_CARD);
-            discardCardCommand.setPlayerId(client.getPlayerId());
-            discardCardCommand.setPlayer(player);
-            discardCardCommand.setCard(view.getDrawnCard().getCard());
-            GameCommand discardedCardCommand =  client.sendCommand(discardCardCommand);
-            player = discardedCardCommand.getPlayer();
-
-            // temp behaviour for testing/demo
-            //discarded.add(new CardView(view.getDrawnCard().getCard()));
+            discardCard(view.getDrawnCard());
         });
 
         view.getEndTurnButton().setOnAction(e -> {
@@ -153,17 +141,6 @@ public class GameController {
 
             disableView(view, true);
             view.getCurrentStateText().setText("Wait for your turn");
-            // just for demonstration
-            //Timer t = new Timer();
-            //TimerTask tt = new TimerTask() {
-                //@Override
-                //public void run() {
-                    //disableView(view, false);
-                    // view.getCurrentStateText().setText("Your turn!");
-                //}
-            //};
-
-           // t.schedule(tt, 5000);
 
         });
 
@@ -190,6 +167,19 @@ public class GameController {
                 view.getShowDiscardedButton().getStyleClass().add("caution");
             }
         });
+    }
+
+    private void discardCard(CardView card) {
+        // Send discard command
+        // Send discard card command
+        GameCommand discardCardCommand = new GameCommand(GameCommand.Command.DISCARD_CARD);
+        discardCardCommand.setPlayerId(client.getPlayerId());
+        discardCardCommand.setPlayer(player);
+        discardCardCommand.setCard(card.getCard());
+        GameCommand discardedCardCommand =  client.sendCommand(discardCardCommand);
+        player = discardedCardCommand.getPlayer();
+
+        myHand.remove(card);
     }
 
     private void disableView(GamePane view, Boolean disable) {
@@ -221,13 +211,7 @@ public class GameController {
             System.out.println("Discarding card");
 
             // Send discard card command
-            GameCommand discardCardCommand = new GameCommand(GameCommand.Command.DISCARD_CARD);
-            discardCardCommand.setPlayerId(client.getPlayerId());
-            discardCardCommand.setPlayer(player);
-            discardCardCommand.setCard(cardView.getCard());
-            GameCommand discardedCardCommand =  client.sendCommand(discardCardCommand);
-            player = discardedCardCommand.getPlayer();
-            deckView.remove(cardView);
+            discardCard(cardView);
 
             // TEMPORARY BEHAVIOUR FOR LAYOUT TESTING
             //discarded.add(new CardView(cardView.getCard()));

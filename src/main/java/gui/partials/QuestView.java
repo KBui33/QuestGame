@@ -9,7 +9,18 @@ import javafx.scene.layout.BorderPane;
  */
 public class QuestView extends BorderPane {
 
+    CardView questCard;
+
+
     public QuestView() {
+
+        // add current quest card to top
+        questCard = new CardView();
+
+        // show stages in the middle
+
+
+
 
     }
 }

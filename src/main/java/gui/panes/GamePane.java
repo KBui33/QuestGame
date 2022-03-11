@@ -140,6 +140,7 @@ public class GamePane extends BorderPane {
 
         drawCardButton = new Button("Draw Card");
         drawCardButton.getStyleClass().add("success");
+        drawCardButton.setVisible(false);
 
         endTurnButton = new Button("End Turn");
         endTurnButton.getStyleClass().add("warn");
