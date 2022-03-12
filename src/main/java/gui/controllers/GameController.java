@@ -205,8 +205,14 @@ public class GameController {
 
             drawnCard.getDiscardButton().setOnAction(e -> {
                 System.out.println("discarded card");
-                view.getMainPane().remove(drawnCard);
                 // send decline to server
+                GameCommand declineSponsorQuestCommand = new GameCommand(Command.WILL_NOT_SPONSOR_QUEST);
+                declineSponsorQuestCommand.setPlayerId(client.getPlayerId());
+                declineSponsorQuestCommand.setPlayer(player);
+                GameCommand declinedSponsorQuestCommand =  client.sendCommand(declineSponsorQuestCommand);
+                player = declinedSponsorQuestCommand.getPlayer();
+
+                view.getMainPane().remove(drawnCard);
             });
         }
     }
