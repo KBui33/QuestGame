@@ -3,36 +3,17 @@ package model;
 import game.components.card.Card;
 
 import java.io.*;
+import java.util.ArrayList;
 
 public class GameCommand implements Serializable {
     // Various game commands
-    public static enum Command {
-        JOIN,
-        JOINED,
-        READY,
-        IS_READY,
-        QUIT,
-        QUITED,
-        GET_LOBBY_STATE,
-        RETURN_LOBBY_STATE,
-        GET_ATTACHED_PLAYER,
-        RETURN_ATTACHED_PLAYER,
-        GAME_STARTED,
-        PLAYER_TURN,
-        TAKE_TURN,
-        END_TURN,
-        ENDED_TURN,
-        TOOK_TURN,
-        DISCARD_CARD,
-        DISCARDED_CARD
-    };
-
     private int playerId = 0;
     private int readyPlayers = 0;
     private int joinedPlayers = 0;
     private Command command;
     private Player player;
     private Card card;
+    private ArrayList<Card> cards;
 
     public GameCommand() {
     }
@@ -102,6 +83,14 @@ public class GameCommand implements Serializable {
 
     public Card getCard() {
         return card;
+    }
+
+    public void setCards(ArrayList<Card> cards) {
+        this.cards = cards;
+    }
+
+    public ArrayList<Card> getCards() {
+        return cards;
     }
 
     @Override

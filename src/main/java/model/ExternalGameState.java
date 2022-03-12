@@ -6,35 +6,51 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExternalGameState implements Serializable {
-    private GameState gameState;
+public class ExternalGameState implements BaseGameState, Serializable {
+    private InternalGameState internalGameState;
 
-    public ExternalGameState(GameState gameState) {
-        this.gameState = gameState;
+    public ExternalGameState(InternalGameState internalGameState) {
+        this.internalGameState = internalGameState;
     }
 
-    public ArrayList<Player> getGamePlayers() {
-        return gameState.getPlayers();
+    @Override
+    public ArrayList<Player> getPlayers() {
+        return internalGameState.getPlayers();
     }
 
-    public List<Card> getDiscardedCards() {return gameState.getDiscardedCards();}
+    @Override
+    public List<Card> getDiscardedCards() {return internalGameState.getDiscardedCards();}
 
-    public int getGameNumPlayers() {
-        return gameState.getNumPlayers();
+    @Override
+    public int getNumPlayers() {
+        return internalGameState.getNumPlayers();
     }
 
-    public GameState getGameState() {
-        return gameState;
+    @Override
+    public GameStatus getGameStatus() {
+        return internalGameState.getGameStatus();
     }
 
-    public void setGameState(GameState gameState) {
-        this.gameState = gameState;
+    @Override
+    public Player getPlayer(int playerId) {
+        return internalGameState.getPlayer(playerId);
     }
 
+    @Override
+    public Card getCurrentStoryCard() {
+        return internalGameState.getCurrentStoryCard();
+    }
+
+    @Override
+    public Player getCurrentTurnPlayer() {
+        return internalGameState.getCurrentTurnPlayer();
+    }
+
+    @Override
     public String toString() {
         return "== External Game State ==\n" +
-                "\tNum Players: " + gameState.getNumPlayers() + "\n" +
-                "\tMax players: " + GameState.MAX_PLAYERS;
+                "\tNum Players: " + internalGameState.getNumPlayers() + "\n" +
+                "\tMax players: " + InternalGameState.MAX_PLAYERS;
     }
 
 

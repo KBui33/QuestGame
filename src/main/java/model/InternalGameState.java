@@ -9,27 +9,24 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameState implements Serializable {
+public class InternalGameState implements BaseGameState, Serializable {
     public static final int MAX_PLAYERS = 4;
-    public static enum GameStatus {
-        READY,
-        STARTED,
-        RUNNING,
-        TAKING_TURN,
-        IN_QUEST
-    }
 
     private ArrayList<Player> players;
     private int numPlayers = 0;
     private Deck storyDeck;
     private Deck adventureDeck;
     private GameStatus gameStatus;
+    private Card currentStoryCard;
+    private Player currentTurnPlayer;
 
-    public GameState() {
+    public InternalGameState() {
         players = new ArrayList<Player>();
         storyDeck = new StoryDeck();
         adventureDeck = new AdventureDeck();
         gameStatus = GameStatus.READY;
+        currentStoryCard = null;
+        currentTurnPlayer = null;
     }
 
     public ArrayList<Player> getPlayers() {
@@ -108,5 +105,23 @@ public class GameState implements Serializable {
 
     public void setGameStatus(GameStatus gameStatus) {
         this.gameStatus = gameStatus;
+    }
+
+    public void setCurrentStoryCard(Card currentStoryCard) {
+        this.currentStoryCard = currentStoryCard;
+    }
+
+    @Override
+    public Card getCurrentStoryCard() {
+        return currentStoryCard;
+    }
+
+    public void setCurrentTurnPlayer(Player currentTurnPlayer) {
+        this.currentTurnPlayer = currentTurnPlayer;
+    }
+
+    @Override
+    public Player getCurrentTurnPlayer() {
+        return currentTurnPlayer;
     }
 }

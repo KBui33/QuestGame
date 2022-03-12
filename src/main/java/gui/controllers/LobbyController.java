@@ -5,6 +5,7 @@ import gui.panes.LobbyPane;
 import gui.scenes.ConnectScene;
 import gui.scenes.GameScene;
 import javafx.application.Platform;
+import model.Command;
 import model.ExternalGameState;
 import model.GameCommand;
 import networking.client.Client;
@@ -36,8 +37,8 @@ public class LobbyController {
         try {
             client = Client.getInstance();
             // Get current lobby state
-            GameCommand initLobbyStateCommand =  client.sendCommand(new GameCommand(GameCommand.Command.GET_LOBBY_STATE));
-            if(initLobbyStateCommand.getCommand().equals(GameCommand.Command.RETURN_LOBBY_STATE)) {
+            GameCommand initLobbyStateCommand =  client.sendCommand(new GameCommand(Command.GET_LOBBY_STATE));
+            if(initLobbyStateCommand.getCommand().equals(Command.RETURN_LOBBY_STATE)) {
                 view.getPlayersText().setText("Players Connected: " + initLobbyStateCommand.getJoinedPlayers());
             }
 
@@ -47,9 +48,9 @@ public class LobbyController {
                 public void update(Client.ClientEvent eventType, Object o) {
                     GameCommand receivedCommand = (GameCommand) o;
                     System.out.println("== Lobby Controller says: " + receivedCommand);
-                    if(receivedCommand.getCommand().equals(GameCommand.Command.JOINED)) { // Update players connected
+                    if(receivedCommand.getCommand().equals(Command.JOINED)) { // Update players connected
                         view.getPlayersText().setText("Players Connected: " + receivedCommand.getJoinedPlayers());
-                    } else if(receivedCommand.getCommand().equals(GameCommand.Command.GAME_STARTED)) { // Load game view
+                    } else if(receivedCommand.getCommand().equals(Command.GAME_STARTED)) { // Load game view
                         Platform.runLater(() ->ClientApplication.window.setScene(new GameScene()));
                     }
                 }
@@ -67,19 +68,20 @@ public class LobbyController {
             view.getReadyButton().setOnAction(e -> {
                 System.out.println("Ready clicked");
 
-                // Send a ready command to the server
-                GameCommand command = new GameCommand(GameCommand.Command.READY);
-                command =  client.sendCommand(command);
-                client.setPlayerId(command.getPlayerId()); // Set id of player/client
-
                 if (view.getReadyButton().getText().equals("Ready")) {
+                    // Send a ready command to the server
+                    GameCommand command = new GameCommand(Command.READY);
+                    command =  client.sendCommand(command);
+                    client.setPlayerId(command.getPlayerId()); // Set id of player/client
+
                     view.getReadyButton().getStyleClass().remove("success");
                     view.getReadyButton().getStyleClass().add("caution");
                     view.getReadyButton().setText("Wait");
                 } else {
-                    view.getReadyButton().getStyleClass().remove("caution");
-                    view.getReadyButton().getStyleClass().add("success");
-                    view.getReadyButton().setText("Ready");
+                    // TODO :: ADD UNREADY FUNCTIONALITY
+//                    view.getReadyButton().getStyleClass().remove("caution");
+//                    view.getReadyButton().getStyleClass().add("success");
+//                    view.getReadyButton().setText("Ready");
                 }
             });
 

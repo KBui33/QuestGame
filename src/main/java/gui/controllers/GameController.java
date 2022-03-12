@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
+import model.Command;
 import model.ExternalGameState;
 import model.GameCommand;
 import model.Player;
@@ -39,7 +40,7 @@ public class GameController {
             client = Client.getInstance();
 
             // Fetch corresponding player
-            GameCommand getAttachedPlayerCommand = new GameCommand(GameCommand.Command.GET_ATTACHED_PLAYER);
+            GameCommand getAttachedPlayerCommand = new GameCommand(Command.GET_ATTACHED_PLAYER);
             getAttachedPlayerCommand.setPlayerId(client.getPlayerId());
             GameCommand returnedAttachedPlayerCommand = client.sendCommand(getAttachedPlayerCommand);
             player = (Player) returnedAttachedPlayerCommand.getPlayer();
@@ -50,17 +51,23 @@ public class GameController {
                 @Override
                 public void update(Client.ClientEvent eventType, Object o) {
                     GameCommand receivedCommand = (GameCommand) o;
+                    Command command = receivedCommand.getCommand();
                     System.out.println("== Game Controller command update says: " + receivedCommand);
-                    if(receivedCommand.getCommand().equals(GameCommand.Command.PLAYER_TURN) && receivedCommand.getPlayerId() == client.getPlayerId()) { // Take turn if it's player's turn
+                    if(command.equals(Command.PLAYER_TURN) && receivedCommand.getPlayerId() == client.getPlayerId()) { // Take turn if it's player's turn
                         System.out.println("== It's my turn. Player: " + receivedCommand.getPlayerId());
                         view.getCurrentStateText().setText("Take your turn!");
-
-                        // get drawn story card from server
-                        // handle it
-                        Platform.runLater(() -> {
-                            handleDrawnCard(new QuestCard("test", "/quests/quest_quest_1.png", 3, "Evil Knight"));
-                        });
                         disableView(false);
+                        view.getEndTurnButton().setVisible(true);
+                    } else if(command.equals(Command.SHOULD_SPONSOR_QUEST)) { // Prompt player to sponsor quest
+                        System.out.println("== It's my turn to decide to sponsor the quest");
+                        Card questCard = receivedCommand.getCard();
+                        Platform.runLater(() -> {
+                            view.getCurrentStateText().setText("Quest: " + questCard.getTitle() + "\nDo you want to sponsor this quest?");
+                            System.out.println(questCard.getCardImg());
+                            handleDrawnCard(questCard);
+                            disableView(false);
+                            view.getEndTurnButton().setVisible(false);
+                        });
                     }
                 }
             });
@@ -76,6 +83,13 @@ public class GameController {
                             discarded.add(new CardView(card));
                         }
                     });
+                    discarded.clear();
+                    for (Card card : externalGameState.getDiscardedCards()) {
+                        discarded.add(new CardView(card));
+                    }
+                    Card currentStoryCard = externalGameState.getCurrentStoryCard();
+                    if(currentStoryCard != null) // Display this on GUI
+                        System.out.println("Game Controller state update says: Current story " + currentStoryCard.getClass() + " -> " +  currentStoryCard.getTitle());
                 }
             });
 
@@ -129,7 +143,7 @@ public class GameController {
         view.getEndTurnButton().setOnAction(e -> {
             System.out.println("Turn ended");
             // Send end turn command
-            GameCommand endTurnCommand = new GameCommand(GameCommand.Command.END_TURN);
+            GameCommand endTurnCommand = new GameCommand(Command.END_TURN);
             endTurnCommand.setPlayerId(client.getPlayerId());
             endTurnCommand.setPlayer(player);
             client.sendCommand(endTurnCommand);
@@ -177,14 +191,15 @@ public class GameController {
     }
 
     private void handleDrawnCard(Card card) {
-        view.getDrawnCard().setCard(card);
-        view.getDrawnCard().getPlayButton().setText("Sponsor");
-        view.getDrawnCard().getDiscardButton().setText("Decline");
-
         view.addToCenterScreen(view.getDrawnCard(), Pos.CENTER, 100);
+        view.getDrawnCard().setCard(card);
+
 
         // if it is a quest card offer player option to sponsor or decline card
         if (view.getDrawnCard().getCard() instanceof QuestCard) {
+            view.getDrawnCard().getPlayButton().setText("Sponsor");
+            view.getDrawnCard().getDiscardButton().setText("Decline");
+
             view.getDrawnCard().getPlayButton().setOnAction(e -> {
                 System.out.println("played card");
                 view.removeFromCenterScreen(view.getDrawnCard());
@@ -202,7 +217,7 @@ public class GameController {
     private void discardCard(CardView card) {
         // Send discard command
         // Send discard card command
-        GameCommand discardCardCommand = new GameCommand(GameCommand.Command.DISCARD_CARD);
+        GameCommand discardCardCommand = new GameCommand(Command.DISCARD_CARD);
         discardCardCommand.setPlayerId(client.getPlayerId());
         discardCardCommand.setPlayer(player);
         discardCardCommand.setCard(card.getCard());
