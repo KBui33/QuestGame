@@ -14,7 +14,6 @@ import javafx.scene.control.ListView;
  */
 public class DeckView {
 
-    // cards will be card objects once cards are created
     protected ListView<CardView> listView;
     protected DeckCellFactory cardCellFactory;
 

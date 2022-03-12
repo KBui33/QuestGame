@@ -47,4 +47,12 @@ public class Quest {
     }
 
     public void startQuest(){}
+
+    public QuestCard getQuestCard() {
+        return quest;
+    }
+
+    public Stage getCurrentStage() {
+        return stages.get(0);
+    }
 }

@@ -88,11 +88,11 @@ public class GameState implements Serializable {
         return discardPile;
     }
 
-    public boolean discardAdventureCard(Card card) {
-        return adventureDeck.discard(card);
+    public void discardAdventureCard(Card card) {
+        adventureDeck.discard(card);
     }
 
-    public boolean discardStoryCard(Card card) {return storyDeck.discard(card);}
+    public void discardStoryCard(Card card) {storyDeck.discard(card);}
 
     public Card drawAdventureCard() {
         return adventureDeck.draw();

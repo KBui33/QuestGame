@@ -9,16 +9,19 @@ import java.util.List;
 
 public class FoeStage extends Stage{
 
-    private Card foe;
     private List<WeaponCard> weapons;
 
     public FoeStage(FoeCard foe, List<WeaponCard> weapons){
-        this.foe = foe;
+        super(foe);
         this.weapons = weapons;
     }
 
     public void calculateBattlePoints(){
 
+    }
+
+    public List<WeaponCard> getWeapons() {
+        return weapons;
     }
 
 }

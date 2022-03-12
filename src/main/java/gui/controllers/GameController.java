@@ -2,8 +2,11 @@ package gui.controllers;
 
 import game.components.card.AllyCard;
 import game.components.card.Card;
+import game.components.card.FoeCard;
+import game.components.card.WeaponCard;
 import gui.panes.GamePane;
 import gui.partials.CardView;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -14,7 +17,6 @@ import networking.client.Client;
 import networking.client.ClientEventListener;
 
 import java.io.IOException;
-import java.util.Random;
 
 /**
  * @author James DiNovo
@@ -62,11 +64,12 @@ public class GameController {
                 @Override
                 public void update(Client.ClientEvent eventType, Object o) {
                     ExternalGameState externalGameState = (ExternalGameState) o;
-                    discarded.clear();
-                    System.out.println(externalGameState.getDiscardedCards().size());
-                    for (Card card : externalGameState.getDiscardedCards()) {
-                        discarded.add(new CardView(card));
-                    }
+                    Platform.runLater(() -> {
+                        discarded.clear();
+                        for (Card card : externalGameState.getDiscardedCards()) {
+                            discarded.add(new CardView(card));
+                        }
+                    });
                 }
             });
 
@@ -96,37 +99,52 @@ public class GameController {
 
 
         // set action for draw card button
-        view.getDrawCardButton().setOnAction(e -> {
-            // draw a card from server
-            // hardcoded for testing
-            Random r = new Random();
-            Card drawnCard = new AllyCard(
-                    "card",
-                    "/specials/quest_ally_" + (r.nextInt(10) + 1) + ".png",
-                    "", "");
+//        view.getDrawCardButton().setOnAction(e -> {
+//            // draw a card from server
+//            // hardcoded for testing
+//            Random r = new Random();
+//            Card drawnCard = new AllyCard(
+//                    "card",
+//                    "/specials/quest_ally_" + (r.nextInt(10) + 1) + ".png",
+//                    "", "");
+//
+//
+//            // once hand has more than 12 cards every next card drawn must be either played or discarded
+//            if (myHand.size() < 12) {
+//                addCardToHand(myHand, drawnCard);
+//            } else {
+//                // display card with option to play it or discard it
+//                view.getDrawnCard().setCard(drawnCard);
+//                view.addToCenterScreen(view.getDrawnCard(), Pos.CENTER, 100);
+//                view.getDrawCardButton().setDisable(true);
+//            }
+//        });
 
+        // get drawn story card from server
 
-            // once hand has more than 12 cards every next card drawn must be either played or discarded
-            if (myHand.size() < 12) {
-                addCardToHand(myHand, drawnCard);
-            } else {
-                // display card with option to play it or discard it
-                view.getDrawnCard().setCard(drawnCard);
-                view.addToCenterScreen(view.getDrawnCard(), Pos.CENTER, 100);
-                view.getDrawCardButton().setDisable(true);
-            }
-        });
+        // if it is a quest card offer player option to sponsor or decline card
+
 
         view.getDrawnCard().getPlayButton().setOnAction(e -> {
             System.out.println("played card");
             view.removeFromCenterScreen(view.getDrawnCard());
-            view.getDrawCardButton().setDisable(false);
+            // if they choose to sponsor allow them to pick a foe and weapons for that foe for each stage...
+            ObservableList<CardView> foes = myHand.filtered(c -> c.getCard() instanceof FoeCard);
+            ObservableList<CardView> weapons = myHand.filtered(c -> c.getCard() instanceof WeaponCard);
+
+            foes.forEach(f -> {
+                f.getPlayButton().setVisible(true);
+                f.getPlayButton().setOnAction(e1 -> {
+
+                });
+            });
+            view.getMyHand().setListViewItems(foes);
+
         });
 
         view.getDrawnCard().getDiscardButton().setOnAction(e -> {
             System.out.println("discarded card");
             view.removeFromCenterScreen(view.getDrawnCard());
-            view.getDrawCardButton().setDisable(false);
 
             discardCard(view.getDrawnCard());
         });
@@ -217,9 +235,7 @@ public class GameController {
             //discarded.add(new CardView(cardView.getCard()));
         });
 
-        cardView.getPlayButton().setOnAction(e -> {
-            System.out.println("Play");
-        });
+        cardView.getPlayButton().setVisible(false);
 
         cardView.setOnMouseEntered(e -> {
             cardView.getButtonBox().setVisible(true);

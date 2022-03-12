@@ -126,6 +126,8 @@ public class GamePane extends BorderPane {
 
         drawnCard = new CardView();
         drawnCard.getButtonBox().setVisible(true);
+        drawnCard.getPlayButton().setText("Sponsor");
+        drawnCard.getDiscardButton().setText("Decline");
 
         centerScreen = new StackPane();
 
