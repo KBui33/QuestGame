@@ -46,6 +46,14 @@ public class Quest {
         }
     }
 
+    public void addStage(Stage stage) {
+        this.stages.add(stage);
+    }
+
+    public int currentStageCount() {
+        return this.stages.size();
+    }
+
     public void startQuest(){}
 
     public QuestCard getQuestCard() {
