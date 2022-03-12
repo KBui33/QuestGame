@@ -4,6 +4,11 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 
+/**
+ * @author James DiNovo
+ *
+ * Main game display
+ */
 public class GameDisplayPane extends StackPane {
 
     public void add(Node node, Pos pos, boolean front) {

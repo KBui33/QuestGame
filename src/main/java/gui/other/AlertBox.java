@@ -1,12 +1,16 @@
 package gui.other;
 
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.DialogEvent;
 import javafx.stage.Stage;
 
+/**
+ * @author James DiNovo
+ *
+ * Alert pop up
+ */
 public class AlertBox {
 
     public static void alert(String message) {
