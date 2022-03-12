@@ -1,12 +1,14 @@
 package gui.controllers;
 
 import game.components.card.*;
+import gui.other.AlertBox;
 import gui.panes.GamePane;
 import gui.partials.CardView;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import model.Command;
 import model.ExternalGameState;
 import model.GameCommand;
@@ -57,7 +59,6 @@ public class GameController {
                         System.out.println("== It's my turn. Player: " + receivedCommand.getPlayerId());
                         view.getHud().getCurrentStateText().setText("Take your turn!");
                         disableView(false);
-                        view.getHud().getEndTurnButton().setVisible(true);
                     } else if(command.equals(Command.SHOULD_SPONSOR_QUEST)) { // Prompt player to sponsor quest
                         System.out.println("== It's my turn to decide to sponsor the quest");
                         Card questCard = receivedCommand.getCard();
@@ -66,7 +67,6 @@ public class GameController {
                             System.out.println(questCard.getCardImg());
                             handleDrawnCard(questCard);
                             disableView(false);
-                            view.getHud().getEndTurnButton().setVisible(false);
                         });
                     }
                 }
@@ -199,8 +199,18 @@ public class GameController {
 
             drawnCard.getPlayButton().setOnAction(e -> {
                 System.out.println("played card");
-                view.getMainPane().remove(drawnCard);
-                questSetup((QuestCard) drawnCard.getCard());
+                if (myHand.filtered(c -> c.getCard() instanceof FoeCard || c.getCard() instanceof TestCard).size()
+                        < ((QuestCard) drawnCard.getCard()).getStages()) {
+                    // notify user they dont have enough cards to sponsor
+                    AlertBox.alert("Insufficient cards in hand. This Quest requires at least "
+                            + ((QuestCard) drawnCard.getCard()).getStages() +
+                            " Foe or Test cards to sponsor.", Alert.AlertType.WARNING, e2 -> {
+                        drawnCard.getDiscardButton().fire();
+                    });
+                } else {
+                    view.getMainPane().remove(drawnCard);
+                    questSetup((QuestCard) drawnCard.getCard());
+                }
             });
 
             drawnCard.getDiscardButton().setOnAction(e -> {

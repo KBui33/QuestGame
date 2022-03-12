@@ -1,5 +1,6 @@
 package gui.panes;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
@@ -26,6 +27,6 @@ public class GameDisplayPane extends StackPane {
     }
 
     public GameDisplayPane() {
-
+        this.setPadding(new Insets(10));
     }
 }
