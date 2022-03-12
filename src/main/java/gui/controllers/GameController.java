@@ -83,10 +83,6 @@ public class GameController {
                             discarded.add(new CardView(card));
                         }
                     });
-                    discarded.clear();
-                    for (Card card : externalGameState.getDiscardedCards()) {
-                        discarded.add(new CardView(card));
-                    }
                     Card currentStoryCard = externalGameState.getCurrentStoryCard();
                     if(currentStoryCard != null) // Display this on GUI
                         System.out.println("Game Controller state update says: Current story " + currentStoryCard.getClass() + " -> " +  currentStoryCard.getTitle());
@@ -191,24 +187,25 @@ public class GameController {
     }
 
     private void handleDrawnCard(Card card) {
-        view.addToCenterScreen(view.getDrawnCard(), Pos.CENTER, 100);
-        view.getDrawnCard().setCard(card);
-
+        CardView drawnCard = new CardView();
+        drawnCard.getButtonBox().setVisible(true);
+        view.addToCenterScreen(drawnCard, Pos.CENTER, 100);
+        drawnCard.setCard(card);
 
         // if it is a quest card offer player option to sponsor or decline card
-        if (view.getDrawnCard().getCard() instanceof QuestCard) {
-            view.getDrawnCard().getPlayButton().setText("Sponsor");
-            view.getDrawnCard().getDiscardButton().setText("Decline");
+        if (drawnCard.getCard() instanceof QuestCard) {
+            drawnCard.getPlayButton().setText("Sponsor");
+            drawnCard.getDiscardButton().setText("Decline");
 
-            view.getDrawnCard().getPlayButton().setOnAction(e -> {
+            drawnCard.getPlayButton().setOnAction(e -> {
                 System.out.println("played card");
-                view.removeFromCenterScreen(view.getDrawnCard());
-                questSetup((QuestCard) view.getDrawnCard().getCard());
+                view.removeFromCenterScreen(drawnCard);
+                questSetup((QuestCard) drawnCard.getCard());
             });
 
-            view.getDrawnCard().getDiscardButton().setOnAction(e -> {
+            drawnCard.getDiscardButton().setOnAction(e -> {
                 System.out.println("discarded card");
-                view.removeFromCenterScreen(view.getDrawnCard());
+                view.removeFromCenterScreen(drawnCard);
                 // send decline to server
             });
         }
@@ -264,7 +261,7 @@ public class GameController {
 
     private void addCardToHand(ObservableList<CardView> hand, Card card) {
         CardView newcard = new CardView(card);
-        setCardViewButtonActions(hand, newcard);
+        setCardViewButtonActions(newcard);
         hand.add(0, newcard);
     }
 
@@ -280,7 +277,7 @@ public class GameController {
 
     }
 
-    private void setCardViewButtonActions(ObservableList<CardView> deckView, CardView cardView) {
+    public void setCardViewButtonActions(CardView cardView) {
         cardView.getDiscardButton().setOnAction(e -> {
             // send delete signal to server and await response
             System.out.println("Discarding card");
@@ -293,6 +290,8 @@ public class GameController {
         });
 
         cardView.getPlayButton().setVisible(false);
+        cardView.getPlayButton().setText("Play");
+        cardView.getDiscardButton().setText("Discard");
 
         cardView.setOnMouseEntered(e -> {
             cardView.getButtonBox().setVisible(true);

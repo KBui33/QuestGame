@@ -32,7 +32,6 @@ public class GamePane extends BorderPane {
     private ShieldsView shieldsView;
     private Text currentStateText;
     private Button showHandButton, showDiscardedButton, drawCardButton, endTurnButton;
-    private CardView drawnCard;
     private StackPane centerScreen;
 
     public DeckView getMyHand() {
@@ -83,10 +82,6 @@ public class GamePane extends BorderPane {
         return rankInfoBox;
     }
 
-    public CardView getDrawnCard() {
-        return drawnCard;
-    }
-
     public StackPane getCenterScreen() {
         return centerScreen;
     }
@@ -123,11 +118,6 @@ public class GamePane extends BorderPane {
         // put current rank card next to shields
         rankInfoBox = new HBox();
         shieldsView = new ShieldsView();
-
-        drawnCard = new CardView();
-        drawnCard.getButtonBox().setVisible(true);
-        drawnCard.getPlayButton().setText("Sponsor");
-        drawnCard.getDiscardButton().setText("Decline");
 
         centerScreen = new StackPane();
 

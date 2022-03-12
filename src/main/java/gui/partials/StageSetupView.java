@@ -27,6 +27,7 @@ public class StageSetupView extends BorderPane {
         this.setTop(stageCard);
 
         weaponsView = new DeckView();
+        weaponsView.setSize(225);
         if (card instanceof FoeCard) {
             this.setCenter(weaponsView.getListView());
         } else {
