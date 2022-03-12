@@ -65,12 +65,12 @@ public class QuestSetupController {
                         parent.getMyHandList().add(f);
                         parent.getMyHandList().addAll(addedWeapons);
                         addedWeapons.clear();
-                        parent.getView().getMyHand().setListViewItems(foesOrTests);
+                        parent.getView().getHud().getMyHand().setListViewItems(foesOrTests);
                         parent.showHand();
                     });
 
                     if (f.getCard() instanceof FoeCard) {
-                        parent.getView().getMyHand().setListViewItems(weapons);
+                        parent.getView().getHud().getMyHand().setListViewItems(weapons);
                     }
                 });
             }
@@ -99,7 +99,7 @@ public class QuestSetupController {
 
                 });
             }
-            parent.getView().getMyHand().setListViewItems(foesOrTests);
+            parent.getView().getHud().getMyHand().setListViewItems(foesOrTests);
             parent.showHand();
 
             questSetupView.getNextStageButton().setOnAction(e -> {
@@ -123,7 +123,7 @@ public class QuestSetupController {
                 } else {
                     this.questSetupView.getPromptText().setText(QuestSetupView.STAGE_PROMPT + (quest.currentStageCount() + 1));
 
-                    parent.getView().getMyHand().setListViewItems(foesOrTests);
+                    parent.getView().getHud().getMyHand().setListViewItems(foesOrTests);
                     parent.showHand();
                 }
 
@@ -133,10 +133,10 @@ public class QuestSetupController {
 
     private void cleanUpGui() {
         // clear quest setup
-        parent.getView().getCenterScreen().getChildren().clear();
+        parent.getView().getMainPane().getChildren().clear();
 
         // reset view
-        parent.getView().getEndTurnButton().setVisible(true);
+        parent.getView().getHud().getEndTurnButton().setVisible(true);
 
         // fix list view - need better fix at some point
         ObservableList<CardView> tmp = FXCollections.observableArrayList();
@@ -148,7 +148,7 @@ public class QuestSetupController {
         });
         parent.getMyHandList().clear();
         parent.getMyHandList().addAll(tmp);
-        parent.getView().getMyHand().setListViewItems(parent.getMyHandList());
+        parent.getView().getHud().getMyHand().setListViewItems(parent.getMyHandList());
     }
 
     public boolean canAddWeapon(Card card) {

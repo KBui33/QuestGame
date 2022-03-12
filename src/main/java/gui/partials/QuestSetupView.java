@@ -1,6 +1,7 @@
 package gui.partials;
 
 import game.components.card.Card;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
@@ -40,6 +41,8 @@ public class QuestSetupView extends BorderPane {
     }
 
     public QuestSetupView(Card card) {
+        this.setMaxSize(500, 700);
+        setMargin(this, new Insets(20));
         topBox = new VBox();
         topBox.setSpacing(5);
         topBox.setAlignment(Pos.CENTER);
