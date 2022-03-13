@@ -14,6 +14,7 @@ public class GameCommand implements Serializable {
     private Player player;
     private Card card;
     private ArrayList<Card> cards;
+    private Quest quest;
 
     public GameCommand() {
     }
@@ -91,6 +92,14 @@ public class GameCommand implements Serializable {
 
     public ArrayList<Card> getCards() {
         return cards;
+    }
+
+    public Quest getQuest() {
+        return quest;
+    }
+
+    public void setQuest(Quest quest) {
+        this.quest = quest;
     }
 
     @Override

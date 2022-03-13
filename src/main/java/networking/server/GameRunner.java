@@ -52,6 +52,7 @@ public class GameRunner extends Runner {
                         server.notifyClients(playerTurnCommand);
                         System.out.println("== Game runner says: take turn command sent");
                     }
+
                     // Wait for player to play
                     while (!gameState.getGameStatus().equals(GameStatus.RUNNING)) {
                         Thread.sleep(1000);
