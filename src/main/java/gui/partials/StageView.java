@@ -1,5 +1,6 @@
 package gui.partials;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.layout.BorderPane;
@@ -14,6 +15,7 @@ public class StageView extends BorderPane {
     private ObservableList<CardView> weapons;
 
     public StageView() {
+        stageCard = new CardView();
         stageCard.setSize(200);
         stageCard.getButtonBox().setVisible(true);
         stageCard.getPlayButton().setVisible(false);
@@ -22,6 +24,8 @@ public class StageView extends BorderPane {
         this.setTop(stageCard);
 
         weaponsView = new DeckView();
+        weaponsView.setSize(225);
+        this.weapons = FXCollections.observableArrayList();
 
     }
 

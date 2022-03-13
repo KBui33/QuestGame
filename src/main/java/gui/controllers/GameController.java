@@ -18,6 +18,7 @@ import networking.client.Client;
 import networking.client.ClientEventListener;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author James DiNovo
@@ -32,11 +33,15 @@ public class GameController {
     private ObservableList<CardView> myHand;
     private ObservableList<CardView> discarded;
     private GamePane view;
+    private QuestController questController;
 
     public GameController (GamePane view) {
         myHand = FXCollections.observableArrayList();
         discarded = FXCollections.observableArrayList();
         this.view = view;
+
+        // for reference inside handlers
+        GameController gc = this;
 
         try {
             client = Client.getInstance();
@@ -71,7 +76,18 @@ public class GameController {
                     } else if(command.equals(Command.PLAYER_QUEST_TURN)) { // Handle taking quest turn
                         System.out.println("== It's my turn to take turn for quest stage");
                         Card questStageCard = receivedCommand.getCard();
-                        view.getHud().getCurrentStateText().setText("Quest Stage: " + questStageCard.getTitle());
+                        view.getHud().getCurrentStateText().setText("Quest Stage: " + (questStageCard instanceof FoeCard ? "Foe" : "Test"));
+                        System.out.println("== Quest Card: " + questStageCard.getTitle());
+
+                        // see line ~110
+                        Platform.runLater(() -> {
+                            // if quest controller is null you are sponsor i guess? not really
+                            if (questController != null) {
+                                questController.pickCards(gc);
+                                disableView(false);
+                            }
+                        });
+
                     }
                 }
             });
@@ -90,6 +106,16 @@ public class GameController {
                     Card currentStoryCard = externalGameState.getCurrentStoryCard();
                     if(currentStoryCard != null) // Display this on GUI
                         System.out.println("Game Controller state update says: Current story " + currentStoryCard.getClass() + " -> " +  currentStoryCard.getTitle());
+
+                    // needs quest to initialize quest controller
+                    Quest q = externalGameState.getCurrentQuest();
+                    if (q != null && questController == null) {
+                        Platform.runLater(() -> {
+                            questController = new QuestController(q);
+                            view.getMainPane().clear();
+                            view.getMainPane().add(questController.getQuestView());
+                        });
+                    }
                 }
             });
 
@@ -186,8 +212,17 @@ public class GameController {
         return myHand;
     }
 
+    public void setMyHandList(ObservableList<CardView> newHand) {
+        this.myHand = newHand;
+    }
+
     public GamePane getView() {
         return view;
+    }
+
+    public void playerStageCardsPicked(List<WeaponCard> weaponCards) {
+        disableView(true);
+        // send cards to server
     }
 
     private void handleDrawnCard(Card card) {
@@ -293,7 +328,7 @@ public class GameController {
 
     public void questSetupComplete(Quest quest) {
         System.out.println("== Quest setup completed");
-        // send decline to server
+        // send sponsor to server
         GameCommand questSetupCommand = new GameCommand(Command.WILL_SPONSOR_QUEST);
         questSetupCommand.setPlayerId(client.getPlayerId());
         questSetupCommand.setPlayer(player);

@@ -115,6 +115,9 @@ public class QuestSetupController {
                 parent.questSetupComplete(quest);
                 cleanUpGui();
             } else {
+                if (questCard.getStages() - quest.currentStageCount() <= 1) {
+                    questSetupView.getNextStageButton().setText("Finish");
+                }
                 this.questSetupView.getPromptText().setText(QuestSetupView.STAGE_PROMPT + (quest.currentStageCount() + 1));
 
                 parent.getView().getHud().getMyHand().setListViewItems(foesOrTests);
@@ -139,9 +142,9 @@ public class QuestSetupController {
             parent.setCardViewButtonActions(n);
             tmp.add(n);
         });
-        parent.getMyHandList().clear();
-        parent.getMyHandList().addAll(tmp);
+        parent.setMyHandList(tmp);
         parent.getView().getHud().getMyHand().setListViewItems(parent.getMyHandList());
+        parent.hideDecks();
     }
 
     public boolean canAddWeapon(Card card) {

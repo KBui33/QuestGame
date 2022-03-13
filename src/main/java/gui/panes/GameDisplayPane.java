@@ -12,6 +12,14 @@ import javafx.scene.layout.StackPane;
  */
 public class GameDisplayPane extends StackPane {
 
+    public void add(Node node) {
+        add(node, Pos.CENTER, true);
+    }
+
+    public void add(Node node, Pos pos) {
+        add(node, pos, true);
+    }
+
     public void add(Node node, Pos pos, boolean front) {
         setAlignment(node, pos);
 
@@ -26,7 +34,11 @@ public class GameDisplayPane extends StackPane {
         this.getChildren().remove(node);
     }
 
+    public void clear() {
+        this.getChildren().clear();
+    }
+
     public GameDisplayPane() {
-        this.setPadding(new Insets(10));
+        this.setPadding(new Insets(20));
     }
 }
