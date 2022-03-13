@@ -53,6 +53,8 @@ public class Quest implements Serializable {
 
     public boolean addQuestPlayer(Player player) { return this.questPlayers.add(new QuestPlayer(player)); }
 
+    public void addQuestPlayer( int index, Player player) { this.questPlayers.add(index, new QuestPlayer(player)); }
+
     public int currentStageCount() {
         return this.stages.size();
     }
@@ -73,5 +75,16 @@ public class Quest implements Serializable {
 
     public ArrayList<QuestPlayer> getQuestPlayers() {
         return questPlayers;
+    }
+
+    public QuestPlayer getQuestPlayer(int index) {
+        return questPlayers.get(index);
+    }
+
+    /**
+     * Find the players set to move forward to next stage based on battle points
+     */
+    public void computeStageWinners() {
+
     }
 }

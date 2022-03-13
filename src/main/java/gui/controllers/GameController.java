@@ -18,7 +18,7 @@ import networking.client.Client;
 import networking.client.ClientEventListener;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author James DiNovo
@@ -109,12 +109,17 @@ public class GameController {
 
                     // needs quest to initialize quest controller
                     Quest q = externalGameState.getCurrentQuest();
-                    if (q != null && questController == null) {
-                        Platform.runLater(() -> {
-                            questController = new QuestController(q);
-                            view.getMainPane().clear();
-                            view.getMainPane().add(questController.getQuestView());
-                        });
+                    if (q != null) {
+                        if(questController == null) {
+                            Platform.runLater(() -> {
+                                questController = new QuestController(q);
+                                view.getMainPane().clear();
+                                view.getMainPane().add(questController.getQuestView());
+                            });
+                        } else if(q.getQuestPlayer(player.getPlayerId() - 1) == null) { // Check if player is still in quest
+                            System.out.println("== Game Controller state update says: You have fallen out of the quest");
+                            view.getHud().getCurrentStateText().setText("Quest Stage: Sitting out till the end of the quest");
+                        }
                     }
                 }
             });
@@ -220,9 +225,15 @@ public class GameController {
         return view;
     }
 
-    public void playerStageCardsPicked(List<WeaponCard> weaponCards) {
+    public void playerStageCardsPicked(ArrayList<Card> weaponCards) {
         disableView(true);
         // send cards to server
+        GameCommand takeQuestTurnCommand = new GameCommand(Command.TAKE_QUEST_TURN);
+        takeQuestTurnCommand.setPlayerId(client.getPlayerId());
+        takeQuestTurnCommand.setPlayer(player);
+        takeQuestTurnCommand.setCards(weaponCards);
+        GameCommand tookQuestTurnCommand =  client.sendCommand(takeQuestTurnCommand);
+        player = tookQuestTurnCommand.getPlayer();
     }
 
     private void handleDrawnCard(Card card) {

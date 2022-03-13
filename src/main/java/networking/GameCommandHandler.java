@@ -7,6 +7,7 @@ import networking.server.QuestRunner;
 import networking.server.Server;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class GameCommandHandler {
     private Server server;
@@ -91,6 +92,19 @@ public class GameCommandHandler {
                 System.out.println("== Command handler says: Player took " + playerId);
                 internalGameState.setGameStatus(GameStatus.RUNNING); // Update game status
                 returnCommand.setCommand(Command.ENDED_TURN);
+                returnCommand.setPlayerId(playerId);
+                break;
+            }
+
+            case TAKE_QUEST_TURN: {
+                int playerId = gameCommand.getPlayerId();
+                ArrayList<Card> stageCards = gameCommand.getCards();
+                System.out.println("== Command handler says: Player " + playerId + " took stage turn");
+                quest = internalGameState.getCurrentQuest();
+                quest.getQuestPlayer(playerId - 1).setPlayerQuestCardUsed(stageCards);
+                internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
+                returnCommand.setCommand(Command.TOOK_QUEST_TURN);
+                returnCommand.setPlayer(player);
                 returnCommand.setPlayerId(playerId);
                 break;
             }

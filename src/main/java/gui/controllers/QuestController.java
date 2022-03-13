@@ -1,7 +1,6 @@
 package gui.controllers;
 
 import game.components.card.Card;
-import game.components.card.FoeCard;
 import game.components.card.QuestCard;
 import game.components.card.WeaponCard;
 import gui.other.AlertBox;
@@ -15,7 +14,6 @@ import model.Quest;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
 /**
  * @author James DiNovo
@@ -107,7 +105,7 @@ public class QuestController {
         questView.getStageCardSelectionView().getWeaponsView().setListViewItems(weaponCards);
 
         getQuestView().getStageCardSelectionView().getDoneButton().setOnAction(e -> {
-            List<WeaponCard> wl = new ArrayList<>();
+            ArrayList<Card> wl = new ArrayList<>();
             for (CardView cv : weaponCards) {
                 wl.add((WeaponCard) cv.getCard());
             }

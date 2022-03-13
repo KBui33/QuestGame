@@ -11,10 +11,23 @@ public class QuestPlayer extends Player implements Serializable {
 
     public QuestPlayer(Player player) {
         this.player = player;
+        this.setPlayerId(player.getPlayerId());
     }
 
     @Override
     public int getPlayerId() {
         return player.getPlayerId();
+    }
+
+    public void setPlayerQuestCardUsed(ArrayList<Card> playerQuestCardUsed) {
+        this.playerQuestCardUsed = playerQuestCardUsed;
+    }
+
+    public ArrayList<Card> getPlayerQuestCardUsed() {
+        return playerQuestCardUsed;
+    }
+
+    public int calculateBattlePoints() {
+        return 0;
     }
 }

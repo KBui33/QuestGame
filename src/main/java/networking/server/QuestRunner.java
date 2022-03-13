@@ -2,8 +2,6 @@ package networking.server;
 
 import model.*;
 
-import java.util.ArrayList;
-
 public class QuestRunner extends Runner {
     // private Quest quest; TODO::Implement quest class
     private Server server;
@@ -20,7 +18,7 @@ public class QuestRunner extends Runner {
     @Override
     public void loop() {
         gameState.setCurrentQuest(this.quest);
-        gameState.setGameStatus(GameStatus.IN_QUEST);
+        gameState.setGameStatus(GameStatus.RUNNING_QUEST);
         server.notifyClients(new GameCommand(Command.QUEST_STARTED));
         System.out.println("== Quest runner says: initializing quest");
 
@@ -28,7 +26,7 @@ public class QuestRunner extends Runner {
             // For now assume all players are participating in quest
             // TODO:: Add setup step to get participating players
             for (Player player: gameState.getPlayers()) {
-                quest.addQuestPlayer(player);
+                quest.addQuestPlayer(player.getPlayerId() - 1, player);
             }
 
             int stageIndex = 1;
@@ -40,7 +38,10 @@ public class QuestRunner extends Runner {
                     questStageCommand.setCard(stage.getStageCard());
                     server.notifyClient(playerId - 1, questStageCommand);
 
-                    Thread.sleep(2000);
+                    // Wait for player to take turn
+                    while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
+                        Thread.sleep(1000);
+                    }
                 }
 
                 System.out.println("== Stage " + stageIndex++ + " completed");
