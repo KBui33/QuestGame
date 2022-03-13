@@ -42,12 +42,13 @@ public class QuestRunner extends Runner {
 
                     // Wait for player to take turn
                     while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
-                        Thread.sleep(1000);
+                        Thread.sleep(2000);
                     }
                 }
 
                 // Find stage winners and losers
                 ArrayList<QuestPlayer> stageLosers = quest.computeStageWinners(stage);
+                ArrayList<QuestPlayer> stageWinners = quest.getQuestPlayers();
                 System.out.println("== Stage:\n\tin game -> " + quest.getQuestPlayers().size() + "\n\tlosers -> " + stageLosers.size());
 
                 // Send notification to quest losers
@@ -58,8 +59,13 @@ public class QuestRunner extends Runner {
                     server.notifyClient(stageLoser.getPlayerId() - 1, questStageLostCommand);
                 }
 
-                // Rest cards of winners
-                for(QuestPlayer stageWinner: quest.getQuestPlayers()) {
+                // If no players are left, end quest
+                if(stageWinners.size() <= 0) {
+                    break;
+                }
+
+                // Reset cards of winners
+                for(QuestPlayer stageWinner: stageWinners) {
                     stageWinner.resetQuestCardsUsed();
                 }
 
@@ -68,6 +74,9 @@ public class QuestRunner extends Runner {
             }
 
             shouldStopRunner();
+            System.out.println("== Quest runner says: Quest completed");
+            server.notifyClients(new GameCommand(Command.ENDED_QUEST));
+            gameState.setGameStatus(GameStatus.RUNNING);
 
         } catch (InterruptedException e) {
             e.printStackTrace();

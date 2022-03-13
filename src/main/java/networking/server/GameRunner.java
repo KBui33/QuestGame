@@ -55,7 +55,7 @@ public class GameRunner extends Runner {
 
                     // Wait for player to play
                     while (!gameState.getGameStatus().equals(GameStatus.RUNNING)) {
-                        Thread.sleep(1000);
+                        Thread.sleep(2000);
                     }
 
                     // Notify clients

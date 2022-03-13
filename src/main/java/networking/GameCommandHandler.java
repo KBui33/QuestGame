@@ -105,10 +105,10 @@ public class GameCommandHandler {
                 player = quest.getQuestPlayer(playerId - 1).getPlayer();
                 boolean discardedQuestCards = player.discardCards(stageCards);
                 System.out.println("== Command handler says: Discarding quest cards " + discardedQuestCards);
-                internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
                 returnCommand.setCommand(Command.TOOK_QUEST_TURN);
                 returnCommand.setPlayer(player);
                 returnCommand.setPlayerId(playerId);
+                internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
                 break;
             }
         }
