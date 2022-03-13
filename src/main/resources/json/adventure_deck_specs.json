@@ -36,5 +36,189 @@
       "frequency": 8,
       "battlePoints": 15
     }
+  ],
+  "foes" : [
+    {
+      "title": "Robber Knight",
+      "image": "/foes/quest_foe_1.png",
+      "frequency": 7,
+      "highBp": 0,
+      "lowBp": 15
+    },
+    {
+      "title": "Saxons",
+      "image": "/foes/quest_foe_2.png",
+      "frequency": 5,
+      "highBp": 20,
+      "lowBp": 10
+    },
+    {
+      "title": "Boar",
+      "image": "/foes/quest_foe_3.png",
+      "frequency": 4,
+      "highBp": 15,
+      "lowBp": 5
+    },
+    {
+      "title": "Thieves",
+      "image": "/foes/quest_foe_4.png",
+      "frequency": 8,
+      "highBp": 0,
+      "lowBp": 5
+    },
+    {
+      "title": "Green Knight",
+      "image": "/foes/quest_foe_5.png",
+      "frequency": 2,
+      "highBp": 40,
+      "lowBp": 25
+    },
+    {
+      "title": "Black Knight",
+      "image": "/foes/quest_foe_6.png",
+      "frequency": 3,
+      "highBp": 35,
+      "lowBp": 25
+    },
+    {
+      "title": "Evil Knight",
+      "image": "/foes/quest_foe_7.png",
+      "frequency": 6,
+      "highBp": 30,
+      "lowBp": 20
+    },
+    {
+      "title": "Saxon Knight",
+      "image": "/foes/quest_foe_8.png",
+      "frequency": 8,
+      "highBp": 25,
+      "lowBp": 15
+    },
+    {
+      "title": "Dragon",
+      "image": "/foes/quest_foe_9.png",
+      "frequency": 1,
+      "highBp": 70,
+      "lowBp": 50
+    },
+    {
+      "title": "Giant",
+      "image": "/foes/quest_foe_10.png",
+      "frequency": 2,
+      "highBp": 0,
+      "lowBp": 40
+    },
+    {
+      "title": "Mordred",
+      "image": "/foes/quest_foe_11.png",
+      "frequency": 4,
+      "highBp": 0,
+      "lowBp": 30
+    }
+  ],
+  "test" : [
+    {
+      "title": "Test of Valor",
+      "image": "/tests/quest_test_3.png",
+      "frequency": 2,
+      "description": ""
+    },
+    {
+      "title": "Test of Temptation",
+      "image": "/tests/quest_test_2.png",
+      "frequency": 2,
+      "description": ""
+    },
+    {
+      "title" : "Test of Morgan Le Fey",
+      "image" : "/tests/quest_test_4.png",
+      "frequency": 2,
+      "description" : "Minimum 3 bid"
+    },
+    {
+      "title" : "Test of the Questing Beast",
+      "image" : "/tests/quest_test_1.png",
+      "frequency": 2,
+      "description" : "Minimum 4 bid on the search for the questing beast quest"
+    }
+  ],
+  "allies" : [
+    {
+      "title" : "Sir Gawain",
+      "image": "/specials/quest_ally_1.png",
+      "frequency": 1,
+      "buff": "10",
+      "extra" : "+20 on the test of the green knight quest"
+    },
+    {
+      "title" : "King Pellinore",
+      "image": "/specials/quest_ally_2.png",
+      "frequency": 1,
+      "buff": "10",
+      "extra" : "4 bids on the search for the questing beast quest"
+    },
+    {
+      "title" : "Sir Percival",
+      "image": "/specials/quest_ally_3.png",
+      "frequency": 1,
+      "buff": "5",
+      "extra" : "+20 on the search for the holy grail quest"
+    },
+    {
+      "title" : "Amour",
+      "image": "/specials/quest_ally_4.png",
+      "frequency": 1,
+      "buff": "10",
+      "extra" : "1 bid"
+    },
+    {
+      "title" : "Sir Tristan",
+      "image": "/specials/quest_ally_5.png",
+      "frequency": 1,
+      "buff": "10",
+      "extra" : "+20 when queen iseult is in play"
+    },
+    {
+      "title" : "King Arthur",
+      "image": "/specials/quest_ally_6.png",
+      "frequency": 1,
+      "buff": "10",
+      "extra" : "2 bids"
+    },
+    {
+      "title" : "Queen Guinevere",
+      "image": "/specials/quest_ally_7.png",
+      "frequency": 1,
+      "buff": "3 bids",
+      "extra" : ""
+    },
+    {
+      "title" : "Merlin",
+      "image": "/specials/quest_ally_8.png",
+      "frequency": 1,
+      "buff": "",
+      "extra" : "Player may preview any one stage per quest"
+    },
+    {
+      "title" : "Queen Iseult",
+      "image": "/specials/quest_ally_9.png",
+      "frequency": 1,
+      "buff": "2 Bids",
+      "extra" : "4 Bids when Tristan is in play"
+    },
+    {
+      "title" : "Sir Lancelot",
+      "image": "/specials/quest_ally_10.png",
+      "frequency": 1,
+      "buff": "15",
+      "extra" : "+25 when the quest to defend the queen's honor"
+    },
+    {
+      "title" : "Sir Galahad",
+      "image": "/specials/quest_ally_11.png",
+      "frequency": 1,
+      "buff": "15",
+      "extra" : ""
+    }
   ]
 }

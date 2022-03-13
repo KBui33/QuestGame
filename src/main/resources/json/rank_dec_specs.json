@@ -1,0 +1,22 @@
+{
+  "rank" : [
+    {
+      "title": "Squire",
+      "image": "/ranks/quest_rank_1.png",
+      "battlePoints": "5",
+      "frequency": "4"
+    },
+    {
+      "title": "Knight",
+      "image": "/ranks/quest_rank_2.png",
+      "battlePoints": "10",
+      "frequency": "4"
+    },
+    {
+      "title": "Champion Knight",
+      "image": "/ranks/quest_rank_3.png",
+      "battlePoints": "20",
+      "frequency": "4"
+    }
+  ]
+}

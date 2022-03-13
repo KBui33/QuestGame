@@ -1,7 +1,5 @@
 package game.components.card;
 
-import javafx.scene.image.Image;
-
 public class RankCard extends Card{
 
     private Integer rank;

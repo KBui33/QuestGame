@@ -12,7 +12,8 @@
       "frequency": 1,
       "stages": 4,
       "foe": "Green Knight"
-    }, {"title": "Search for the Questing Beast",
+    },
+    {"title": "Search for the Questing Beast",
       "image": "/quests/quest_quest_5.png",
       "frequency": 1,
       "stages": 4,

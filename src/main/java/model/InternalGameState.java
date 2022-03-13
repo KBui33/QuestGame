@@ -9,26 +9,25 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameState implements Serializable {
+public class InternalGameState implements BaseGameState, Serializable {
     public static final int MAX_PLAYERS = 4;
-    public static enum GameStatus {
-        READY,
-        STARTED
-    }
 
     private ArrayList<Player> players;
     private int numPlayers = 0;
-    private List<Card> discardedCards;
     private Deck storyDeck;
     private Deck adventureDeck;
     private GameStatus gameStatus;
+    private Card currentStoryCard;
+    private Quest currentQuest;
+    private Player currentTurnPlayer;
 
-    public GameState() {
+    public InternalGameState() {
         players = new ArrayList<Player>();
-        discardedCards = new ArrayList<Card>();
         storyDeck = new StoryDeck();
         adventureDeck = new AdventureDeck();
         gameStatus = GameStatus.READY;
+        currentStoryCard = null;
+        currentTurnPlayer = null;
     }
 
     public ArrayList<Player> getPlayers() {
@@ -59,6 +58,10 @@ public class GameState implements Serializable {
         return players.get(playerId - 1);
     }
 
+    public Player setPlayer(int playerId, Player player) {
+        return players.set(playerId, player);
+    }
+
     public void startGame() {
         storyDeck.init();
         adventureDeck.init();
@@ -77,14 +80,58 @@ public class GameState implements Serializable {
     }
 
     public List<Card> getDiscardedCards() {
-        return discardedCards;
+        ArrayList<Card> discardPile = new ArrayList<>();
+        discardPile.addAll(adventureDeck.getDiscarded());
+        discardPile.addAll(storyDeck.getDiscarded());
+        return discardPile;
     }
 
-    public void discardCard(Card card) {
-        discardedCards.add(card);
+    public void discardAdventureCard(Card card) {
+        adventureDeck.discard(card);
+    }
+
+    public void discardStoryCard(Card card) {storyDeck.discard(card);}
+
+    public Card drawAdventureCard() {
+        return adventureDeck.draw();
+    }
+
+    public Card drawStoryCard() {
+        return storyDeck.draw();
     }
 
     public GameStatus getGameStatus() {
         return gameStatus;
+    }
+
+    public void setGameStatus(GameStatus gameStatus) {
+        this.gameStatus = gameStatus;
+    }
+
+    public void setCurrentStoryCard(Card currentStoryCard) {
+        this.currentStoryCard = currentStoryCard;
+    }
+
+    @Override
+    public Card getCurrentStoryCard() {
+        return currentStoryCard;
+    }
+
+    public void setCurrentTurnPlayer(Player currentTurnPlayer) {
+        this.currentTurnPlayer = currentTurnPlayer;
+    }
+
+    @Override
+    public Player getCurrentTurnPlayer() {
+        return currentTurnPlayer;
+    }
+
+    public void setCurrentQuest(Quest currentQuest) {
+        this.currentQuest = currentQuest;
+    }
+
+    @Override
+    public Quest getCurrentQuest() {
+        return currentQuest;
     }
 }

@@ -1,6 +1,5 @@
 package game.components.card;
 
-import javafx.scene.image.Image;
 
 public class QuestCard extends Card{
 
@@ -11,5 +10,13 @@ public class QuestCard extends Card{
         super(title, cardImg);
         this.stages = stages;
         this.foe = foe;
+    }
+
+    public Integer getStages() {
+        return stages;
+    }
+
+    public String getFoe() {
+        return foe;
     }
 }

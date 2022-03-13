@@ -1,11 +1,11 @@
 package game.components.card;
 
-import javafx.scene.image.Image;
-
 public class AllyCard extends Card{
-    private String description;
-    public AllyCard( String title, String cardImg, String desc) {
+    private String extra;
+    private String buff;
+    public AllyCard(String title, String cardImg, String extra, String buff) {
         super(title, cardImg);
-        this.description = desc;
+        this.extra = extra;
+        this.buff = buff;
     }
 }
