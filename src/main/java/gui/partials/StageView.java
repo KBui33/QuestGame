@@ -1,22 +1,33 @@
 package gui.partials;
 
-import javafx.scene.layout.AnchorPane;
+import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
+import javafx.scene.layout.BorderPane;
 import model.FoeStage;
 import model.Stage;
 
-import java.util.ArrayList;
+public class StageView extends BorderPane {
 
-public class StageView extends AnchorPane {
-
-    Stage stage;
-    CardView stageCard;
-    ArrayList<CardView> weapons;
+    private Stage stage;
+    private CardView stageCard;
+    private DeckView weaponsView;
+    private ObservableList<CardView> weapons;
 
     public StageView() {
-        stageCard = new CardView();
         stageCard.setSize(200);
+        stageCard.getButtonBox().setVisible(true);
+        stageCard.getPlayButton().setVisible(false);
+        stageCard.getDiscardButton().setText("Remove");
+        setAlignment(stageCard, Pos.CENTER);
+        this.setTop(stageCard);
 
+        weaponsView = new DeckView();
 
+    }
+
+    public StageView(Stage s) {
+        this();
+        setStage(s);
     }
 
     public void setStage(Stage s) {
@@ -31,7 +42,14 @@ public class StageView extends AnchorPane {
         }
     }
 
+    public void stageHidden(boolean hidden) {
+        // hide card and info
+        weaponsView.setVisible(hidden);
+        stageCard.setVisible(hidden);
+    }
+
     public void clearStage() {
+        this.weapons.clear();
 
     }
 
