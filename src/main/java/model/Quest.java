@@ -15,10 +15,12 @@ public class Quest {
     private QuestCard quest; //Current sponsored quest
     private List<Stage> stages; // Total amount of stages
     private List<QuestPlayer> questPlayers; //Players that participate in the quest
+    // handles the current quest state
+    // int state
 
-    public Quest(QuestCard quest, List<QuestPlayer> questPlayers) {
+    public Quest(QuestCard quest) {
         this.stages = new ArrayList<>();
-        this.questPlayers = questPlayers;
+        this.questPlayers = new ArrayList<>();
         this.quest = quest;
     }
 
@@ -43,24 +45,40 @@ public class Quest {
         }
     }
 
-    public void startQuest(){
-        /*
-        * - Sponsor hands one card to players in quest(from adventure deck)
-        * - Players who participate must place card(s) against the quest card(s)
-        *  for each stage
-        *        flip the card(s)
-        *        if FOE (and weapons)
-        *           for each player participating
-        *                flip their card(s)
-        *                if player card(s) >= stage card(s)
-        *                   - player proceeds to next stage
-        *                   - draw one card (from adventure)
-        *                else
-        *                   - player cannot go to next stage
-        *       else TEST
-        *            *** Impl later ***
-        *
-        * - Discard all cards in stage and sponsor gains new cards
-        * */
-    }
+    // get the current and next stage
+
+//    public void startQuest(InternalGameState internalGameState){
+//        /*
+//        * - Sponsor hands one card to players in quest(from adventure deck)
+//        *   for each player participating
+//        *        hand out one card to their hand
+//        *
+//        * - Players who participate must place card(s) against the quest card(s)
+//        *
+//        *  wait for players
+//        *
+//        *  for each stage
+//        *        flip the card(s)
+//        *        if FOE (and weapons)
+//        *           for each player participating
+//        *                flip their card(s)
+//        *                if player card(s) >= stage card(s)
+//        *                   - player proceeds to next stage
+//        *                   - draw one card (from adventure)
+//        *                else
+//        *                   - player cannot go to next stage
+//        *       else TEST
+//        *            *** Impl later ***
+//        *
+//        * - Discard all cards in quest
+//        * */
+//
+//
+//        questPlayers.forEach(
+//                p ->{
+//
+//                });
+//    }
+
+    public boolean addPlayer(Player player){return questPlayers.add((QuestPlayer) player);}
 }
