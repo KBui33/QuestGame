@@ -35,6 +35,12 @@ public class CardView extends StackPane {
         this.imageView.setImage(new Image(String.valueOf(getClass().getResource(this.card.getCardImg()))));
     }
 
+    public void setSize(double h) {
+        this.imageView.setFitHeight(h);
+        this.setHeight(h);
+        this.setWidth(h / 3);
+    }
+
     // will take Card object once cards are implemented
     public CardView(Card card) {
         this();

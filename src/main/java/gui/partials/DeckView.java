@@ -1,6 +1,5 @@
 package gui.partials;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.geometry.Orientation;
@@ -14,16 +13,13 @@ import javafx.scene.control.ListView;
  */
 public class DeckView {
 
-    // cards will be card objects once cards are created
     protected ListView<CardView> listView;
-    protected ObservableList<CardView> list;
     protected DeckCellFactory cardCellFactory;
 
     public DeckView() {
         listView = new ListView<>();
         listView.setOrientation(Orientation.HORIZONTAL);
         listView.setMaxHeight(325);
-        list = FXCollections.observableArrayList();
 
         // Disable default list item selection behaviour
         listView.setOnMouseClicked(Event::consume);
@@ -42,17 +38,16 @@ public class DeckView {
         setListViewItems(input);
     }
 
+    public void setSize(int height) {
+        listView.setMaxHeight(height);
+    }
+
     public void setListViewItems (ObservableList<CardView> input) {
-        this.list = input;
-        listView.setItems(this.list);
+        listView.setItems(input);
     }
 
     public ListView<CardView> getListView() {
         return listView;
-    }
-
-    public ObservableList<CardView> getList() {
-        return list;
     }
 
     public void setVisible(Boolean b) {

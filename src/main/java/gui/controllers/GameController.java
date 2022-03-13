@@ -1,21 +1,24 @@
 package gui.controllers;
 
-import game.components.card.AllyCard;
-import game.components.card.Card;
+import game.components.card.*;
+import gui.other.AlertBox;
 import gui.panes.GamePane;
 import gui.partials.CardView;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import model.Command;
 import model.ExternalGameState;
 import model.GameCommand;
 import model.Player;
+import model.Quest;
 import networking.client.Client;
 import networking.client.ClientEventListener;
 
 import java.io.IOException;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.List;
 
 /**
  * @author James DiNovo
@@ -29,19 +32,22 @@ public class GameController {
     private Player player;
     private ObservableList<CardView> myHand;
     private ObservableList<CardView> discarded;
+    private GamePane view;
+    private QuestController questController;
 
     public GameController (GamePane view) {
         myHand = FXCollections.observableArrayList();
-        view.getMyHand().setListViewItems(myHand);
-
         discarded = FXCollections.observableArrayList();
-        view.getDiscardedCards().setListViewItems(discarded);
+        this.view = view;
+
+        // for reference inside handlers
+        GameController gc = this;
 
         try {
             client = Client.getInstance();
 
             // Fetch corresponding player
-            GameCommand getAttachedPlayerCommand = new GameCommand(GameCommand.Command.GET_ATTACHED_PLAYER);
+            GameCommand getAttachedPlayerCommand = new GameCommand(Command.GET_ATTACHED_PLAYER);
             getAttachedPlayerCommand.setPlayerId(client.getPlayerId());
             GameCommand returnedAttachedPlayerCommand = client.sendCommand(getAttachedPlayerCommand);
             player = (Player) returnedAttachedPlayerCommand.getPlayer();
@@ -52,11 +58,36 @@ public class GameController {
                 @Override
                 public void update(Client.ClientEvent eventType, Object o) {
                     GameCommand receivedCommand = (GameCommand) o;
+                    Command command = receivedCommand.getCommand();
                     System.out.println("== Game Controller command update says: " + receivedCommand);
-                    if(receivedCommand.getCommand().equals(GameCommand.Command.PLAYER_TURN) && receivedCommand.getPlayerId() == client.getPlayerId()) { // Take turn if it's player's turn
+                    if(command.equals(Command.PLAYER_TURN) && receivedCommand.getPlayerId() == client.getPlayerId()) { // Take turn if it's player's turn
                         System.out.println("== It's my turn. Player: " + receivedCommand.getPlayerId());
-                        view.getCurrentStateText().setText("Take your turn!");
-                        disableView(view, false);
+                        view.getHud().getCurrentStateText().setText("Take your turn!");
+                        disableView(false);
+                    } else if(command.equals(Command.SHOULD_SPONSOR_QUEST)) { // Prompt player to sponsor quest
+                        System.out.println("== It's my turn to decide to sponsor the quest");
+                        Card questCard = receivedCommand.getCard();
+                        Platform.runLater(() -> {
+                            view.getHud().getCurrentStateText().setText("Quest: " + questCard.getTitle() + "\nDo you want to sponsor this quest?");
+                            System.out.println(questCard.getCardImg());
+                            handleDrawnCard(questCard);
+                            disableView(false);
+                        });
+                    } else if(command.equals(Command.PLAYER_QUEST_TURN)) { // Handle taking quest turn
+                        System.out.println("== It's my turn to take turn for quest stage");
+                        Card questStageCard = receivedCommand.getCard();
+                        view.getHud().getCurrentStateText().setText("Quest Stage: " + (questStageCard instanceof FoeCard ? "Foe" : "Test"));
+                        System.out.println("== Quest Card: " + questStageCard.getTitle());
+
+                        // see line ~110
+                        Platform.runLater(() -> {
+                            // if quest controller is null you are sponsor i guess? not really
+                            if (questController != null) {
+                                questController.pickCards(gc);
+                                disableView(false);
+                            }
+                        });
+
                     }
                 }
             });
@@ -66,11 +97,25 @@ public class GameController {
                 @Override
                 public void update(Client.ClientEvent eventType, Object o) {
                     ExternalGameState externalGameState = (ExternalGameState) o;
-                    discarded.clear();
-                    for (Card card : externalGameState.getDiscardedCards()) {
-                        discarded.add(new CardView(card));
+                    Platform.runLater(() -> {
+                        discarded.clear();
+                        for (Card card : externalGameState.getDiscardedCards()) {
+                            discarded.add(new CardView(card));
+                        }
+                    });
+                    Card currentStoryCard = externalGameState.getCurrentStoryCard();
+                    if(currentStoryCard != null) // Display this on GUI
+                        System.out.println("Game Controller state update says: Current story " + currentStoryCard.getClass() + " -> " +  currentStoryCard.getTitle());
+
+                    // needs quest to initialize quest controller
+                    Quest q = externalGameState.getCurrentQuest();
+                    if (q != null && questController == null) {
+                        Platform.runLater(() -> {
+                            questController = new QuestController(q);
+                            view.getMainPane().clear();
+                            view.getMainPane().add(questController.getQuestView());
+                        });
                     }
-                    System.out.println("== Game Controller game state update says: " + externalGameState);
                 }
             });
 
@@ -78,160 +123,232 @@ public class GameController {
             err.printStackTrace();
         }
 
-        setView(view);
+        setView();
     }
 
-    public void setView(GamePane view) {
+    public void setView() {
+
+        // link lists to listviews
+        view.getHud().getMyHand().setListViewItems(myHand);
+        view.getHud().getDiscardedCards().setListViewItems(discarded);
 
         // Add player cards to gui cards
         for (Card card : player.getCards()) {
             addCardToHand(myHand, card);
         }
 
-        disableView(view, true);
-        view.getCurrentStateText().setText("Wait for your turn!");
+        disableView(true);
+        view.getHud().getCurrentStateText().setText("Wait for your turn!");
 
         // a lot of this is just for laying out gui will be removed later
-        view.getShieldsView().setShields(1);
+        view.getHud().getShieldsView().setShields(1);
 
 
         // set action for draw card button
-        view.getDrawCardButton().setOnAction(e -> {
-            // draw a card from server
-            // hardcoded for testing
-            Random r = new Random();
-            Card drawnCard = new AllyCard(
-                    "card",
-                    "/specials/quest_ally_" + (r.nextInt(10) + 1) + ".png",
-                    "", "");
+//        view.getDrawCardButton().setOnAction(e -> {
+//            // draw a card from server
+//            // hardcoded for testing
+//            Random r = new Random();
+//            Card drawnCard = new AllyCard(
+//                    "card",
+//                    "/specials/quest_ally_" + (r.nextInt(10) + 1) + ".png",
+//                    "", "");
+//
+//
+//            // once hand has more than 12 cards every next card drawn must be either played or discarded
+//            if (myHand.size() < 12) {
+//                addCardToHand(myHand, drawnCard);
+//            } else {
+//                // display card with option to play it or discard it
+//                view.getDrawnCard().setCard(drawnCard);
+//                view.addToCenterScreen(view.getDrawnCard(), Pos.CENTER, 100);
+//                view.getDrawCardButton().setDisable(true);
+//            }
+//        });
 
-
-            // once hand has more than 12 cards every next card drawn must be either played or discarded
-            if (myHand.size() < 12) {
-                addCardToHand(myHand, drawnCard);
-            } else {
-                // display card with option to play it or discard it
-                view.getDrawnCard().setCard(drawnCard);
-                view.setCenter(view.getDrawnCard());
-                view.getDrawCardButton().setDisable(true);
-            }
-        });
-
-        view.getDrawnCard().getPlayButton().setOnAction(e -> {
-            System.out.println("played card");
-            view.setCenter(null);
-            view.getDrawCardButton().setDisable(false);
-        });
-
-        view.getDrawnCard().getDiscardButton().setOnAction(e -> {
-            System.out.println("discarded card");
-            view.setCenter(null);
-            view.getDrawCardButton().setDisable(false);
-
-            // Send discard command
-            // Send discard card command
-            GameCommand discardCardCommand = new GameCommand(GameCommand.Command.DISCARD_CARD);
-            discardCardCommand.setPlayerId(client.getPlayerId());
-            discardCardCommand.setCard(view.getDrawnCard().getCard());
-            client.sendCommand(discardCardCommand);
-
-            // temp behaviour for testing/demo
-            //discarded.add(new CardView(view.getDrawnCard().getCard()));
-        });
-
-        view.getEndTurnButton().setOnAction(e -> {
+        view.getHud().getEndTurnButton().setOnAction(e -> {
             System.out.println("Turn ended");
             // Send end turn command
-            GameCommand endTurnCommand = new GameCommand(GameCommand.Command.END_TURN);
+            GameCommand endTurnCommand = new GameCommand(Command.END_TURN);
             endTurnCommand.setPlayerId(client.getPlayerId());
             endTurnCommand.setPlayer(player);
             client.sendCommand(endTurnCommand);
 
-            disableView(view, true);
-            view.getCurrentStateText().setText("Wait for your turn");
-            // just for demonstration
-            //Timer t = new Timer();
-            //TimerTask tt = new TimerTask() {
-                //@Override
-                //public void run() {
-                    //disableView(view, false);
-                    // view.getCurrentStateText().setText("Your turn!");
-                //}
-            //};
-
-           // t.schedule(tt, 5000);
+            disableView(true);
+            view.getHud().getCurrentStateText().setText("Wait for your turn");
 
         });
 
-        view.getShowHandButton().setOnAction(e -> {
+        view.getHud().getShowHandButton().setOnAction(e -> {
             System.out.println("showing hand");
             // show and hide hand
-            clearCardViewButtonsHighlight(view);
-            if (view.getBottom() != null && view.getBottom().equals(view.getMyHand().getListView())) {
-                view.setBottom(null);
+            clearCardViewButtonsHighlight();
+            if (view.getHud().getBottom() != null && view.getHud().getBottom().equals(view.getHud().getMyHand().getListView())) {
+                view.getHud().setBottom(null);
             } else {
-                view.setBottom(view.getMyHand().getListView());
-                view.getShowHandButton().getStyleClass().add("caution");
+                view.getHud().setBottom(view.getHud().getMyHand().getListView());
+                view.getHud().getShowHandButton().getStyleClass().add("caution");
             }
         });
 
-        view.getShowDiscardedButton().setOnAction(e -> {
+        view.getHud().getShowDiscardedButton().setOnAction(e -> {
             System.out.println("showing discarded");
             // show and hide discarded
-            clearCardViewButtonsHighlight(view);
-            if (view.getBottom() != null && view.getBottom().equals(view.getDiscardedCards().getListView())) {
-                view.setBottom(null);
+            clearCardViewButtonsHighlight();
+            if (view.getHud().getBottom() != null && view.getHud().getBottom().equals(view.getHud().getDiscardedCards().getListView())) {
+                view.getHud().setBottom(null);
             } else {
-                view.setBottom(view.getDiscardedCards().getListView());
-                view.getShowDiscardedButton().getStyleClass().add("caution");
+                view.getHud().setBottom(view.getHud().getDiscardedCards().getListView());
+                view.getHud().getShowDiscardedButton().getStyleClass().add("caution");
             }
         });
     }
 
-    private void disableView(GamePane view, Boolean disable) {
-        if (disable) {
-            view.setBottom(null);
-            view.getDeckButtons().setVisible(false);
-            view.getCardButtons().setVisible(false);
-            clearCardViewButtonsHighlight(view);
-        } else {
-            view.getDeckButtons().setVisible(true);
-            view.getCardButtons().setVisible(true);
+    public ObservableList<CardView> getDiscardedList() {
+        return discarded;
+    }
+
+    public ObservableList<CardView> getMyHandList() {
+        return myHand;
+    }
+
+    public void setMyHandList(ObservableList<CardView> newHand) {
+        this.myHand = newHand;
+    }
+
+    public GamePane getView() {
+        return view;
+    }
+
+    public void playerStageCardsPicked(List<WeaponCard> weaponCards) {
+        disableView(true);
+        // send cards to server
+    }
+
+    private void handleDrawnCard(Card card) {
+        CardView drawnCard = new CardView();
+        drawnCard.getButtonBox().setVisible(true);
+        view.getMainPane().add(drawnCard, Pos.CENTER, true);
+        drawnCard.setCard(card);
+
+        // if it is a quest card offer player option to sponsor or decline card
+        if (drawnCard.getCard() instanceof QuestCard) {
+            drawnCard.getPlayButton().setText("Sponsor");
+            drawnCard.getDiscardButton().setText("Decline");
+
+            drawnCard.getPlayButton().setOnAction(e -> {
+                System.out.println("played card");
+                if (myHand.filtered(c -> c.getCard() instanceof FoeCard || c.getCard() instanceof TestCard).size()
+                        < ((QuestCard) drawnCard.getCard()).getStages()) {
+                    // notify user they dont have enough cards to sponsor
+                    AlertBox.alert("Insufficient cards in hand. This Quest requires at least "
+                            + ((QuestCard) drawnCard.getCard()).getStages() +
+                            " Foe or Test cards to sponsor.", Alert.AlertType.WARNING, e2 -> {
+                        drawnCard.getDiscardButton().fire();
+                    });
+                } else {
+                    view.getMainPane().remove(drawnCard);
+                    questSetup((QuestCard) drawnCard.getCard());
+                }
+            });
+
+            drawnCard.getDiscardButton().setOnAction(e -> {
+                System.out.println("discarded card");
+                // send decline to server
+                GameCommand declineSponsorQuestCommand = new GameCommand(Command.WILL_NOT_SPONSOR_QUEST);
+                declineSponsorQuestCommand.setPlayerId(client.getPlayerId());
+                declineSponsorQuestCommand.setPlayer(player);
+                GameCommand declinedSponsorQuestCommand =  client.sendCommand(declineSponsorQuestCommand);
+                player = declinedSponsorQuestCommand.getPlayer();
+
+                view.getMainPane().remove(drawnCard);
+            });
         }
     }
 
-    private void clearCardViewButtonsHighlight(GamePane view) {
-        view.getShowDiscardedButton().getStyleClass().remove("caution");
-        view.getShowHandButton().getStyleClass().remove("caution");
+    private void discardCard(CardView card) {
+        // Send discard command
+        // Send discard card command
+        GameCommand discardCardCommand = new GameCommand(Command.DISCARD_CARD);
+        discardCardCommand.setPlayerId(client.getPlayerId());
+        discardCardCommand.setPlayer(player);
+        discardCardCommand.setCard(card.getCard());
+        GameCommand discardedCardCommand =  client.sendCommand(discardCardCommand);
+        player = discardedCardCommand.getPlayer();
+
+        myHand.remove(card);
+    }
+
+    private void disableView(Boolean disable) {
+        if (disable) {
+            view.getHud().getCardButtons().setVisible(false);
+            clearCardViewButtonsHighlight();
+        } else {
+            view.getHud().getCardButtons().setVisible(true);
+        }
+        disableDecks(disable);
+        hideDecks();
+    }
+
+    private void disableDecks(Boolean disable) {
+        if (disable) {
+            view.getHud().getDeckButtons().setVisible(false);
+        } else {
+            view.getHud().getDeckButtons().setVisible(true);
+        }
+    }
+
+    public void hideDecks() {
+        view.getHud().setBottom(null);
+        clearCardViewButtonsHighlight();
+    }
+
+    public void showHand() {
+        clearCardViewButtonsHighlight();
+        view.getHud().setBottom(view.getHud().getMyHand().getListView());
+        view.getHud().getShowHandButton().getStyleClass().add("caution");
+    }
+
+    private void clearCardViewButtonsHighlight() {
+        view.getHud().getShowDiscardedButton().getStyleClass().remove("caution");
+        view.getHud().getShowHandButton().getStyleClass().remove("caution");
     }
 
     private void addCardToHand(ObservableList<CardView> hand, Card card) {
         CardView newcard = new CardView(card);
-        setCardViewButtonActions(hand, newcard);
+        setCardViewButtonActions(newcard);
         hand.add(0, newcard);
     }
 
-    private void setCardViewButtonActions(ObservableList<CardView> deckView, CardView cardView) {
+    private void questSetup(QuestCard questCard) {
+        view.getHud().getEndTurnButton().setVisible(false);
+        QuestSetupController qsc = new QuestSetupController(this, questCard);
+        view.getMainPane().add(qsc.getView(), Pos.CENTER, false);
+    }
+
+    public void questSetupComplete(Quest quest) {
+        System.out.println("== Quest setup completed");
+        // send sponsor to server
+        GameCommand questSetupCommand = new GameCommand(Command.WILL_SPONSOR_QUEST);
+        questSetupCommand.setPlayerId(client.getPlayerId());
+        questSetupCommand.setPlayer(player);
+        questSetupCommand.setQuest(quest);
+        client.sendCommand(questSetupCommand);
+    }
+
+    public void setCardViewButtonActions(CardView cardView) {
         cardView.getDiscardButton().setOnAction(e -> {
             // send delete signal to server and await response
             System.out.println("Discarding card");
 
             // Send discard card command
-            GameCommand discardCardCommand = new GameCommand(GameCommand.Command.DISCARD_CARD);
-            discardCardCommand.setPlayerId(client.getPlayerId());
-            discardCardCommand.setPlayer(player);
-            discardCardCommand.setCard(cardView.getCard());
-            GameCommand discardedCardCommand =  client.sendCommand(discardCardCommand);
-            player = discardedCardCommand.getPlayer();
-            deckView.remove(cardView);
+            discardCard(cardView);
 
-            // TEMPORARY BEHAVIOUR FOR LAYOUT TESTING
-            //discarded.add(new CardView(cardView.getCard()));
         });
 
-        cardView.getPlayButton().setOnAction(e -> {
-            System.out.println("Play");
-        });
+        cardView.getPlayButton().setVisible(false);
+        cardView.getPlayButton().setText("Play");
+        cardView.getDiscardButton().setText("Discard");
 
         cardView.setOnMouseEntered(e -> {
             cardView.getButtonBox().setVisible(true);
@@ -241,4 +358,6 @@ public class GameController {
             cardView.getButtonBox().setVisible(false);
         });
     }
+
+
 }

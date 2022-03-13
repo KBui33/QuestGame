@@ -1,9 +1,7 @@
 package networking.server;
 // CODE FROM::https://tianpan.co/blog/2015-01-13-understanding-reactor-pattern-for-highly-scalable-i-o-bound-web-server
 
-import model.ExternalGameState;
-import model.GameCommand;
-import model.GameState;
+import model.*;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -43,13 +41,13 @@ public class Server implements Runnable {
     private final ArrayList<ObjectOutputStream> _broadcastClientOutputStreams;
     private final ArrayList<ObjectOutputStream> _gameStateUpdateOutputStreams;
 
-    private GameState gameState;
+    private InternalGameState internalGameState;
     private ExternalGameState externalGameState;
 
     Server() throws IOException {
         // Initialize game state
-        gameState = new GameState();
-        externalGameState = new ExternalGameState(gameState);
+        internalGameState = new InternalGameState();
+        externalGameState = new ExternalGameState(internalGameState);
 
         _serverBroadcastSocket = new ServerSocket(SERVER_BROADCAST_PORT);
         _serverGameStateUpdateSocket = new ServerSocket(SERVER_GAME_STATE_UPDATE_PORT);
@@ -77,8 +75,8 @@ public class Server implements Runnable {
         return instance;
     }
 
-    public GameState getGameState() {
-        return gameState;
+    public InternalGameState getGameState() {
+        return internalGameState;
     }
 
     public ExternalGameState getExternalGameState() {
@@ -117,7 +115,7 @@ public class Server implements Runnable {
                         return;
                     }
 
-                    if (gameState.getGameStatus().equals(GameState.GameStatus.STARTED)) {
+                    if (internalGameState.getGameStatus().equals(GameStatus.STARTED)) {
                         System.out.println("== Server says:  Game has already started. No longer accepting players");
                         return;
                     }
@@ -129,7 +127,7 @@ public class Server implements Runnable {
                     registerClientForGameStateUpdates(gameStateUpdateSocket);
                     if (socketChannel != null) new Handler(Server.this, _selector, socketChannel);
                     lastClientIndex++;
-                    notifyClients(new GameCommand(GameCommand.Command.JOINED));
+                    notifyClients(new GameCommand(Command.JOINED));
                     System.out.println("== Server Says: New client connected");
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
@@ -161,18 +159,28 @@ public class Server implements Runnable {
         _broadcastClients.remove(index);
     }
 
+    public synchronized  void notifyClient(int clientIndex, GameCommand command) {
+        try {
+            ObjectOutputStream oos = _broadcastClientOutputStreams.get(clientIndex);
+            oos.writeObject(command);
+            oos.reset();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public synchronized void notifyClients(GameCommand command) {
         System.out.println("== Server notifier says: " + command);
         command.setJoinedPlayers(lastClientIndex);
         try {
             for (ObjectOutputStream oos : _gameStateUpdateOutputStreams) {
                 oos.writeObject(externalGameState);
-                oos.flush();
+                oos.reset();
             }
 
             for (ObjectOutputStream oos : _broadcastClientOutputStreams) {
                 oos.writeObject(command);
-                oos.flush();
+                oos.reset();
             }
         } catch (IOException e) {
             e.printStackTrace();
