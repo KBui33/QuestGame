@@ -68,7 +68,7 @@ public class GameController {
                             disableView(false);
                             view.getHud().getEndTurnButton().setVisible(false);
                         });
-                    } else if(command.equals(Command.TAKE_QUEST_TURN)) { // Handle taking quest turn
+                    } else if(command.equals(Command.PLAYER_QUEST_TURN)) { // Handle taking quest turn
                         System.out.println("== It's my turn to take turn for quest stage");
                         Card questStageCard = receivedCommand.getCard();
                         view.getHud().getCurrentStateText().setText("Quest Stage: " + questStageCard.getTitle());

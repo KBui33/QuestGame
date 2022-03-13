@@ -21,4 +21,6 @@ public interface BaseGameState {
     public Card getCurrentStoryCard();
 
     public Player getCurrentTurnPlayer();
+
+    public Quest getCurrentQuest();
 }

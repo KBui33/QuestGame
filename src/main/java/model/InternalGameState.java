@@ -18,6 +18,7 @@ public class InternalGameState implements BaseGameState, Serializable {
     private Deck adventureDeck;
     private GameStatus gameStatus;
     private Card currentStoryCard;
+    private Quest currentQuest;
     private Player currentTurnPlayer;
 
     public InternalGameState() {
@@ -123,5 +124,14 @@ public class InternalGameState implements BaseGameState, Serializable {
     @Override
     public Player getCurrentTurnPlayer() {
         return currentTurnPlayer;
+    }
+
+    public void setCurrentQuest(Quest currentQuest) {
+        this.currentQuest = currentQuest;
+    }
+
+    @Override
+    public Quest getCurrentQuest() {
+        return currentQuest;
     }
 }
