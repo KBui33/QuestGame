@@ -1,6 +1,7 @@
 package model;
 
 import game.components.card.Card;
+import game.components.card.WeaponCard;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -28,6 +29,18 @@ public class QuestPlayer extends Player implements Serializable {
     }
 
     public int calculateBattlePoints() {
-        return 0;
+        int battlePoints = player.getShields(); // Minimum battle points
+
+        for(Card questCardUsed: playerQuestCardUsed) { // Sum up battle points based on quest cards used
+            if(questCardUsed instanceof WeaponCard) {
+                battlePoints += ((WeaponCard) questCardUsed).getBattlePoints();
+            }
+        }
+
+        return battlePoints;
+    }
+
+    public void resetQuestCardsUsed() {
+        playerQuestCardUsed.clear();
     }
 }
