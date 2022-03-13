@@ -9,6 +9,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
+/**
+ * @author James DiNovo
+ *
+ * View for sponsors to set up quest
+ */
 public class QuestSetupView extends BorderPane {
 
     private CardView chosenQuestCard;

@@ -45,90 +45,86 @@ public class QuestSetupController {
         ObservableList<CardView> foesOrTests = parent.getMyHandList().filtered(c -> c.getCard() instanceof FoeCard || c.getCard() instanceof TestCard);
         ObservableList<CardView> weapons = parent.getMyHandList().filtered(c -> c.getCard() instanceof WeaponCard);
 
-        // check player has enough cards
-        if (foesOrTests.size() < questCard.getStages()) {
-            AlertBox.alert("INSUFFICIENT CARDS IN HAND", Alert.AlertType.WARNING, e -> {
-                cleanUpGui();
-            });
-        } else {
 
-            ObservableList<CardView> addedWeapons = FXCollections.observableArrayList();
-            for (CardView f : foesOrTests) {
-                f.getPlayButton().setVisible(true);
-                f.getDiscardButton().setVisible(false);
-                f.getPlayButton().setOnAction(e1 -> {
-                    // once foe is chosen remove it from hand
-                    parent.getMyHandList().remove(f);
-                    // add it to quest display
-                    this.addStage(f.getCard(), e2 -> {
-                        this.clearStage();
-                        parent.getMyHandList().add(f);
-                        parent.getMyHandList().addAll(addedWeapons);
-                        addedWeapons.clear();
-                        parent.getView().getHud().getMyHand().setListViewItems(foesOrTests);
-                        parent.showHand();
-                    });
-
-                    if (f.getCard() instanceof FoeCard) {
-                        parent.getView().getHud().getMyHand().setListViewItems(weapons);
-                    }
-                });
-            }
-
-            for (CardView w : weapons) {
-                w.getPlayButton().setVisible(true);
-                w.getPlayButton().setText("Add Weapon");
-                w.getDiscardButton().setVisible(false);
-                w.getPlayButton().setOnAction(e1 -> {
-                    if (canAddWeapon(w.getCard())) {
-                        // once foe is chosen remove it from hand
-                        parent.getMyHandList().remove(w);
-                        addedWeapons.add(w);
-                        parent.hideDecks();
-                        // add it to stage
-                        CardView weap = addWeapon((WeaponCard) w.getCard());
-                        weap.getDiscardButton().setOnAction(e2 -> {
-                            removeWeapon(weap);
-                            parent.getMyHandList().add(w);
-                            addedWeapons.remove(w);
-                            parent.showHand();
-                        });
-                    } else {
-                        AlertBox.alert("WEAPON OF TYPE ALREADY ADDED TO THIS FOE", Alert.AlertType.WARNING);
-                    }
-
-                });
-            }
-            parent.getView().getHud().getMyHand().setListViewItems(foesOrTests);
-            parent.showHand();
-
-            questSetupView.getNextStageButton().setOnAction(e -> {
-                if (currentStage.getStageCard().getCard() instanceof FoeCard) {
-                    List<WeaponCard> wl = new ArrayList<>();
-                    for (CardView cv : weaponCards) {
-                        wl.add((WeaponCard) cv.getCard());
-                    }
-                    quest.addStage(new FoeStage((FoeCard) currentStage.getStageCard().getCard(), wl));
-                }
-                addedWeapons.clear();
-                weaponNames.clear();
-                weaponCards.clear();
-
-                clearStage();
-
-                if (quest.currentStageCount() == questCard.getStages()) {
-                    // quest set up complete
-                    parent.questSetupComplete(quest);
-                    cleanUpGui();
-                } else {
-                    this.questSetupView.getPromptText().setText(QuestSetupView.STAGE_PROMPT + (quest.currentStageCount() + 1));
-
+        ObservableList<CardView> addedWeapons = FXCollections.observableArrayList();
+        for (CardView f : foesOrTests) {
+            f.getPlayButton().setVisible(true);
+            f.getDiscardButton().setVisible(false);
+            f.getPlayButton().setOnAction(e1 -> {
+                // once foe is chosen remove it from hand
+                parent.getMyHandList().remove(f);
+                // add it to quest display
+                this.addStage(f.getCard(), e2 -> {
+                    this.clearStage();
+                    parent.getMyHandList().add(f);
+                    parent.getMyHandList().addAll(addedWeapons);
+                    addedWeapons.clear();
                     parent.getView().getHud().getMyHand().setListViewItems(foesOrTests);
                     parent.showHand();
+                });
+
+                if (f.getCard() instanceof FoeCard) {
+                    parent.getView().getHud().getMyHand().setListViewItems(weapons);
+                }
+            });
+        }
+
+        for (CardView w : weapons) {
+            w.getPlayButton().setVisible(true);
+            w.getPlayButton().setText("Add Weapon");
+            w.getDiscardButton().setVisible(false);
+            w.getPlayButton().setOnAction(e1 -> {
+                if (canAddWeapon(w.getCard())) {
+                    // once foe is chosen remove it from hand
+                    parent.getMyHandList().remove(w);
+                    addedWeapons.add(w);
+                    parent.hideDecks();
+                    // add it to stage
+                    CardView weap = addWeapon((WeaponCard) w.getCard());
+                    weap.getDiscardButton().setOnAction(e2 -> {
+                        removeWeapon(weap);
+                        parent.getMyHandList().add(w);
+                        addedWeapons.remove(w);
+                        parent.showHand();
+                    });
+                } else {
+                    AlertBox.alert(w.getCard().getTitle() + " has already been added to this foe.", Alert.AlertType.WARNING);
                 }
 
             });
         }
+        parent.getView().getHud().getMyHand().setListViewItems(foesOrTests);
+        parent.showHand();
+
+        questSetupView.getNextStageButton().setOnAction(e -> {
+            if (currentStage.getStageCard().getCard() instanceof FoeCard) {
+                List<WeaponCard> wl = new ArrayList<>();
+                for (CardView cv : weaponCards) {
+                    wl.add((WeaponCard) cv.getCard());
+                }
+                quest.addStage(new FoeStage((FoeCard) currentStage.getStageCard().getCard(), wl));
+            }
+            addedWeapons.clear();
+            weaponNames.clear();
+            weaponCards.clear();
+
+            clearStage();
+
+            if (quest.currentStageCount() == questCard.getStages()) {
+                // quest set up complete
+                parent.questSetupComplete(quest);
+                cleanUpGui();
+            } else {
+                if (questCard.getStages() - quest.currentStageCount() <= 1) {
+                    questSetupView.getNextStageButton().setText("Finish");
+                }
+                this.questSetupView.getPromptText().setText(QuestSetupView.STAGE_PROMPT + (quest.currentStageCount() + 1));
+
+                parent.getView().getHud().getMyHand().setListViewItems(foesOrTests);
+                parent.showHand();
+            }
+
+        });
     }
 
     private void cleanUpGui() {
@@ -146,9 +142,9 @@ public class QuestSetupController {
             parent.setCardViewButtonActions(n);
             tmp.add(n);
         });
-        parent.getMyHandList().clear();
-        parent.getMyHandList().addAll(tmp);
+        parent.setMyHandList(tmp);
         parent.getView().getHud().getMyHand().setListViewItems(parent.getMyHandList());
+        parent.hideDecks();
     }
 
     public boolean canAddWeapon(Card card) {

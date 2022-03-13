@@ -2,6 +2,7 @@ package gui.partials;
 
 import javafx.geometry.Pos;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import model.Quest;
 import model.Stage;
@@ -15,8 +16,24 @@ public class QuestView extends BorderPane {
 
     private CardView questCard;
     private Text stageText, headerText;
+    private VBox infoBox;
     private StageView stageView;
+    private StageCardSelectionView scsv;
     private Quest quest;
+
+    public static final String STAGE_TEXT = "Stage: ";
+
+    public void setStage(Stage stage) {
+        StageView sv = new StageView(stage);
+    }
+
+    public StageCardSelectionView getStageCardSelectionView() {
+        return scsv;
+    }
+
+    public void clearStage() {
+        this.setCenter(null);
+    }
 
     public QuestView() {
 
@@ -30,10 +47,18 @@ public class QuestView extends BorderPane {
         questCard = new CardView();
         questCard.setSize(200);
         setAlignment(questCard, Pos.CENTER);
-        this.setTop(questCard);
+
+
+        infoBox = new VBox();
+        infoBox.setSpacing(5);
+        infoBox.setAlignment(Pos.CENTER);
+        infoBox.getChildren().addAll(headerText, questCard, stageText);
+
+        this.setTop(infoBox);
 
         // show stages in the middle
         stageView = new StageView();
+        scsv = new StageCardSelectionView();
 
     }
 
@@ -42,13 +67,37 @@ public class QuestView extends BorderPane {
         setQuest(quest);
     }
 
+    public void mode(boolean pickCards) {
+        if (pickCards) {
+            this.setCenter(this.scsv);
+        } else {
+            this.setCenter(this.stageView);
+        }
+    }
+
     public void setQuest(Quest q) {
         this.quest = q;
         this.questCard.setCard(q.getQuestCard());
         this.setStage(q.getCurrentStage());
     }
 
-    public void setStage(Stage s) {
+    public CardView getQuestCard() {
+        return questCard;
+    }
 
+    public Text getStageText() {
+        return stageText;
+    }
+
+    public Text getHeaderText() {
+        return headerText;
+    }
+
+    public StageView getStageView() {
+        return stageView;
+    }
+
+    public StageCardSelectionView getScsv() {
+        return scsv;
     }
 }

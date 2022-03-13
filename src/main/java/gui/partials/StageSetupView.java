@@ -5,6 +5,11 @@ import game.components.card.FoeCard;
 import javafx.geometry.Pos;
 import javafx.scene.layout.BorderPane;
 
+/**
+ * @author James DiNovo
+ *
+ * GUI for selecting cards to be used on a given stage
+ */
 public class StageSetupView extends BorderPane {
     private CardView stageCard;
     private DeckView weaponsView;

@@ -1,10 +1,24 @@
 package gui.panes;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 
+/**
+ * @author James DiNovo
+ *
+ * Main game display
+ */
 public class GameDisplayPane extends StackPane {
+
+    public void add(Node node) {
+        add(node, Pos.CENTER, true);
+    }
+
+    public void add(Node node, Pos pos) {
+        add(node, pos, true);
+    }
 
     public void add(Node node, Pos pos, boolean front) {
         setAlignment(node, pos);
@@ -20,7 +34,11 @@ public class GameDisplayPane extends StackPane {
         this.getChildren().remove(node);
     }
 
-    public GameDisplayPane() {
+    public void clear() {
+        this.getChildren().clear();
+    }
 
+    public GameDisplayPane() {
+        this.setPadding(new Insets(20));
     }
 }

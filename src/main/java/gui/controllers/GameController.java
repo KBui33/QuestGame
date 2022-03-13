@@ -1,12 +1,14 @@
 package gui.controllers;
 
 import game.components.card.*;
+import gui.other.AlertBox;
 import gui.panes.GamePane;
 import gui.partials.CardView;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import model.Command;
 import model.ExternalGameState;
 import model.GameCommand;
@@ -16,6 +18,7 @@ import networking.client.Client;
 import networking.client.ClientEventListener;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author James DiNovo
@@ -30,11 +33,15 @@ public class GameController {
     private ObservableList<CardView> myHand;
     private ObservableList<CardView> discarded;
     private GamePane view;
+    private QuestController questController;
 
     public GameController (GamePane view) {
         myHand = FXCollections.observableArrayList();
         discarded = FXCollections.observableArrayList();
         this.view = view;
+
+        // for reference inside handlers
+        GameController gc = this;
 
         try {
             client = Client.getInstance();
@@ -57,7 +64,6 @@ public class GameController {
                         System.out.println("== It's my turn. Player: " + receivedCommand.getPlayerId());
                         view.getHud().getCurrentStateText().setText("Take your turn!");
                         disableView(false);
-                        view.getHud().getEndTurnButton().setVisible(true);
                     } else if(command.equals(Command.SHOULD_SPONSOR_QUEST)) { // Prompt player to sponsor quest
                         System.out.println("== It's my turn to decide to sponsor the quest");
                         Card questCard = receivedCommand.getCard();
@@ -66,12 +72,22 @@ public class GameController {
                             System.out.println(questCard.getCardImg());
                             handleDrawnCard(questCard);
                             disableView(false);
-                            view.getHud().getEndTurnButton().setVisible(false);
                         });
                     } else if(command.equals(Command.PLAYER_QUEST_TURN)) { // Handle taking quest turn
                         System.out.println("== It's my turn to take turn for quest stage");
                         Card questStageCard = receivedCommand.getCard();
-                        view.getHud().getCurrentStateText().setText("Quest Stage: " + questStageCard.getTitle());
+                        view.getHud().getCurrentStateText().setText("Quest Stage: " + (questStageCard instanceof FoeCard ? "Foe" : "Test"));
+                        System.out.println("== Quest Card: " + questStageCard.getTitle());
+
+                        // see line ~110
+                        Platform.runLater(() -> {
+                            // if quest controller is null you are sponsor i guess? not really
+                            if (questController != null) {
+                                questController.pickCards(gc);
+                                disableView(false);
+                            }
+                        });
+
                     }
                 }
             });
@@ -90,6 +106,16 @@ public class GameController {
                     Card currentStoryCard = externalGameState.getCurrentStoryCard();
                     if(currentStoryCard != null) // Display this on GUI
                         System.out.println("Game Controller state update says: Current story " + currentStoryCard.getClass() + " -> " +  currentStoryCard.getTitle());
+
+                    // needs quest to initialize quest controller
+                    Quest q = externalGameState.getCurrentQuest();
+                    if (q != null && questController == null) {
+                        Platform.runLater(() -> {
+                            questController = new QuestController(q);
+                            view.getMainPane().clear();
+                            view.getMainPane().add(questController.getQuestView());
+                        });
+                    }
                 }
             });
 
@@ -186,8 +212,17 @@ public class GameController {
         return myHand;
     }
 
+    public void setMyHandList(ObservableList<CardView> newHand) {
+        this.myHand = newHand;
+    }
+
     public GamePane getView() {
         return view;
+    }
+
+    public void playerStageCardsPicked(List<WeaponCard> weaponCards) {
+        disableView(true);
+        // send cards to server
     }
 
     private void handleDrawnCard(Card card) {
@@ -203,8 +238,18 @@ public class GameController {
 
             drawnCard.getPlayButton().setOnAction(e -> {
                 System.out.println("played card");
-                view.getMainPane().remove(drawnCard);
-                questSetup((QuestCard) drawnCard.getCard());
+                if (myHand.filtered(c -> c.getCard() instanceof FoeCard || c.getCard() instanceof TestCard).size()
+                        < ((QuestCard) drawnCard.getCard()).getStages()) {
+                    // notify user they dont have enough cards to sponsor
+                    AlertBox.alert("Insufficient cards in hand. This Quest requires at least "
+                            + ((QuestCard) drawnCard.getCard()).getStages() +
+                            " Foe or Test cards to sponsor.", Alert.AlertType.WARNING, e2 -> {
+                        drawnCard.getDiscardButton().fire();
+                    });
+                } else {
+                    view.getMainPane().remove(drawnCard);
+                    questSetup((QuestCard) drawnCard.getCard());
+                }
             });
 
             drawnCard.getDiscardButton().setOnAction(e -> {
@@ -283,7 +328,7 @@ public class GameController {
 
     public void questSetupComplete(Quest quest) {
         System.out.println("== Quest setup completed");
-        // send decline to server
+        // send sponsor to server
         GameCommand questSetupCommand = new GameCommand(Command.WILL_SPONSOR_QUEST);
         questSetupCommand.setPlayerId(client.getPlayerId());
         questSetupCommand.setPlayer(player);

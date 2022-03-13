@@ -1,6 +1,5 @@
 package gui.partials;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.geometry.Orientation;
