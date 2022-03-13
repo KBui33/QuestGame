@@ -68,6 +68,10 @@ public class GameController {
                             disableView(false);
                             view.getHud().getEndTurnButton().setVisible(false);
                         });
+                    } else if(command.equals(Command.TAKE_QUEST_TURN)) { // Handle taking quest turn
+                        System.out.println("== It's my turn to take turn for quest stage");
+                        Card questStageCard = receivedCommand.getCard();
+                        view.getHud().getCurrentStateText().setText("Quest Stage: " + questStageCard.getTitle());
                     }
                 }
             });
@@ -278,9 +282,13 @@ public class GameController {
     }
 
     public void questSetupComplete(Quest quest) {
-
-        // TODO :: RETURN QUEST TO SERVER
-
+        System.out.println("== Quest setup completed");
+        // send decline to server
+        GameCommand questSetupCommand = new GameCommand(Command.WILL_SPONSOR_QUEST);
+        questSetupCommand.setPlayerId(client.getPlayerId());
+        questSetupCommand.setPlayer(player);
+        questSetupCommand.setQuest(quest);
+        client.sendCommand(questSetupCommand);
     }
 
     public void setCardViewButtonActions(CardView cardView) {
@@ -305,4 +313,6 @@ public class GameController {
             cardView.getButtonBox().setVisible(false);
         });
     }
+
+
 }

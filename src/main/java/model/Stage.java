@@ -2,7 +2,9 @@ package model;
 
 import game.components.card.Card;
 
-public abstract class Stage {
+import java.io.Serializable;
+
+public abstract class Stage implements Serializable {
     private Card stageCard;
 
     public Stage(Card stageCard) {

@@ -5,12 +5,13 @@ import game.components.card.FoeCard;
 import game.components.card.QuestCard;
 import game.components.card.WeaponCard;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Quest {
+public class Quest implements Serializable {
 
     private QuestCard quest;
     private ArrayList<Stage> stages;
@@ -50,6 +51,8 @@ public class Quest {
         this.stages.add(stage);
     }
 
+    public boolean addQuestPlayer(Player player) { return this.questPlayers.add(new QuestPlayer(player)); }
+
     public int currentStageCount() {
         return this.stages.size();
     }
@@ -62,5 +65,13 @@ public class Quest {
 
     public Stage getCurrentStage() {
         return stages.get(0);
+    }
+
+    public ArrayList<Stage> getStages() {
+        return stages;
+    }
+
+    public ArrayList<QuestPlayer> getQuestPlayers() {
+        return questPlayers;
     }
 }
