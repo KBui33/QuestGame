@@ -38,6 +38,10 @@ public class Player implements Serializable {
         return cards.remove(card);
     }
 
+    public boolean discardCards(ArrayList<Card> cards) {
+        return cards.removeAll(cards);
+    }
+
     public int getPlayerId() {
         return playerId;
     }

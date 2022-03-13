@@ -102,6 +102,9 @@ public class GameCommandHandler {
                 System.out.println("== Command handler says: Player " + playerId + " took stage turn");
                 quest = internalGameState.getCurrentQuest();
                 quest.getQuestPlayer(playerId - 1).setPlayerQuestCardUsed(stageCards);
+                player = quest.getQuestPlayer(playerId - 1).getPlayer();
+                boolean discardedQuestCards = player.discardCards(stageCards);
+                System.out.println("== Command handler says: Discarding quest cards " + discardedQuestCards);
                 internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
                 returnCommand.setCommand(Command.TOOK_QUEST_TURN);
                 returnCommand.setPlayer(player);

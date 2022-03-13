@@ -21,7 +21,7 @@ public class FoeStage extends Stage implements Serializable {
         this.questCardFoe = questCardFoe;
     }
 
-    public Integer calculateBattlePoints(){
+    public int calculateBattlePoints(){
         int[] totalBp = {0};
         if(questCardFoe != null && questCardFoe.equals(foe.getTitle())){totalBp[0] = foe.getBp()[1];}
         weapons.forEach(w -> totalBp[0] += w.getBattlePoints());

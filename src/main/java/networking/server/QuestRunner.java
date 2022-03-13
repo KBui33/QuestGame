@@ -2,6 +2,8 @@ package networking.server;
 
 import model.*;
 
+import java.util.ArrayList;
+
 public class QuestRunner extends Runner {
     // private Quest quest; TODO::Implement quest class
     private Server server;
@@ -42,6 +44,23 @@ public class QuestRunner extends Runner {
                     while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
                         Thread.sleep(1000);
                     }
+                }
+
+                // Find stage winners and losers
+                ArrayList<QuestPlayer> stageLosers = quest.computeStageWinners(stage);
+                System.out.println("== Stage:\n\tin game -> " + quest.getQuestPlayers().size() + "\n\tlosers -> " + stageLosers.size());
+
+                // Send notification to quest losers
+                for(QuestPlayer stageLoser: stageLosers) {
+                    GameCommand questStageLostCommand = new GameCommand(Command.QUEST_STAGE_LOST);
+                    questStageLostCommand.setPlayerId(stageLoser.getPlayerId());
+                    questStageLostCommand.setPlayer(stageLoser.getPlayer());
+                    server.notifyClient(stageLoser.getPlayerId() - 1, questStageLostCommand);
+                }
+
+                // Rest cards of winners
+                for(QuestPlayer stageWinner: quest.getQuestPlayers()) {
+                    stageWinner.resetQuestCardsUsed();
                 }
 
                 System.out.println("== Stage " + stageIndex++ + " completed");

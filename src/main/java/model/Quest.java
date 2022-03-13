@@ -123,7 +123,20 @@ public class Quest implements Serializable {
     /**
      * Find the players set to move forward to next stage based on battle points
      */
-    public void computeStageWinners() {
+    public ArrayList<QuestPlayer> computeStageWinners(Stage stage) {
+        ArrayList<QuestPlayer> stageLosers = new ArrayList<>();
+        if (stage instanceof FoeStage) {
+            int stageBattlePoints = ((FoeStage) stage).calculateBattlePoints();
+            for(QuestPlayer questPlayer: questPlayers) {
+                if(questPlayer.calculateBattlePoints() >= stageBattlePoints) continue;
+                stageLosers.add(questPlayer);
+            }
+        }
 
+        for(QuestPlayer questPlayer: stageLosers) {
+            questPlayers.remove(questPlayer);
+        }
+
+        return stageLosers;
     }
 }

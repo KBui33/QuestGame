@@ -43,4 +43,8 @@ public class QuestPlayer extends Player implements Serializable {
     public void resetQuestCardsUsed() {
         playerQuestCardUsed.clear();
     }
+
+    public Player getPlayer() {
+        return player;
+    }
 }
