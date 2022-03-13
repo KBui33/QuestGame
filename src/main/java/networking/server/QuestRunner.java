@@ -19,6 +19,7 @@ public class QuestRunner extends Runner {
 
     @Override
     public void loop() {
+        gameState.setCurrentQuest(this.quest);
         gameState.setGameStatus(GameStatus.IN_QUEST);
         server.notifyClients(new GameCommand(Command.QUEST_STARTED));
         System.out.println("== Quest runner says: initializing quest");
@@ -30,24 +31,27 @@ public class QuestRunner extends Runner {
                 quest.addQuestPlayer(player);
             }
 
+            int stageIndex = 1;
             for(Stage stage: quest.getStages()) {
                 for(QuestPlayer questPlayer: quest.getQuestPlayers()) {
                     int playerId = questPlayer.getPlayerId();
-                    System.out.println(playerId);
                     // TODO:: Scaffold command
-                    GameCommand questStageCommand = new GameCommand(Command.TAKE_QUEST_TURN);
+                    GameCommand questStageCommand = new GameCommand(Command.PLAYER_QUEST_TURN);
                     questStageCommand.setCard(stage.getStageCard());
-                    server.notifyClient(playerId, questStageCommand);
+                    server.notifyClient(playerId - 1, questStageCommand);
 
                     Thread.sleep(2000);
                 }
 
-                System.out.println("== Stage completed");
+                System.out.println("== Stage " + stageIndex++ + " completed");
                 Thread.sleep(2000);
             }
 
+            shouldStopRunner();
+
         } catch (InterruptedException e) {
             e.printStackTrace();
+            shouldStopRunner();
         }
     }
 }

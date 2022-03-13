@@ -15,6 +15,7 @@ public enum Command {
     PLAYER_TURN,
     TAKE_TURN,
     END_TURN,
+    PLAYER_QUEST_TURN,
     TAKE_QUEST_TURN,
     TOOK_QUEST_TURN,
     END_QUEST_TURN,

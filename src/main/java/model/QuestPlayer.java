@@ -12,4 +12,9 @@ public class QuestPlayer extends Player implements Serializable {
     public QuestPlayer(Player player) {
         this.player = player;
     }
+
+    @Override
+    public int getPlayerId() {
+        return player.getPlayerId();
+    }
 }
