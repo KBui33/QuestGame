@@ -102,7 +102,7 @@ public class QuestSetupController {
                 for (CardView cv : weaponCards) {
                     wl.add((WeaponCard) cv.getCard());
                 }
-                quest.addStage(new FoeStage((FoeCard) currentStage.getStageCard().getCard(), wl));
+                quest.addStage(new FoeStage((FoeCard) currentStage.getStageCard().getCard(),  wl, quest.getQuestFoe()));
             }
             addedWeapons.clear();
             weaponNames.clear();

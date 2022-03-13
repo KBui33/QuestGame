@@ -16,4 +16,12 @@ public class FoeCard extends Card{
         this.bp = bp;
         this.extra = "";
     }
+
+    public String getExtra() {
+        return extra;
+    }
+
+    public int[] getBp() {
+        return bp;
+    }
 }

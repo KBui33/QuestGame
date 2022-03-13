@@ -13,20 +13,21 @@ import java.util.stream.Collectors;
 
 public class Quest implements Serializable {
 
-    private QuestCard quest;
-    private ArrayList<Stage> stages;
-    private ArrayList<QuestPlayer> questPlayers;
+    private QuestCard questCard; //Current sponsored quest
+    private ArrayList<Stage> stages; // Total amount of stages
+    private ArrayList<QuestPlayer> questPlayers; //Players that participate in the quest
+    // handles the current quest state
+    // int state
 
     public Quest(QuestCard quest) {
         this.stages = new ArrayList<>();
         this.questPlayers = new ArrayList<>();
-        this.quest = quest;
+        this.questCard = quest;
     }
 
     public void setupQuest(Map<Card, List<Card>> stageCards){
         // Adding stages to the current quest
-        // Map<The main card for the stage, extra cards (i.e. weapons)>
-        for(int i = 0; i < quest.getStages(); i++){
+        for(int i = 0; i < questCard.getStages(); i++){
             stageCards
                     .forEach((key, value) -> {
                         if (key.getClass() == FoeCard.class) {
@@ -34,11 +35,9 @@ public class Quest implements Serializable {
                                     stageWeapons =
                                     value
                                             .stream()
-                                            .map(
-                                                    c -> (WeaponCard) c
-                                            )
+                                            .map(c -> (WeaponCard) c)
                                             .collect(Collectors.toList());
-                            FoeStage s = new FoeStage((FoeCard) key, stageWeapons);
+                            FoeStage s = new FoeStage((FoeCard) key, (ArrayList<WeaponCard>) stageWeapons, questCard.getFoe());
                             stages.add(s);
                         } else {
                             // Add Test Stage
@@ -47,6 +46,42 @@ public class Quest implements Serializable {
         }
     }
 
+    // get the current and next stage
+
+//    public void startQuest(InternalGameState internalGameState){
+//        /*
+//        * - Sponsor hands one card to players in quest(from adventure deck)
+//        *   for each player participating
+//        *        hand out one card to their hand
+//        *
+//        * - Players who participate must place card(s) against the quest card(s)
+//        *
+//        *  wait for players
+//        *
+//        *  for each stage
+//        *        flip the card(s)
+//        *        if FOE (and weapons)
+//        *           for each player participating
+//        *                flip their card(s)
+//        *                if player card(s) >= stage card(s)
+//        *                   - player proceeds to next stage
+//        *                   - draw one card (from adventure)
+//        *                else
+//        *                   - player cannot go to next stage
+//        *       else TEST
+//        *            *** Impl later ***
+//        *
+//        * - Discard all cards in quest
+//        * */
+//
+//
+//        questPlayers.forEach(
+//                p ->{
+//
+//                });
+//    }
+
+    public boolean addPlayer(Player player){return questPlayers.add((QuestPlayer) player);}
     public void addStage(Stage stage) {
         this.stages.add(stage);
     }
@@ -62,7 +97,11 @@ public class Quest implements Serializable {
     public void startQuest(){}
 
     public QuestCard getQuestCard() {
-        return quest;
+        return questCard;
+    }
+
+    public String getQuestFoe() {
+        return questCard.getFoe();
     }
 
     public Stage getCurrentStage() {
