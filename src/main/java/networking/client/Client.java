@@ -12,8 +12,8 @@ import java.util.Scanner;
 
 public class Client  {
     private final int PORT = 80;
-    private static final int READ_BUFFER_SIZE = 2048;
-    private static final int WRITE_BUFFER_SIZE = 2048;
+    private static final int READ_BUFFER_SIZE = 4096;
+    private static final int WRITE_BUFFER_SIZE = 4096;
 
     // Various game commands
     public static enum ClientEvent {
@@ -86,7 +86,7 @@ public class Client  {
         return serverHost;
     }
 
-    public GameCommand sendCommand(GameCommand command) {
+    public synchronized GameCommand sendCommand(GameCommand command) {
         GameCommand receivedCommand = null;
         try {
             byte[] outMessage = GameCommand.toBytesArray(command);

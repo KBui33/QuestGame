@@ -83,8 +83,13 @@ public class GameController {
                         Platform.runLater(() -> {
                             // if quest controller is null you are sponsor i guess? not really
                             if (questController != null) {
+                                System.out.println("== QContr is not NOT null");
+                                view.getMainPane().clear();
+                                view.getMainPane().add(questController.getQuestView());
                                 questController.pickCards(gc);
                                 disableView(false);
+                            } else {
+                                System.out.println("== QContr is  null");
                             }
                         });
 
@@ -255,6 +260,14 @@ public class GameController {
                     AlertBox.alert("Insufficient cards in hand. This Quest requires at least "
                             + ((QuestCard) drawnCard.getCard()).getStages() +
                             " Foe or Test cards to sponsor.", Alert.AlertType.WARNING, e2 -> {
+
+                        // send decline to server
+                        GameCommand declineSponsorQuestCommand = new GameCommand(Command.WILL_NOT_SPONSOR_QUEST);
+                        declineSponsorQuestCommand.setPlayerId(client.getPlayerId());
+                        declineSponsorQuestCommand.setPlayer(player);
+                        GameCommand declinedSponsorQuestCommand =  client.sendCommand(declineSponsorQuestCommand);
+                        player = declinedSponsorQuestCommand.getPlayer();
+
                         drawnCard.getDiscardButton().fire();
                     });
                 } else {
@@ -270,7 +283,7 @@ public class GameController {
                 declineSponsorQuestCommand.setPlayerId(client.getPlayerId());
                 declineSponsorQuestCommand.setPlayer(player);
                 GameCommand declinedSponsorQuestCommand =  client.sendCommand(declineSponsorQuestCommand);
-                player = declinedSponsorQuestCommand.getPlayer();
+                declinedSponsorQuestCommand.getPlayer();
 
                 view.getMainPane().remove(drawnCard);
             });

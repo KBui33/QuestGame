@@ -42,7 +42,7 @@ public class QuestSponsorRunner extends Runner {
                 }
 
                 // If sponsor agreed, exit
-                if(gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
+                if(gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST) || gameState.getGameStatus().equals(GameStatus.TAKING_QUEST_TURN)) {
                     System.out.println("== Quest Sponsor runner says: Found quest sponsor");
                     foundSponsor = true;
                     break;

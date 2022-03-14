@@ -5,7 +5,6 @@ import model.*;
 import java.util.ArrayList;
 
 public class QuestRunner extends Runner {
-    // private Quest quest; TODO::Implement quest class
     private Server server;
     private InternalGameState gameState;
     private Quest quest;
@@ -33,7 +32,9 @@ public class QuestRunner extends Runner {
 
             int stageIndex = 1;
             for(Stage stage: quest.getStages()) {
+                System.out.println("== Quest runner says: Stage " + stageIndex + " started");
                 for(QuestPlayer questPlayer: quest.getQuestPlayers()) {
+                    gameState.setGameStatus(GameStatus.TAKING_QUEST_TURN);
                     int playerId = questPlayer.getPlayerId();
                     // TODO:: Scaffold command
                     GameCommand questStageCommand = new GameCommand(Command.PLAYER_QUEST_TURN);
@@ -44,6 +45,8 @@ public class QuestRunner extends Runner {
                     while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
                         Thread.sleep(2000);
                     }
+
+
                 }
 
                 // Find stage winners and losers
@@ -69,7 +72,7 @@ public class QuestRunner extends Runner {
                     stageWinner.resetQuestCardsUsed();
                 }
 
-                System.out.println("== Stage " + stageIndex++ + " completed");
+                System.out.println("== Quest runner says: Stage " + stageIndex++ + " completed");
                 Thread.sleep(2000);
             }
 

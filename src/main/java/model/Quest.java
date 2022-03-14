@@ -127,7 +127,9 @@ public class Quest implements Serializable {
         ArrayList<QuestPlayer> stageLosers = new ArrayList<>();
         if (stage instanceof FoeStage) {
             int stageBattlePoints = ((FoeStage) stage).calculateBattlePoints();
+            System.out.println("== Stage battle points: " + stageBattlePoints);
             for(QuestPlayer questPlayer: questPlayers) {
+                System.out.println("== Player " + questPlayer.getPlayerId() + " battle points: " + questPlayer.calculateBattlePoints());
                 if(questPlayer.calculateBattlePoints() >= stageBattlePoints) continue;
                 stageLosers.add(questPlayer);
             }
