@@ -1,6 +1,8 @@
 package gui.partials;
 
 import game.components.card.Card;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -41,12 +43,6 @@ public class CardView extends StackPane {
         this.setWidth(h / 3);
     }
 
-    // will take Card object once cards are implemented
-    public CardView(Card card) {
-        this();
-        setCard(card);
-    }
-
     public CardView() {
         imageView = new ImageView();
         imageView.setFitHeight(300);
@@ -71,6 +67,27 @@ public class CardView extends StackPane {
         imageView.setScaleZ(1);
         buttonBox.setScaleZ(2);
         this.getChildren().addAll(imageView, buttonBox);
+    }
+
+    public CardView(Card card) {
+        this();
+        setCard(card);
+    }
+
+
+    public CardView(Card card, boolean showButtons, String posButton, String negButton) {
+        this();
+        setCard(card);
+
+        getButtonBox().setVisible(showButtons);
+        getPlayButton().setText(posButton);
+        getDiscardButton().setText(negButton);
+
+    }
+
+    public void setButtonEvents(EventHandler<ActionEvent> posButtonEvent, EventHandler<ActionEvent> negButtonEvent) {
+        getPlayButton().setOnAction(posButtonEvent);
+        getDiscardButton().setOnAction(negButtonEvent);
     }
 
 }

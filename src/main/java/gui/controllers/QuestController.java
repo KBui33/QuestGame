@@ -6,7 +6,7 @@ import game.components.card.WeaponCard;
 import gui.other.AlertBox;
 import gui.partials.CardView;
 import gui.partials.QuestView;
-import gui.partials.StageView;
+import gui.partials.StageCompleteView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
@@ -22,7 +22,7 @@ import java.util.HashSet;
  */
 public class QuestController {
     private QuestView questView;
-    private StageView currentStage;
+    private StageCompleteView currentStage;
     private int stageCount;
     private QuestCard quest;
     private ObservableList<CardView> weaponCards;
@@ -146,7 +146,7 @@ public class QuestController {
         weaponNames.remove(cardView.getCard().getTitle());
     }
 
-    public StageView getCurrentStageView() {
+    public StageCompleteView getCurrentStageView() {
         return currentStage;
     }
 

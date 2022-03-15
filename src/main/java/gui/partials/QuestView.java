@@ -17,14 +17,14 @@ public class QuestView extends BorderPane {
     private CardView questCard;
     private Text stageText, headerText;
     private VBox infoBox;
-    private StageView stageView;
+    private StageCompleteView stageView;
     private StageCardSelectionView scsv;
     private Quest quest;
 
     public static final String STAGE_TEXT = "Stage: ";
 
     public void setStage(Stage stage) {
-        StageView sv = new StageView(stage);
+        StageCompleteView sv = new StageCompleteView(stage);
     }
 
     public StageCardSelectionView getStageCardSelectionView() {
@@ -57,7 +57,7 @@ public class QuestView extends BorderPane {
         this.setTop(infoBox);
 
         // show stages in the middle
-        stageView = new StageView();
+        stageView = new StageCompleteView();
         scsv = new StageCardSelectionView();
 
     }
@@ -93,7 +93,7 @@ public class QuestView extends BorderPane {
         return headerText;
     }
 
-    public StageView getStageView() {
+    public StageCompleteView getStageView() {
         return stageView;
     }
 

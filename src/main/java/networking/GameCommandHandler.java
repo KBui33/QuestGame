@@ -77,7 +77,7 @@ public class GameCommandHandler {
                 System.out.println("== Command handler says: Player " + playerId + " agreed to sponsor quest");
 
                 returnCommand.setCommand(Command.FOUND_QUEST_SPONSOR);
-                returnCommand.setPlayer(internalGameState.getPlayer(playerId - 1));
+                returnCommand.setPlayer(internalGameState.getPlayer(playerId));
                 returnCommand.setPlayerId(playerId);
 
                 internalGameState.setGameStatus(GameStatus.FINDING_QUEST_PARTICIPANTS);
