@@ -21,7 +21,7 @@ public class QuestPlayer extends Player implements Serializable {
     }
 
     public void setPlayerQuestCardUsed(ArrayList<Card> playerQuestCardUsed) {
-        this.playerQuestCardUsed = playerQuestCardUsed;
+        this.playerQuestCardUsed = new ArrayList<>(playerQuestCardUsed);
     }
 
     public ArrayList<Card> getPlayerQuestCardUsed() {

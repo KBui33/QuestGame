@@ -81,16 +81,15 @@ public class GameController {
 
                         // see line ~110
                         Platform.runLater(() -> {
-                            // if quest controller is null you are sponsor i guess? not really
-                            if (questController != null) {
-                                System.out.println("== QContr is not NOT null");
-                                view.getMainPane().clear();
-                                view.getMainPane().add(questController.getQuestView());
-                                questController.pickCards(gc);
-                                disableView(false);
-                            } else {
-                                System.out.println("== QContr is  null");
-                            }
+                            // if quest controller is null you are sponsor i guess? not really -> NO NEED: If sponsoring, will never receive this command
+                            try {
+                                while (questController == null) Thread.sleep(1000); // Wait for quest controller to be setup
+                            } catch (InterruptedException e) {e.printStackTrace();}
+
+                            view.getMainPane().clear();
+                            view.getMainPane().add(questController.getQuestView());
+                            questController.pickCards(gc);
+                            disableView(false);
                         });
 
                     }
@@ -118,8 +117,6 @@ public class GameController {
                         if(questController == null) {
                             Platform.runLater(() -> {
                                 questController = new QuestController(q);
-                                view.getMainPane().clear();
-                                view.getMainPane().add(questController.getQuestView());
                             });
                         } else if(q.getQuestPlayer(player.getPlayerId() - 1) == null) { // Check if player is still in quest
                             System.out.println("== Game Controller state update says: You have fallen out of the quest");
