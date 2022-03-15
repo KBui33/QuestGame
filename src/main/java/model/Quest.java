@@ -18,11 +18,17 @@ public class Quest implements Serializable {
     private ArrayList<QuestPlayer> questPlayers; //Players that participate in the quest
     // handles the current quest state
     // int state
+    private Player sponsor;
 
     public Quest(QuestCard quest) {
         this.stages = new ArrayList<>();
         this.questPlayers = new ArrayList<>();
         this.questCard = quest;
+    }
+
+    public Quest(QuestCard quest, Player sponsor) {
+        this(quest);
+        this.sponsor = sponsor;
     }
 
     public void setupQuest(Map<Card, List<Card>> stageCards){
@@ -118,6 +124,14 @@ public class Quest implements Serializable {
 
     public QuestPlayer getQuestPlayer(int index) {
         return questPlayers.get(index);
+    }
+
+    public void setSponsor(Player sponsor) {
+        this.sponsor = sponsor;
+    }
+
+    public Player getSponsor() {
+        return sponsor;
     }
 
     /**

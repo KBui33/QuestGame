@@ -47,4 +47,9 @@ public class QuestPlayer extends Player implements Serializable {
     public Player getPlayer() {
         return player;
     }
+
+    public void addCard(Card card) {
+        this.player.addCard(card);
+    }
+
 }

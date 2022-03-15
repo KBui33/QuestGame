@@ -69,6 +69,7 @@ public class GameCommandHandler {
             case WILL_SPONSOR_QUEST: {
                 int playerId = gameCommand.getPlayerId();
                 quest = gameCommand.getQuest();
+                quest.setSponsor(player);
                 System.out.println("== Command handler says: Player " + playerId + " agreed to sponsor quest");
                 returnCommand.setCommand(Command.FOUND_QUEST_SPONSOR);
                 returnCommand.setPlayer(player);

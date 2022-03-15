@@ -24,19 +24,27 @@ public class QuestRunner extends Runner {
         System.out.println("== Quest runner says: initializing quest");
 
         try {
-            // For now assume all players are participating in quest
             // TODO:: Add setup step to get participating players
             for (Player player: gameState.getPlayers()) {
+                if (player.getPlayerId() == quest.getSponsor().getPlayerId()) continue;
                 quest.addQuestPlayer(player.getPlayerId() - 1, player);
             }
 
             int stageIndex = 1;
             for(Stage stage: quest.getStages()) {
                 System.out.println("== Quest runner says: Stage " + stageIndex + " started");
+
+                // Deal adventure cards to participants
+                System.out.println("== Quest runner says: Dealing an adventure card to each participant");
                 for(QuestPlayer questPlayer: quest.getQuestPlayers()) {
-                    gameState.setGameStatus(GameStatus.TAKING_QUEST_TURN);
+                    questPlayer.addCard(gameState.drawAdventureCard());
+                }
+
+                for(QuestPlayer questPlayer: quest.getQuestPlayers()) {
                     int playerId = questPlayer.getPlayerId();
-                    // TODO:: Scaffold command
+                    System.out.println("== Game runner says: Sending take quest turn command to player " + playerId);
+                    gameState.setGameStatus(GameStatus.TAKING_QUEST_TURN);
+
                     GameCommand questStageCommand = new GameCommand(Command.PLAYER_QUEST_TURN);
                     questStageCommand.setCard(stage.getStageCard());
                     server.notifyClient(playerId - 1, questStageCommand);
@@ -45,14 +53,12 @@ public class QuestRunner extends Runner {
                     while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
                         Thread.sleep(2000);
                     }
-
-
                 }
 
                 // Find stage winners and losers
                 ArrayList<QuestPlayer> stageLosers = quest.computeStageWinners(stage);
                 ArrayList<QuestPlayer> stageWinners = quest.getQuestPlayers();
-                System.out.println("== Stage:\n\tin game -> " + quest.getQuestPlayers().size() + "\n\tlosers -> " + stageLosers.size());
+                System.out.println("== Stage:\tin game -> " + quest.getQuestPlayers().size() + "\tlosers -> " + stageLosers.size());
 
                 // Send notification to quest losers
                 for(QuestPlayer stageLoser: stageLosers) {
