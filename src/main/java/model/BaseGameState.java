@@ -19,4 +19,8 @@ public interface BaseGameState {
     public GameStatus getGameStatus();
 
     public Card getCurrentStoryCard();
+
+    public Player getCurrentTurnPlayer();
+
+    public Quest getCurrentQuest();
 }

@@ -15,8 +15,8 @@ public class Handler implements Runnable {
     private final SocketChannel _socketChannel;
     private final SelectionKey _selectionKey;
 
-    private static final int READ_BUFFER_SIZE = 2048;
-    private static final int WRITE_BUFFER_SIZE = 2048;
+    private static final int READ_BUFFER_SIZE = 4096;
+    private static final int WRITE_BUFFER_SIZE = 4096;
 
     private ByteBuffer _readBuffer = ByteBuffer.allocate(READ_BUFFER_SIZE);
     private ByteBuffer _writeBuffer = ByteBuffer.allocate(WRITE_BUFFER_SIZE);

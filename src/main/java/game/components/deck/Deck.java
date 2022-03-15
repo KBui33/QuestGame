@@ -32,8 +32,8 @@ public abstract class Deck implements Serializable {
         return cards.remove(cards.size() - 1);
     }
 
-    public boolean discard(Card card) {
-        return discarded.add(card);
+    public void discard(Card card) {
+        discarded.add(0, card);
     }
 
     public List<Card> getCards() {

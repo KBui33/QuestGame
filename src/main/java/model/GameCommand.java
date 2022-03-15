@@ -3,6 +3,7 @@ package model;
 import game.components.card.Card;
 
 import java.io.*;
+import java.util.ArrayList;
 
 public class GameCommand implements Serializable {
     // Various game commands
@@ -12,6 +13,8 @@ public class GameCommand implements Serializable {
     private Command command;
     private Player player;
     private Card card;
+    private ArrayList<Card> cards;
+    private Quest quest;
 
     public GameCommand() {
     }
@@ -81,6 +84,22 @@ public class GameCommand implements Serializable {
 
     public Card getCard() {
         return card;
+    }
+
+    public void setCards(ArrayList<Card> cards) {
+        this.cards = cards;
+    }
+
+    public ArrayList<Card> getCards() {
+        return cards;
+    }
+
+    public Quest getQuest() {
+        return quest;
+    }
+
+    public void setQuest(Quest quest) {
+        this.quest = quest;
     }
 
     @Override

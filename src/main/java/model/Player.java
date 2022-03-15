@@ -1,6 +1,8 @@
 package model;
 
 import game.components.card.Card;
+import game.components.card.Rank;
+import game.components.card.RankCard;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,12 +11,14 @@ import java.util.List;
 public class Player implements Serializable {
     private int playerId;
     private List<Card> cards;
+    private RankCard rankCard;
 
     // -- TODO:: Add cards array list
     // -- TODO:: Add weapons array list
 
     public Player() {
         cards = new ArrayList<Card>();
+        rankCard = new RankCard("", "", Rank.SQUIRE);
     }
 
     public Player(int playerId) {
@@ -34,6 +38,10 @@ public class Player implements Serializable {
         return cards.remove(card);
     }
 
+    public boolean discardCards(ArrayList<Card> cards) {
+        return cards.removeAll(cards);
+    }
+
     public int getPlayerId() {
         return playerId;
     }
@@ -44,6 +52,18 @@ public class Player implements Serializable {
 
     public List<Card> getCards() {
         return cards;
+    }
+
+    public void setRankCard(RankCard rankCard) {
+        this.rankCard = rankCard;
+    }
+
+    public RankCard getRankCard() {
+        return rankCard;
+    }
+
+    public int getShields() {
+        return rankCard.getShields();
     }
 
     @Override

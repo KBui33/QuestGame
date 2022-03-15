@@ -68,19 +68,20 @@ public class LobbyController {
             view.getReadyButton().setOnAction(e -> {
                 System.out.println("Ready clicked");
 
-                // Send a ready command to the server
-                GameCommand command = new GameCommand(Command.READY);
-                command =  client.sendCommand(command);
-                client.setPlayerId(command.getPlayerId()); // Set id of player/client
-
                 if (view.getReadyButton().getText().equals("Ready")) {
+                    // Send a ready command to the server
+                    GameCommand command = new GameCommand(Command.READY);
+                    command =  client.sendCommand(command);
+                    client.setPlayerId(command.getPlayerId()); // Set id of player/client
+
                     view.getReadyButton().getStyleClass().remove("success");
                     view.getReadyButton().getStyleClass().add("caution");
                     view.getReadyButton().setText("Wait");
                 } else {
-                    view.getReadyButton().getStyleClass().remove("caution");
-                    view.getReadyButton().getStyleClass().add("success");
-                    view.getReadyButton().setText("Ready");
+                    // TODO :: ADD UNREADY FUNCTIONALITY
+//                    view.getReadyButton().getStyleClass().remove("caution");
+//                    view.getReadyButton().getStyleClass().add("success");
+//                    view.getReadyButton().setText("Ready");
                 }
             });
 
