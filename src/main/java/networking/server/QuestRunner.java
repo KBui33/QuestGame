@@ -18,7 +18,7 @@ public class QuestRunner extends Runner {
 
     @Override
     public void loop() {
-        gameState.setCurrentQuest(this.quest);
+        //gameState.setCurrentQuest(this.quest);
         gameState.setGameStatus(GameStatus.RUNNING_QUEST);
         server.notifyClients(new GameCommand(Command.QUEST_STARTED));
         System.out.println("== Quest runner says: initializing quest");

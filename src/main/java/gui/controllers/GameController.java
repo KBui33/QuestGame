@@ -73,6 +73,16 @@ public class GameController {
                             handleDrawnCard(questCard);
                             disableView(false);
                         });
+                    } else if(command.equals(Command.SHOULD_JOIN_QUEST)) { // Prompt player to join quest
+                        System.out.println("== It's my turn to decide to join the quest");
+                        Card questCard = receivedCommand.getCard();
+                        Platform.runLater(() -> {
+                            view.getHud().getCurrentStateText().setText("Quest: " + questCard.getTitle() + "\nDo you want to join this quest?");
+                            System.out.println(questCard.getCardImg());
+                            // TODO::Prompt player to join quest
+                            //handleDrawnCard(questCard);
+                            disableView(false);
+                        });
                     } else if(command.equals(Command.PLAYER_QUEST_TURN)) { // Handle taking quest turn
                         System.out.println("== It's my turn to take turn for quest stage");
                         Card questStageCard = receivedCommand.getCard();

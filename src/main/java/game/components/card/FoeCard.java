@@ -1,5 +1,7 @@
 package game.components.card;
 
+import java.util.Arrays;
+
 public class FoeCard extends Card{
 
     private String extra; // Special description for foe (See for_11.png)
@@ -7,7 +9,8 @@ public class FoeCard extends Card{
 
     public FoeCard(String title, String cardImg, int[] bp, String extra) {
         super(title, cardImg);
-        this.bp = bp;
+        this.bp =  bp;
+        Arrays.sort(this.bp);// Always sorted
         this.extra = extra;
     }
 

@@ -42,7 +42,7 @@ public class QuestSponsorRunner extends Runner {
                 }
 
                 // If sponsor agreed, exit
-                if(gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST) || gameState.getGameStatus().equals(GameStatus.TAKING_QUEST_TURN)) {
+                if(gameState.getGameStatus().equals(GameStatus.FINDING_QUEST_PARTICIPANTS)) {
                     System.out.println("== Quest Sponsor runner says: Found quest sponsor");
                     foundSponsor = true;
                     break;
@@ -50,8 +50,11 @@ public class QuestSponsorRunner extends Runner {
             }
 
             shouldStopRunner();
-            if(!foundSponsor) {
-                System.out.println("== Quest Sponsor runner says: No sponsor found");
+            if(foundSponsor) { // If sponsor found, start quest join runner to get participants
+                System.out.println("== Quest sponsor runner says: starting quest join runner to prompt participants");
+                new Thread(new QuestJoinRunner(server, gameState.getCurrentQuest())).start();
+            } else {
+                System.out.println("== Quest Sponsor runner says: No sponsor found. Exiting...");
                 gameState.setGameStatus(GameStatus.RUNNING);
             }
         } catch (InterruptedException e) {

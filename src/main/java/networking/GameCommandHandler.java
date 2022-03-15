@@ -70,11 +70,14 @@ public class GameCommandHandler {
                 int playerId = gameCommand.getPlayerId();
                 quest = gameCommand.getQuest();
                 quest.setSponsor(player);
+                internalGameState.setCurrentQuest(quest);
                 System.out.println("== Command handler says: Player " + playerId + " agreed to sponsor quest");
                 returnCommand.setCommand(Command.FOUND_QUEST_SPONSOR);
                 returnCommand.setPlayer(player);
                 returnCommand.setPlayerId(playerId);
-                startQuest = true;
+
+                internalGameState.setGameStatus(GameStatus.FINDING_QUEST_PARTICIPANTS);
+
                 break;
             }
 
@@ -85,6 +88,31 @@ public class GameCommandHandler {
                 returnCommand.setPlayer(player);
                 returnCommand.setPlayerId(playerId);
                 internalGameState.setGameStatus(GameStatus.FINDING_QUEST_SPONSOR);
+                break;
+            }
+
+            case WILL_JOIN_QUEST: {
+                int playerId = gameCommand.getPlayerId();
+                quest = gameCommand.getQuest();
+                quest.addQuestPlayer(playerId - 1, player); // Add participant to quest
+
+                System.out.println("== Command handler says: Player " + playerId + " agreed to participate in quest");
+                returnCommand.setCommand(Command.JOINED_QUEST);
+                returnCommand.setPlayer(player);
+                returnCommand.setPlayerId(playerId);
+                internalGameState.setGameStatus(GameStatus.FINDING_QUEST_PARTICIPANTS);
+
+                break;
+            }
+
+            case WILL_NOT_JOIN_QUEST: {
+                int playerId = gameCommand.getPlayerId();
+                System.out.println("== Command handler says: Player " + playerId + " did not agreed to participate in quest");
+                returnCommand.setCommand(Command.DID_NOT_JOIN_QUEST);
+                returnCommand.setPlayer(player);
+                returnCommand.setPlayerId(playerId);
+                internalGameState.setGameStatus(GameStatus.FINDING_QUEST_PARTICIPANTS);
+
                 break;
             }
 
@@ -117,7 +145,7 @@ public class GameCommandHandler {
         server.notifyClients(returnCommand);
 
         if(startGame)  new Thread(new GameRunner(server, server.getGameState())).start();
-        if(startQuest)  new Thread(new QuestRunner(server, quest)).start();
+        //if(startQuest)  new Thread(new QuestRunner(server, quest)).start();
 
         return returnCommand;
     }

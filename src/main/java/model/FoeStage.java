@@ -6,6 +6,8 @@ import game.components.card.WeaponCard;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class FoeStage extends Stage implements Serializable {
@@ -23,7 +25,11 @@ public class FoeStage extends Stage implements Serializable {
 
     public int calculateBattlePoints(){
         int[] totalBp = {0};
-        if(questCardFoe != null && questCardFoe.equals(foe.getTitle())){totalBp[0] = foe.getBp()[1];}
+        if(questCardFoe != null && questCardFoe.equals(foe.getTitle())) {
+            totalBp[0] = foe.getBp()[1];
+        } else {
+            totalBp[0] = foe.getBp()[0];
+        }
         weapons.forEach(w -> totalBp[0] += w.getBattlePoints());
         return totalBp[0];
     }
