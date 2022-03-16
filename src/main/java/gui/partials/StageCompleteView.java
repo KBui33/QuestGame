@@ -7,14 +7,19 @@ import javafx.scene.layout.BorderPane;
 import model.FoeStage;
 import model.Stage;
 
-public class StageView extends BorderPane {
+/**
+ * @author James DiNovo
+ *
+ * Display outcome of the stage. Display stage card, a table indicating who passed and who failed.
+ */
+public class StageCompleteView extends BorderPane {
 
     private Stage stage;
     private CardView stageCard;
     private DeckView weaponsView;
     private ObservableList<CardView> weapons;
 
-    public StageView() {
+    public StageCompleteView() {
         stageCard = new CardView();
         stageCard.setSize(200);
         stageCard.getButtonBox().setVisible(true);
@@ -29,7 +34,7 @@ public class StageView extends BorderPane {
 
     }
 
-    public StageView(Stage s) {
+    public StageCompleteView(Stage s) {
         this();
         setStage(s);
     }

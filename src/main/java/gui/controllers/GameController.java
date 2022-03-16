@@ -7,6 +7,8 @@ import gui.partials.CardView;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import model.*;
@@ -49,7 +51,7 @@ public class GameController {
             player = returnedAttachedPlayerCommand.getPlayer();
             System.out.println("== My Player: \n\t" + player);
 
-                        // Subscribe to command updates
+            // Subscribe to command updates
             client.clientEvents.subscribe(Client.ClientEvent.GAME_COMMAND_RECEIVED, new ClientEventListener() {
                 @Override
                 public void update(Client.ClientEvent eventType, Object o) {
@@ -66,7 +68,7 @@ public class GameController {
                         Platform.runLater(() -> {
                             view.getHud().getCurrentStateText().setText("Quest: " + questCard.getTitle() + "\nDo you want to sponsor this quest?");
                             System.out.println(questCard.getCardImg());
-                            handleDrawnCard(questCard);
+                            questSponsor(questCard);
                             disableView(false);
                         });
                     } else if(command.equals(Command.SHOULD_JOIN_QUEST)) { // Prompt player to join quest
@@ -76,7 +78,7 @@ public class GameController {
                             view.getHud().getCurrentStateText().setText("Quest: " + questCard.getTitle() + "\nDo you want to join this quest?");
                             System.out.println(questCard.getCardImg());
                             // TODO::Prompt player to join quest
-                            //handleDrawnCard(questCard);
+                            questJoin(questCard);
                             disableView(false);
                         });
                     } else if(command.equals(Command.PLAYER_QUEST_TURN)) { // Handle taking quest turn
@@ -150,8 +152,10 @@ public class GameController {
             addCardToHand(myHand, card);
         }
 
-        disableView(true);
-        view.getHud().getCurrentStateText().setText("Wait for your turn!");
+        // hide endturn button for now
+        view.getHud().getEndTurnButton().setVisible(false);
+
+        waitTurn();
 
         // a lot of this is just for laying out gui will be removed later
         view.getHud().getShieldsView().setShields(1);
@@ -187,9 +191,7 @@ public class GameController {
             endTurnCommand.setPlayer(player);
             GameCommand endedTurnCommand =  client.sendCommand(endTurnCommand);
             player = endedTurnCommand.getPlayer();
-            disableView(true);
-            view.getHud().getCurrentStateText().setText("Wait for your turn");
-
+            waitTurn();
         });
 
         view.getHud().getShowHandButton().setOnAction(e -> {
@@ -244,53 +246,70 @@ public class GameController {
         player = tookQuestTurnCommand.getPlayer();
     }
 
-    private void handleDrawnCard(Card card) {
-        CardView drawnCard = new CardView();
-        drawnCard.getButtonBox().setVisible(true);
-        view.getMainPane().add(drawnCard, Pos.CENTER, true);
-        drawnCard.setCard(card);
+    private void waitTurn() {
+        disableView(true);
+        view.getHud().getCurrentStateText().setText("Wait for your turn");
+    }
 
-        // if it is a quest card offer player option to sponsor or decline card
-        if (drawnCard.getCard() instanceof QuestCard) {
-            drawnCard.getPlayButton().setText("Sponsor");
-            drawnCard.getDiscardButton().setText("Decline");
+    private void takeTurn() {
+        disableView(false);
+    }
 
-            drawnCard.getPlayButton().setOnAction(e -> {
-                System.out.println("played card");
-                if (myHand.filtered(c -> c.getCard() instanceof FoeCard || c.getCard() instanceof TestCard).size()
-                        < ((QuestCard) drawnCard.getCard()).getStages()) {
-                    // notify user they dont have enough cards to sponsor
-                    AlertBox.alert("Insufficient cards in hand. This Quest requires at least "
-                            + ((QuestCard) drawnCard.getCard()).getStages() +
-                            " Foe or Test cards to sponsor.", Alert.AlertType.WARNING, e2 -> {
+    private void questJoin(Card card) {
+        CardView drawnCard = new CardView(card, true, "Join", "Decline");
 
-                        // send decline to server
-                        GameCommand declineSponsorQuestCommand = new GameCommand(Command.WILL_NOT_SPONSOR_QUEST);
-                        declineSponsorQuestCommand.setPlayerId(client.getPlayerId());
-                        declineSponsorQuestCommand.setPlayer(player);
-                        GameCommand declinedSponsorQuestCommand =  client.sendCommand(declineSponsorQuestCommand);
-                        player = declinedSponsorQuestCommand.getPlayer();
+        displayCard(drawnCard, e -> {
+            // player chooses join
+        }, e -> {
+            // player chooses decline
+        });
+    }
 
-                        drawnCard.getDiscardButton().fire();
-                    });
-                } else {
-                    view.getMainPane().remove(drawnCard);
-                    questSetup((QuestCard) drawnCard.getCard());
-                }
-            });
+    private void questSponsor(Card card) {
+        CardView drawnCard = new CardView(card, true, "Sponsor", "Decline");
 
-            drawnCard.getDiscardButton().setOnAction(e -> {
-                System.out.println("discarded card");
-                // send decline to server
-                GameCommand declineSponsorQuestCommand = new GameCommand(Command.WILL_NOT_SPONSOR_QUEST);
-                declineSponsorQuestCommand.setPlayerId(client.getPlayerId());
-                declineSponsorQuestCommand.setPlayer(player);
-                GameCommand declinedSponsorQuestCommand =  client.sendCommand(declineSponsorQuestCommand);
-                player =  declinedSponsorQuestCommand.getPlayer();
+        displayCard(drawnCard, e -> {
+            if (myHand.filtered(c -> c.getCard() instanceof FoeCard || c.getCard() instanceof TestCard).size()
+                    < ((QuestCard) drawnCard.getCard()).getStages()) {
+                // notify user they dont have enough cards to sponsor
+                AlertBox.alert("Insufficient cards in hand. This Quest requires at least "
+                        + ((QuestCard) drawnCard.getCard()).getStages() +
+                        " Foe or Test cards to sponsor.", Alert.AlertType.WARNING, e2 -> {
 
+                    // send decline to server
+                    GameCommand declineSponsorQuestCommand = new GameCommand(Command.WILL_NOT_SPONSOR_QUEST);
+                    declineSponsorQuestCommand.setPlayerId(client.getPlayerId());
+                    declineSponsorQuestCommand.setPlayer(player);
+                    GameCommand declinedSponsorQuestCommand =  client.sendCommand(declineSponsorQuestCommand);
+                    player = declinedSponsorQuestCommand.getPlayer();
+
+                    drawnCard.getDiscardButton().fire();
+                });
+            } else {
                 view.getMainPane().remove(drawnCard);
-            });
-        }
+                questSetup((QuestCard) drawnCard.getCard());
+            }
+        }, e -> {
+            // send decline to server
+            GameCommand declineSponsorQuestCommand = new GameCommand(Command.WILL_NOT_SPONSOR_QUEST);
+            declineSponsorQuestCommand.setPlayerId(client.getPlayerId());
+            declineSponsorQuestCommand.setPlayer(player);
+            GameCommand declinedSponsorQuestCommand =  client.sendCommand(declineSponsorQuestCommand);
+            player =  declinedSponsorQuestCommand.getPlayer();
+            view.getMainPane().remove(drawnCard);
+
+            waitTurn();
+        });
+    }
+
+    private void displayCard(CardView cardView,
+                             EventHandler<ActionEvent> posButtonEvent,
+                             EventHandler<ActionEvent> negButtonEvent) {
+
+        cardView.setButtonEvents(posButtonEvent, negButtonEvent);
+
+        // add cardview to center of main pane
+        view.getMainPane().add(cardView, Pos.CENTER, true);
     }
 
     private void discardCard(CardView card) {

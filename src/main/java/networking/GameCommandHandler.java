@@ -62,7 +62,7 @@ public class GameCommandHandler {
                 player.discardCard(card);
                 internalGameState.discardAdventureCard(card);
                 returnCommand.setCommand(Command.DISCARDED_CARD);
-                returnCommand.setPlayer(internalGameState.getPlayer(playerId - 1));
+                returnCommand.setPlayer(internalGameState.getPlayer(playerId));
                 returnCommand.setPlayerId(playerId);
                 break;
             }
@@ -77,7 +77,7 @@ public class GameCommandHandler {
                 System.out.println("== Command handler says: Player " + playerId + " agreed to sponsor quest");
 
                 returnCommand.setCommand(Command.FOUND_QUEST_SPONSOR);
-                returnCommand.setPlayer(internalGameState.getPlayer(playerId - 1));
+                returnCommand.setPlayer(internalGameState.getPlayer(playerId));
                 returnCommand.setPlayerId(playerId);
 
                 internalGameState.setGameStatus(GameStatus.FINDING_QUEST_PARTICIPANTS);
@@ -91,7 +91,7 @@ public class GameCommandHandler {
                 System.out.println("== Command handler says: Player " + playerId + " refused to sponsor quest");
 
                 returnCommand.setCommand(Command.FIND_QUEST_SPONSOR);
-                returnCommand.setPlayer(internalGameState.getPlayer(playerId - 1));
+                returnCommand.setPlayer(internalGameState.getPlayer(playerId));
                 returnCommand.setPlayerId(playerId);
 
                 internalGameState.setGameStatus(GameStatus.FINDING_QUEST_SPONSOR);
@@ -108,7 +108,7 @@ public class GameCommandHandler {
                 System.out.println("== Command handler says: Player " + playerId + " agreed to participate in quest");
 
                 returnCommand.setCommand(Command.JOINED_QUEST);
-                returnCommand.setPlayer(internalGameState.getPlayer(playerId - 1));
+                returnCommand.setPlayer(internalGameState.getPlayer(playerId));
                 returnCommand.setPlayerId(playerId);
 
                 internalGameState.setGameStatus(GameStatus.FINDING_QUEST_PARTICIPANTS);
@@ -122,7 +122,7 @@ public class GameCommandHandler {
                 System.out.println("== Command handler says: Player " + playerId + " did not agreed to participate in quest");
 
                 returnCommand.setCommand(Command.DID_NOT_JOIN_QUEST);
-                returnCommand.setPlayer(internalGameState.getPlayer(playerId - 1));
+                returnCommand.setPlayer(internalGameState.getPlayer(playerId));
                 returnCommand.setPlayerId(playerId);
 
                 internalGameState.setGameStatus(GameStatus.FINDING_QUEST_PARTICIPANTS);
@@ -137,7 +137,7 @@ public class GameCommandHandler {
 
                 returnCommand.setCommand(Command.ENDED_TURN);
                 returnCommand.setPlayerId(playerId);
-                returnCommand.setPlayer(internalGameState.getPlayer(playerId - 1));
+                returnCommand.setPlayer(internalGameState.getPlayer(playerId));
 
                 internalGameState.setGameStatus(GameStatus.RUNNING); // Update game status
 
@@ -151,13 +151,13 @@ public class GameCommandHandler {
 
                 quest = internalGameState.getCurrentQuest();
                 quest.getQuestPlayer(playerId - 1).setPlayerQuestCardUsed(stageCards);
-                player = internalGameState.getPlayer(playerId - 1);
+                player = internalGameState.getPlayer(playerId);
                 boolean discardedQuestCards = player.discardCards(stageCards);
 
                 System.out.println("== Command handler says: Discarding quest cards " + discardedQuestCards);
 
                 returnCommand.setCommand(Command.TOOK_QUEST_TURN);
-                returnCommand.setPlayer(internalGameState.getPlayer(playerId - 1));
+                returnCommand.setPlayer(internalGameState.getPlayer(playerId));
                 returnCommand.setPlayerId(playerId);
 
                 internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
