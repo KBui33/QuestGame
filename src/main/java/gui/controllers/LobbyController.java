@@ -12,6 +12,8 @@ import networking.client.Client;
 import networking.client.ClientEventListener;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.concurrent.Callable;
 
 /**
  * @author James DiNovo
@@ -22,6 +24,7 @@ public class LobbyController {
 
     // need model
     private Client client;
+    private final ArrayList<Callable> eventSubscriptions = new ArrayList<>();
 
     public LobbyController(LobbyPane view) {
         setView(view);
@@ -43,26 +46,25 @@ public class LobbyController {
             }
 
             // Subscribe to game updates
-            client.clientEvents.subscribe(Client.ClientEvent.GAME_COMMAND_RECEIVED, new ClientEventListener() {
-                @Override
-                public void update(Client.ClientEvent eventType, Object o) {
-                    GameCommand receivedCommand = (GameCommand) o;
-                    System.out.println("== Lobby Controller says: " + receivedCommand);
-                    if(receivedCommand.getCommand().equals(Command.JOINED)) { // Update players connected
-                        view.getPlayersText().setText("Players Connected: " + receivedCommand.getJoinedPlayers());
-                    } else if(receivedCommand.getCommand().equals(Command.GAME_STARTED)) { // Load game view
-                        Platform.runLater(() ->ClientApplication.window.setScene(new GameScene()));
-                    }
+            Callable<Void> unsubscribeCommandReceived = client.clientEvents.subscribe(Client.ClientEvent.GAME_COMMAND_RECEIVED, (eventType, o) -> {
+                GameCommand receivedCommand = (GameCommand) o;
+                System.out.println("== Lobby Controller says: " + receivedCommand);
+                if(receivedCommand.getCommand().equals(Command.JOINED)) { // Update players connected
+                    view.getPlayersText().setText("Players Connected: " + receivedCommand.getJoinedPlayers());
+                } else if(receivedCommand.getCommand().equals(Command.GAME_STARTED)) { // Load game view
+                    unsubscribeEvents(); // Unsubscribe from events
+                    Platform.runLater(() ->ClientApplication.window.setScene(new GameScene()));
                 }
             });
 
-            client.clientEvents.subscribe(Client.ClientEvent.EXTERNAL_GAME_STATE_UPDATED, new ClientEventListener() {
-                @Override
-                public void update(Client.ClientEvent eventType, Object o) {
-                    ExternalGameState externalGameState = (ExternalGameState) o;
-                    System.out.println("== Lobby Controller says: " + externalGameState);
-                }
+            eventSubscriptions.add(unsubscribeCommandReceived);
+
+            Callable<Void> unsubscribeGameStateUpdate = client.clientEvents.subscribe(Client.ClientEvent.EXTERNAL_GAME_STATE_UPDATED, (eventType, o) -> {
+                ExternalGameState externalGameState = (ExternalGameState) o;
+                System.out.println("== Lobby Controller says: " + externalGameState);
             });
+
+            eventSubscriptions.add(unsubscribeGameStateUpdate);
 
             // link controller to view
             view.getReadyButton().setOnAction(e -> {
@@ -95,6 +97,20 @@ public class LobbyController {
             System.out.println("Disconnecting");
             ClientApplication.window.setScene(new ConnectScene());
             // should send disconnect notification to server and remove player from game
+            // TODO::Unsubscribe from all events
         });
+    }
+
+    /**
+     * Unsubscribe from all events
+     */
+    public void unsubscribeEvents() {
+        try {
+            for (Callable eventSubscription : eventSubscriptions) {
+                eventSubscription.call();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
