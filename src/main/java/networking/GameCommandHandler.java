@@ -164,6 +164,21 @@ public class GameCommandHandler {
 
                 break;
             }
+
+            case END_QUEST_TURN: {
+                int playerId = gameCommand.getPlayerId();
+                System.out.println("== Command handler says: Player " + playerId + " ended stage turn");
+
+                player = internalGameState.getPlayer(playerId);
+
+                returnCommand.setCommand(Command.ENDED_QUEST_TURN);
+                returnCommand.setPlayer(internalGameState.getPlayer(playerId));
+                returnCommand.setPlayerId(playerId);
+
+                internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
+
+                break;
+            }
         }
 
         server.notifyClients(returnCommand);

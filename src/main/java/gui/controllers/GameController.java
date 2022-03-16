@@ -100,6 +100,20 @@ public class GameController {
                             disableView(false);
                         });
 
+                    } else if(command.equals(Command.QUEST_STAGE_WON)) { // Handle end quest stage turn when stage won -> continue quest
+                        System.out.println("== I just won this stage. Continuing...");
+                        Quest quest = receivedCommand.getQuest();
+                        Stage currentStage = quest.getCurrentStage();
+                        view.getHud().getCurrentStateText().setText("Quest Stage: " + currentStage.getStageCard().getTitle());
+
+                        // Should show button to continue
+                    } else if(command.equals(Command.QUEST_STAGE_LOST)) { // Handle end quest stage turn when stage lost -> sit out of quest
+                        System.out.println("== I just lost this stage. Sitting out...");
+                        Quest quest = receivedCommand.getQuest();
+                        Stage currentStage = quest.getCurrentStage();
+                        view.getHud().getCurrentStateText().setText("Quest Stage: " + currentStage.getStageCard().getTitle());
+
+                        // Should show sit out of quest button
                     }
                 }
             });
@@ -126,7 +140,7 @@ public class GameController {
                             Platform.runLater(() -> {
                                 questController = new QuestController(q);
                             });
-                        } else if(externalGameState.getGameStatus().equals(GameStatus.RUNNING_QUEST) && q.getQuestPlayerByPlayerId(player.getPlayerId()) == null) { // Check if player is still in quest
+                        } else if(externalGameState.getGameStatus().equals(GameStatus.RUNNING_QUEST) && q.getSponsor().getPlayerId() != player.getPlayerId() && q.getQuestPlayerByPlayerId(player.getPlayerId()) == null) { // Check if player is still in quest
                             System.out.println("== Game Controller state update says: You have fallen out of the quest");
                             view.getHud().getCurrentStateText().setText("Quest Stage: Sitting out till the end of the quest");
                         }
