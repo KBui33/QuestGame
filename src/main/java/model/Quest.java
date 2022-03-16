@@ -126,6 +126,14 @@ public class Quest implements Serializable {
         return questPlayers.get(index);
     }
 
+    public QuestPlayer getQuestPlayerByPlayerId(int playerId) {
+        for(QuestPlayer questPlayer: questPlayers) {
+            if (questPlayer.getPlayerId() == playerId) return questPlayer;
+        }
+
+        return null;
+    }
+
     public void setSponsor(Player sponsor) {
         this.sponsor = sponsor;
     }

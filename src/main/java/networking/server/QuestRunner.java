@@ -24,12 +24,6 @@ public class QuestRunner extends Runner {
         System.out.println("== Quest runner says: initializing quest");
 
         try {
-            // TODO:: Add setup step to get participating players
-            for (Player player: gameState.getPlayers()) {
-                if (player.getPlayerId() == quest.getSponsor().getPlayerId()) continue;
-                quest.addQuestPlayer(player.getPlayerId() - 1, player);
-            }
-
             int stageIndex = 1;
             for(Stage stage: quest.getStages()) {
                 System.out.println("== Quest runner says: Stage " + stageIndex + " started");

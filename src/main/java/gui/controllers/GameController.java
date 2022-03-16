@@ -126,7 +126,7 @@ public class GameController {
                             Platform.runLater(() -> {
                                 questController = new QuestController(q);
                             });
-                        } else if(q.getQuestPlayer(player.getPlayerId() - 1) == null) { // Check if player is still in quest
+                        } else if(externalGameState.getGameStatus().equals(GameStatus.RUNNING_QUEST) && q.getQuestPlayerByPlayerId(player.getPlayerId()) == null) { // Check if player is still in quest
                             System.out.println("== Game Controller state update says: You have fallen out of the quest");
                             view.getHud().getCurrentStateText().setText("Quest Stage: Sitting out till the end of the quest");
                         }
@@ -260,8 +260,22 @@ public class GameController {
 
         displayCard(drawnCard, e -> {
             // player chooses join
+            // Send will join command to server
+            GameCommand willJoinQuestCommand = new GameCommand(Command.WILL_JOIN_QUEST);
+            willJoinQuestCommand.setPlayerId(client.getPlayerId());
+            willJoinQuestCommand.setPlayer(player);
+            GameCommand joinedQuestCommand =  client.sendCommand(willJoinQuestCommand);
+            if (joinedQuestCommand.getPlayer() != null) player = joinedQuestCommand.getPlayer();
+            view.getMainPane().remove(drawnCard);
         }, e -> {
             // player chooses decline
+            // Send will not join command to server
+            GameCommand willNotJoinQuestCommand = new GameCommand(Command.WILL_NOT_JOIN_QUEST);
+            willNotJoinQuestCommand.setPlayerId(client.getPlayerId());
+            willNotJoinQuestCommand.setPlayer(player);
+            GameCommand didNotJoinQuestCommand =  client.sendCommand(willNotJoinQuestCommand);
+            if (didNotJoinQuestCommand.getPlayer() != null) player = didNotJoinQuestCommand.getPlayer();
+            view.getMainPane().remove(drawnCard);
         });
     }
 
