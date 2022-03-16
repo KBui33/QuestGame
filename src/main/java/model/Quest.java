@@ -4,6 +4,8 @@ import game.components.card.Card;
 import game.components.card.FoeCard;
 import game.components.card.QuestCard;
 import game.components.card.WeaponCard;
+import game.components.deck.AdventureDeck;
+import game.components.deck.Deck;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,8 +18,6 @@ public class Quest implements Serializable {
     private QuestCard questCard; //Current sponsored quest
     private ArrayList<Stage> stages; // Total amount of stages
     private ArrayList<QuestPlayer> questPlayers; //Players that participate in the quest
-    // handles the current quest state
-    // int state
     private Player sponsor;
 
     public Quest(QuestCard quest) {
@@ -29,27 +29,6 @@ public class Quest implements Serializable {
     public Quest(QuestCard quest, Player sponsor) {
         this(quest);
         this.sponsor = sponsor;
-    }
-
-    public void setupQuest(Map<Card, List<Card>> stageCards){
-        // Adding stages to the current quest
-        for(int i = 0; i < questCard.getStages(); i++){
-            stageCards
-                    .forEach((key, value) -> {
-                        if (key.getClass() == FoeCard.class) {
-                            List<WeaponCard>
-                                    stageWeapons =
-                                    value
-                                            .stream()
-                                            .map(c -> (WeaponCard) c)
-                                            .collect(Collectors.toList());
-                            FoeStage s = new FoeStage((FoeCard) key, (ArrayList<WeaponCard>) stageWeapons, questCard.getFoe());
-                            stages.add(s);
-                        } else {
-                            // Add Test Stage
-                        }
-                    });
-        }
     }
 
     public boolean addPlayer(Player player){return questPlayers.add((QuestPlayer) player);}
@@ -121,5 +100,47 @@ public class Quest implements Serializable {
         return stageLosers;
     }
 
-    // cards to be distrubuted
+    /**
+     * Sets up the quest
+     * */
+    public void setupQuest(Map<Card, List<Card>> stageCards){
+        // Adding stages to the current quest
+        for(int i = 0; i < questCard.getStages(); i++){
+            stageCards
+                    .forEach((key, value) -> {
+                        if (key instanceof WeaponCard) {
+                            List<WeaponCard>
+                                    stageWeapons =
+                                    value
+                                            .stream()
+                                            .map(c -> (WeaponCard) c)
+                                            .collect(Collectors.toList());
+                            FoeStage s = new FoeStage((FoeCard) key, (ArrayList<WeaponCard>) stageWeapons, questCard.getFoe());
+                            stages.add(s);
+                        } else {
+                            // Add Test Stage
+                        }
+                    });
+        }
+    }
+
+    /**
+     * Return the amount of cards the sponsor gets
+     */
+    public int distributeToSponsor(){
+        int[] cardsForSponsor = {0}; // amount of cards the sponsor gets
+        stages.forEach(
+                s -> {
+                    if(s instanceof FoeStage stage){
+                        cardsForSponsor[0] += 1 + stage.getWeapons().size(); // The foe card itself and weapons if any
+                    }else{
+                        cardsForSponsor[0] += 1; // The test card itself
+                    }
+                }
+        );
+        cardsForSponsor[0] += stages.size(); //add the amount of stages to total amount of cards the sponsor gets
+        int difference = (sponsor.getCards().size() + cardsForSponsor[0]) - 12;
+        cardsForSponsor[0] = cardsForSponsor[0] > 0 ? cardsForSponsor[0] - difference : cardsForSponsor[0];
+        return cardsForSponsor[0];
+    }
 }
