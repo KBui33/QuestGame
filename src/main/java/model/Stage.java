@@ -10,7 +10,6 @@ public abstract class Stage implements Serializable {
     public Stage(Card stageCard) {
         this.stageCard = stageCard;
     }
-
     public Card getStageCard() {
         return stageCard;
     }
