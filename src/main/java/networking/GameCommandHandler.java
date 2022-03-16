@@ -102,8 +102,8 @@ public class GameCommandHandler {
             case WILL_JOIN_QUEST: {
                 int playerId = gameCommand.getPlayerId();
 
-                quest = gameCommand.getQuest();
-                quest.addQuestPlayer(playerId - 1, player); // Add participant to quest
+                quest = internalGameState.getCurrentQuest();
+                quest.addQuestPlayer(player); // Add participant to quest
 
                 System.out.println("== Command handler says: Player " + playerId + " agreed to participate in quest");
 
@@ -150,13 +150,28 @@ public class GameCommandHandler {
                 System.out.println("== Command handler says: Player " + playerId + " took stage turn");
 
                 quest = internalGameState.getCurrentQuest();
-                quest.getQuestPlayer(playerId - 1).setPlayerQuestCardUsed(stageCards);
+                quest.getQuestPlayerByPlayerId(playerId).setPlayerQuestCardUsed(stageCards);
                 player = internalGameState.getPlayer(playerId);
                 boolean discardedQuestCards = player.discardCards(stageCards);
 
                 System.out.println("== Command handler says: Discarding quest cards " + discardedQuestCards);
 
                 returnCommand.setCommand(Command.TOOK_QUEST_TURN);
+                returnCommand.setPlayer(internalGameState.getPlayer(playerId));
+                returnCommand.setPlayerId(playerId);
+
+                internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
+
+                break;
+            }
+
+            case END_QUEST_TURN: {
+                int playerId = gameCommand.getPlayerId();
+                System.out.println("== Command handler says: Player " + playerId + " ended stage turn");
+
+                player = internalGameState.getPlayer(playerId);
+
+                returnCommand.setCommand(Command.ENDED_QUEST_TURN);
                 returnCommand.setPlayer(internalGameState.getPlayer(playerId));
                 returnCommand.setPlayerId(playerId);
 

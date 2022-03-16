@@ -23,13 +23,9 @@ public class QuestRunner extends Runner {
         server.notifyClients(new GameCommand(Command.QUEST_STARTED));
         System.out.println("== Quest runner says: initializing quest");
 
-        try {
-            // TODO:: Add setup step to get participating players
-            for (Player player: gameState.getPlayers()) {
-                if (player.getPlayerId() == quest.getSponsor().getPlayerId()) continue;
-                quest.addQuestPlayer(player.getPlayerId() - 1, player);
-            }
 
+        // Setup already done in quest setup controller
+        try {
             int stageIndex = 1;
             for(Stage stage: quest.getStages()) {
                 System.out.println("== Quest runner says: Stage " + stageIndex + " started");
@@ -62,10 +58,38 @@ public class QuestRunner extends Runner {
 
                 // Send notification to quest losers
                 for(QuestPlayer stageLoser: stageLosers) {
+                    int playerId = stageLoser.getPlayerId();
+                    System.out.println("== Game runner says: Sending end quest turn to loser " + playerId);
+                    gameState.setGameStatus(GameStatus.ENDING_QUEST_TURN);
+
                     GameCommand questStageLostCommand = new GameCommand(Command.QUEST_STAGE_LOST);
-                    questStageLostCommand.setPlayerId(stageLoser.getPlayerId());
+                    questStageLostCommand.setPlayerId(playerId);
                     questStageLostCommand.setPlayer(stageLoser.getPlayer());
-                    server.notifyClient(stageLoser.getPlayerId() - 1, questStageLostCommand);
+                    questStageLostCommand.setQuest(quest);
+                    server.notifyClient(playerId - 1, questStageLostCommand);
+
+                    // Wait for player to end turn
+//                    while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
+//                        Thread.sleep(1000);
+//                    }
+                }
+
+                // Send notification to quest winners
+                for(QuestPlayer stageWinner: stageWinners) {
+                    int playerId = stageWinner.getPlayerId();
+                    System.out.println("== Game runner says: Sending end quest turn to winner " + playerId);
+                    gameState.setGameStatus(GameStatus.ENDING_QUEST_TURN);
+
+                    GameCommand questStageWonCommand = new GameCommand(Command.QUEST_STAGE_WON);
+                    questStageWonCommand.setPlayerId(playerId);
+                    questStageWonCommand.setPlayer(stageWinner.getPlayer());
+                    questStageWonCommand.setQuest(quest);
+                    server.notifyClient(playerId - 1, questStageWonCommand);
+
+                    // Wait for player to end turn
+//                    while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
+//                        Thread.sleep(1000);
+//                    }
                 }
 
                 // If no players are left, end quest
@@ -86,6 +110,7 @@ public class QuestRunner extends Runner {
                 }
 
                 System.out.println("== Quest runner says: Stage " + stageIndex++ + " completed");
+                quest.incrementStage(); // Increment stage
                 Thread.sleep(2000);
             }
 

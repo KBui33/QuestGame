@@ -19,6 +19,7 @@ public enum Command {
     TAKE_QUEST_TURN,
     TOOK_QUEST_TURN,
     END_QUEST_TURN,
+    ENDED_QUEST_TURN,
     ENDED_TURN,
     TOOK_TURN,
     DISCARD_CARD,
@@ -38,5 +39,6 @@ public enum Command {
     DID_NOT_JOIN_QUEST,
     QUEST_STAGE_LOST,
     QUEST_STAGE_WON,
+    QUEST_STAGE_STATE,
     ENDED_QUEST
 }
