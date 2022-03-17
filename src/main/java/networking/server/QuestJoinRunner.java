@@ -31,7 +31,7 @@ public class QuestJoinRunner extends Runner {
             playerShouldJoinQuestCommand.setPlayer(player);
             playerShouldJoinQuestCommand.setPlayerId(playerId);
 
-            server.notifyClient(playerId - 1, playerShouldJoinQuestCommand);
+            server.notifyClientByPlayerId(playerId, playerShouldJoinQuestCommand);
             System.out.println("== Quest join runner says: should join quest command sent");
 
             try {

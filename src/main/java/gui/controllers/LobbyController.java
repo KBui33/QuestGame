@@ -49,7 +49,7 @@ public class LobbyController {
             Callable<Void> unsubscribeCommandReceived = client.clientEvents.subscribe(Client.ClientEvent.GAME_COMMAND_RECEIVED, (eventType, o) -> {
                 GameCommand receivedCommand = (GameCommand) o;
                 System.out.println("== Lobby Controller says: " + receivedCommand);
-                if(receivedCommand.getCommand().equals(Command.JOINED)) { // Update players connected
+                if(receivedCommand.getCommand().equals(Command.PLAYER_JOINED)) { // Update players connected
                     view.getPlayersText().setText("Players Connected: " + receivedCommand.getJoinedPlayers());
                 } else if(receivedCommand.getCommand().equals(Command.GAME_STARTED)) { // Load game view
                     unsubscribeEvents(); // Unsubscribe from events
@@ -72,9 +72,10 @@ public class LobbyController {
 
                 if (view.getReadyButton().getText().equals("Ready")) {
                     // Send a ready command to the server
-                    GameCommand command = new GameCommand(Command.READY);
-                    command =  client.sendCommand(command);
-                    client.setPlayerId(command.getPlayerId()); // Set id of player/client
+                    GameCommand readyCommand = new GameCommand(Command.READY);
+                    readyCommand.setClientIndex(client.getClientIndex());
+                    GameCommand isReadyCommand =  client.sendCommand(readyCommand);
+                    client.setPlayerId(isReadyCommand.getPlayerId()); // Set id of player/client
 
                     view.getReadyButton().getStyleClass().remove("success");
                     view.getReadyButton().getStyleClass().add("caution");
