@@ -43,7 +43,7 @@ public class QuestRunner extends Runner {
 
                     GameCommand questStageCommand = new GameCommand(Command.PLAYER_QUEST_TURN);
                     questStageCommand.setCard(stage.getStageCard());
-                    server.notifyClient(playerId - 1, questStageCommand);
+                    server.notifyClientByPlayerId(playerId, questStageCommand);
 
                     // Wait for player to take turn
                     while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
@@ -66,7 +66,7 @@ public class QuestRunner extends Runner {
                     questStageLostCommand.setPlayerId(playerId);
                     questStageLostCommand.setPlayer(stageLoser.getPlayer());
                     questStageLostCommand.setQuest(quest);
-                    server.notifyClient(playerId - 1, questStageLostCommand);
+                    server.notifyClientByPlayerId(playerId, questStageLostCommand);
 
                     // Wait for player to end turn
 //                    while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
@@ -84,7 +84,7 @@ public class QuestRunner extends Runner {
                     questStageWonCommand.setPlayerId(playerId);
                     questStageWonCommand.setPlayer(stageWinner.getPlayer());
                     questStageWonCommand.setQuest(quest);
-                    server.notifyClient(playerId - 1, questStageWonCommand);
+                    server.notifyClientByPlayerId(playerId, questStageWonCommand);
 
                     // Wait for player to end turn
 //                    while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {

@@ -29,6 +29,9 @@ public class GameCommandHandler {
             case READY: {
                 System.out.println("== Command handler says:  Adding new player");
                 int playerId = internalGameState.addPlayer(new Player());
+
+                server.setClientPlayerId(gameCommand.getClientIndex(), playerId);
+
                 returnCommand.setCommand(Command.IS_READY);
                 returnCommand.setPlayerId(playerId);
                 returnCommand.setReadyPlayers(internalGameState.getNumPlayers());

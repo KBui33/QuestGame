@@ -27,14 +27,14 @@ public class QuestSponsorRunner extends Runner {
             // Determine prompt order
             int[] promptOrder = computePromptOrder();
 
-                // Iterate over clients to find sponsor
+            // Iterate over clients to find sponsor
             for(int playerId: promptOrder) {
                 gameState.setGameStatus(GameStatus.PROMPTING_QUEST_SPONSOR);
                 GameCommand playerShouldSponsorQuestCommand = new GameCommand(Command.SHOULD_SPONSOR_QUEST);
                 playerShouldSponsorQuestCommand.setCard(gameState.getCurrentStoryCard());
                 playerShouldSponsorQuestCommand.setPlayerId(playerId);
 
-                server.notifyClient(playerId - 1, playerShouldSponsorQuestCommand);
+                server.notifyClientByPlayerId(playerId, playerShouldSponsorQuestCommand);
                 System.out.println("== Quest Sponsor runner says: should sponsor command sent");
                 // Wait for player to make decision
                 while (gameState.getGameStatus().equals(GameStatus.PROMPTING_QUEST_SPONSOR)) {

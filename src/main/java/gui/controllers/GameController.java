@@ -47,6 +47,7 @@ public class GameController {
             // Fetch corresponding player
             GameCommand getAttachedPlayerCommand = new GameCommand(Command.GET_ATTACHED_PLAYER);
             getAttachedPlayerCommand.setPlayerId(client.getPlayerId());
+            getAttachedPlayerCommand.setClientIndex(client.getClientIndex());
             GameCommand returnedAttachedPlayerCommand = client.sendCommand(getAttachedPlayerCommand);
             player = returnedAttachedPlayerCommand.getPlayer();
             System.out.println("== My Player: \n\t" + player);
@@ -206,6 +207,7 @@ public class GameController {
             GameCommand endTurnCommand = new GameCommand(Command.END_TURN);
             endTurnCommand.setPlayerId(client.getPlayerId());
             endTurnCommand.setPlayer(player);
+            endTurnCommand.setClientIndex(client.getClientIndex());
             GameCommand endedTurnCommand =  client.sendCommand(endTurnCommand);
             player = endedTurnCommand.getPlayer();
             waitTurn();
@@ -282,6 +284,7 @@ public class GameController {
         // send cards to server
         GameCommand takeQuestTurnCommand = new GameCommand(Command.TAKE_QUEST_TURN);
         takeQuestTurnCommand.setPlayerId(client.getPlayerId());
+        takeQuestTurnCommand.setClientIndex(client.getClientIndex());
         takeQuestTurnCommand.setPlayer(player);
         takeQuestTurnCommand.setCards(weaponCards);
         GameCommand tookQuestTurnCommand =  client.sendCommand(takeQuestTurnCommand);
@@ -306,6 +309,7 @@ public class GameController {
             // Send will join command to server
             GameCommand willJoinQuestCommand = new GameCommand(Command.WILL_JOIN_QUEST);
             willJoinQuestCommand.setPlayerId(client.getPlayerId());
+            willJoinQuestCommand.setClientIndex(client.getClientIndex());
             willJoinQuestCommand.setPlayer(player);
             GameCommand joinedQuestCommand =  client.sendCommand(willJoinQuestCommand);
             if (joinedQuestCommand.getPlayer() != null) player = joinedQuestCommand.getPlayer();
@@ -316,6 +320,7 @@ public class GameController {
             // Send will not join command to server
             GameCommand willNotJoinQuestCommand = new GameCommand(Command.WILL_NOT_JOIN_QUEST);
             willNotJoinQuestCommand.setPlayerId(client.getPlayerId());
+            willNotJoinQuestCommand.setClientIndex(client.getClientIndex());
             willNotJoinQuestCommand.setPlayer(player);
             GameCommand didNotJoinQuestCommand =  client.sendCommand(willNotJoinQuestCommand);
             if (didNotJoinQuestCommand.getPlayer() != null) player = didNotJoinQuestCommand.getPlayer();
@@ -338,6 +343,7 @@ public class GameController {
                     // send decline to server
                     GameCommand declineSponsorQuestCommand = new GameCommand(Command.WILL_NOT_SPONSOR_QUEST);
                     declineSponsorQuestCommand.setPlayerId(client.getPlayerId());
+                    declineSponsorQuestCommand.setClientIndex(client.getClientIndex());
                     declineSponsorQuestCommand.setPlayer(player);
                     GameCommand declinedSponsorQuestCommand =  client.sendCommand(declineSponsorQuestCommand);
                     player = declinedSponsorQuestCommand.getPlayer();
@@ -352,6 +358,7 @@ public class GameController {
             // send decline to server
             GameCommand declineSponsorQuestCommand = new GameCommand(Command.WILL_NOT_SPONSOR_QUEST);
             declineSponsorQuestCommand.setPlayerId(client.getPlayerId());
+            declineSponsorQuestCommand.setClientIndex(client.getClientIndex());
             declineSponsorQuestCommand.setPlayer(player);
             GameCommand declinedSponsorQuestCommand =  client.sendCommand(declineSponsorQuestCommand);
             player =  declinedSponsorQuestCommand.getPlayer();
@@ -376,6 +383,7 @@ public class GameController {
         // Send discard card command
         GameCommand discardCardCommand = new GameCommand(Command.DISCARD_CARD);
         discardCardCommand.setPlayerId(client.getPlayerId());
+        discardCardCommand.setClientIndex(client.getClientIndex());
         discardCardCommand.setPlayer(player);
         discardCardCommand.setCard(card.getCard());
         GameCommand discardedCardCommand =  client.sendCommand(discardCardCommand);
@@ -436,6 +444,7 @@ public class GameController {
         // send sponsor to server
         GameCommand questSetupCompleteCommand = new GameCommand(Command.WILL_SPONSOR_QUEST);
         questSetupCompleteCommand.setPlayerId(client.getPlayerId());
+        questSetupCompleteCommand.setClientIndex(client.getClientIndex());
         questSetupCompleteCommand.setPlayer(player);
         questSetupCompleteCommand.setQuest(quest);
         GameCommand questSetupCompletedCommand =  client.sendCommand(questSetupCompleteCommand);

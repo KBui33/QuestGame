@@ -1,5 +1,6 @@
 package networking.client;
 
+import model.Command;
 import model.ExternalGameState;
 import model.GameCommand;
 
@@ -35,7 +36,8 @@ public class Client  {
     private ByteBuffer _readBuffer = ByteBuffer.allocate(READ_BUFFER_SIZE);
     private ByteBuffer _writeBuffer = ByteBuffer.allocate(WRITE_BUFFER_SIZE);
 
-    private int playerId;
+    private int playerId = -1;
+    private int clientIndex = -1;
 
     public ClientEventManager clientEvents;
 
@@ -82,6 +84,14 @@ public class Client  {
         return playerId;
     }
 
+    public void setClientIndex(int clientIndex) {
+        this.clientIndex = clientIndex;
+    }
+
+    public int getClientIndex() {
+        return clientIndex;
+    }
+
     public String getServerHost() {
         return serverHost;
     }
@@ -115,6 +125,10 @@ public class Client  {
             while (true) {
                 try {
                     GameCommand command = (GameCommand) _subscribeInputStream.readObject();
+                    if(command.getCommand().equals(Command.JOINED))  {
+                        clientIndex = command.getClientIndex();
+                        System.out.println("== Client index: " + clientIndex);
+                    }
                     clientEvents.notify(ClientEvent.GAME_COMMAND_RECEIVED, command);
                     System.out.println("== Subscription thread: " + command);
                 } catch (IOException | ClassNotFoundException e) {

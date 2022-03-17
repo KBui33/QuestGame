@@ -3,6 +3,7 @@ package model;
 public enum Command {
     JOIN,
     JOINED,
+    PLAYER_JOINED,
     READY,
     IS_READY,
     QUIT,
