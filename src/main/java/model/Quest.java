@@ -162,10 +162,7 @@ public class Quest implements Serializable {
                 }
         );
         cardsForSponsor[0] += stages.size(); // Add total amount of stages
-        if((sponsor.getCards().size() + cardsForSponsor[0]) < 12) return cardsForSponsor[0];
-
-        int difference = (sponsor.getCards().size() + cardsForSponsor[0]) - 12;
-        cardsForSponsor[0] = cardsForSponsor[0] > 0 ? cardsForSponsor[0] - difference : cardsForSponsor[0];
+        if((sponsor.getCards().size() + cardsForSponsor[0]) > 12) return 12 - sponsor.getCards().size();
         return cardsForSponsor[0];
     }
 
