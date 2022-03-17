@@ -39,7 +39,10 @@ public class Quest implements Serializable {
     }
 
 
-    public boolean addPlayer(Player player){return questPlayers.add((QuestPlayer) player);}
+    public boolean addPlayer(Player player) {
+        return questPlayers.add((QuestPlayer) player);
+    }
+
     public void addStage(Stage stage) {
         this.stages.add(stage);
     }
@@ -71,7 +74,9 @@ public class Quest implements Serializable {
         return stages.get(currentStageIndex);
     }
 
-    public void incrementStage() { this.currentStageIndex++; }
+    public void incrementStage() {
+        this.currentStageIndex++;
+    }
 
     // note this is the number of the current stage not the index in the array
     public int getCurrentStageNumber() {
@@ -137,10 +142,10 @@ public class Quest implements Serializable {
 
     /**
      * Sets up the quest
-     * */
-    public void setupQuest(Map<Card, List<Card>> stageCards){
+     */
+    public void setupQuest(Map<Card, List<Card>> stageCards) {
         // Adding stages to the current quest
-        for(int i = 0; i < questCard.getStages(); i++){
+        for (int i = 0; i < questCard.getStages(); i++) {
             stageCards
                     .forEach((key, value) -> {
                         if (key instanceof WeaponCard) {
@@ -162,13 +167,13 @@ public class Quest implements Serializable {
     /**
      * Return the amount of cards the sponsor gets
      */
-    public int distributeToSponsor(){
+    public int distributeToSponsor() {
         int[] cardsForSponsor = {0}; // amount of cards the sponsor gets
         stages.forEach(
                 s -> {
-                    if(s instanceof FoeStage stage){
+                    if (s instanceof FoeStage stage) {
                         cardsForSponsor[0] += 1 + stage.getWeapons().size(); // The foe card itself and weapons if any
-                    }else{
+                    } else {
                         cardsForSponsor[0] += 1; // The test card itself
                     }
                 }

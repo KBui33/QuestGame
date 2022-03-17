@@ -275,9 +275,13 @@ public class GameController {
     }
 
     public void playerStageContinue() {
-        // TODO :: - SEND CONTINUE TO SERVER
-
-        //
+        // send quest turn complete command to server
+        GameCommand endQuestTurnCommand = new GameCommand(Command.END_QUEST_TURN);
+        endQuestTurnCommand.setPlayerId(client.getPlayerId());
+        endQuestTurnCommand.setClientIndex(client.getClientIndex());
+        endQuestTurnCommand.setPlayer(player);
+        GameCommand endedQuestTurnCommand =  client.sendCommand(endQuestTurnCommand);
+        if (endedQuestTurnCommand.getPlayer() != null) player = endedQuestTurnCommand.getPlayer();
     }
 
     public void playerStageCardsPicked(ArrayList<Card> weaponCards) {

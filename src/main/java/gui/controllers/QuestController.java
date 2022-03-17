@@ -9,6 +9,8 @@ import gui.partials.quest.QuestView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import model.Command;
+import model.GameCommand;
 import model.Quest;
 import model.Stage;
 
@@ -56,8 +58,9 @@ public class QuestController {
         parent.hideDecks();
 
         questView.getStageCompletedView().getContinueButton().setOnAction(e -> {
-            parent.cleanUpGui();
+            // Send continue command to server
 
+            parent.cleanUpGui();
             parent.playerStageContinue();
 
 

@@ -103,20 +103,21 @@ public class QuestRunner extends Runner {
                     stageWinner.resetQuestCardsUsed();
                 }
 
-                // Give card(s) to the sponsor
-                for (int i = 0; i < quest.distributeToSponsor(); i++) {
-                    quest.getSponsor().getCards().add(
-                            gameState.drawAdventureCard()
-                    );
-                }
-
                 System.out.println("== Quest runner says: Stage " + stageIndex++ + " completed");
                 quest.incrementStage(); // Increment stage
-                Thread.sleep(2000);
             }
 
             shouldStopRunner();
             System.out.println("== Quest runner says: Quest completed");
+
+            // Give card(s) to the sponsor
+            /*System.out.println("== Quest runner says: Distributing cards to sponsor");
+            for (int i = 0; i < quest.distributeToSponsor(); i++) {
+                quest.getSponsor().getCards().add(
+                        gameState.drawAdventureCard()
+                );
+            }*/
+
             server.notifyClients(new GameCommand(Command.ENDED_QUEST));
             gameState.setGameStatus(GameStatus.RUNNING);
 
