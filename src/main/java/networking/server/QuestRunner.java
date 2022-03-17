@@ -1,5 +1,7 @@
 package networking.server;
 
+import game.components.card.Card;
+import game.components.card.FoeCard;
 import model.*;
 
 import java.util.ArrayList;
@@ -101,16 +103,33 @@ public class QuestRunner extends Runner {
                     stageWinner.resetQuestCardsUsed();
                 }
 
-                // Give card(s) to the sponsor
-                for(int i = 0; i < quest.distributeToSponsor(); i++) {
-                    quest.getSponsor().getCards().add(
-                            gameState.drawAdventureCard()
-                    );
-                }
-
                 System.out.println("== Quest runner says: Stage " + stageIndex++ + " completed");
                 quest.incrementStage(); // Increment stage
                 Thread.sleep(2000);
+            }
+
+            System.out.println("== Quest runner says: Discarding cards used in stage(s)");
+            quest.getStages().forEach(
+                    s -> {
+                        FoeStage stage = (FoeStage) s;
+
+                        quest.getSponsor().discardCard(stage.getFoe()); // Discarding cards used for quest
+                        gameState.discardAdventureCard(stage.getFoe()); // Adding the cards to the discard pile
+
+                        stage.getWeapons().forEach(
+                                w -> {
+                                    quest.getSponsor().discardCard(w); // Discarding weapon card
+                                    gameState.discardAdventureCard(w); // Adding the weapon to discard pile
+                        });
+            });
+
+
+            System.out.println("== Quest runner says: Distributing cards");
+            int amount = quest.distributeToSponsor();
+            for(int i = 0; i < amount; i++) {
+                quest.getSponsor().getCards().add(
+                        gameState.drawAdventureCard()
+                );
             }
 
             shouldStopRunner();

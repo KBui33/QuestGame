@@ -150,7 +150,8 @@ public class Quest implements Serializable {
      * Return the amount of cards the sponsor gets
      */
     public int distributeToSponsor(){
-        int[] cardsForSponsor = {0}; // amount of cards the sponsor gets
+        int[] cardsForSponsor = {0}; // Amount of cards sponsor gets
+        // Get all cards used for quest
         stages.forEach(
                 s -> {
                     if(s instanceof FoeStage stage){
@@ -160,9 +161,13 @@ public class Quest implements Serializable {
                     }
                 }
         );
-        cardsForSponsor[0] += stages.size(); //add the amount of stages to total amount of cards the sponsor gets
+        cardsForSponsor[0] += stages.size(); // Add total amount of stages
+        if((sponsor.getCards().size() + cardsForSponsor[0]) < 12) return cardsForSponsor[0];
+
         int difference = (sponsor.getCards().size() + cardsForSponsor[0]) - 12;
         cardsForSponsor[0] = cardsForSponsor[0] > 0 ? cardsForSponsor[0] - difference : cardsForSponsor[0];
         return cardsForSponsor[0];
     }
+
+
 }

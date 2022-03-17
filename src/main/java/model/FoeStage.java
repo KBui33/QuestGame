@@ -31,4 +31,6 @@ public class FoeStage extends Stage{
         return weapons;
     }
 
+    public FoeCard getFoe(){return foe;}
+
 }
