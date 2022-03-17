@@ -3,8 +3,8 @@ package gui.controllers;
 import game.components.card.*;
 import gui.other.AlertBox;
 import gui.partials.CardView;
-import gui.partials.QuestSetupView;
-import gui.partials.StageSetupView;
+import gui.partials.quest.QuestSetupView;
+import gui.partials.quest.StageSetupView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -113,7 +113,7 @@ public class QuestSetupController {
             if (quest.currentStageCount() == questCard.getStages()) {
                 // quest set up complete
                 parent.questSetupComplete(quest);
-                cleanUpGui();
+                parent.cleanUpGui();
             } else {
                 if (questCard.getStages() - quest.currentStageCount() <= 1) {
                     questSetupView.getNextStageButton().setText("Finish");
@@ -127,25 +127,6 @@ public class QuestSetupController {
         });
     }
 
-    private void cleanUpGui() {
-        // clear quest setup
-        parent.getView().getMainPane().getChildren().clear();
-
-        // reset view
-        parent.getView().getHud().getEndTurnButton().setVisible(true);
-
-        // fix list view - need better fix at some point
-        ObservableList<CardView> tmp = FXCollections.observableArrayList();
-
-        parent.getMyHandList().forEach(c -> {
-            CardView n = new CardView(c.getCard());
-            parent.setCardViewButtonActions(n);
-            tmp.add(n);
-        });
-        parent.setMyHandList(tmp);
-        parent.getView().getHud().getMyHand().setListViewItems(parent.getMyHandList());
-        parent.hideDecks();
-    }
 
     public boolean canAddWeapon(Card card) {
         if (card instanceof WeaponCard) {
