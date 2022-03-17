@@ -21,6 +21,7 @@ public class GameCommandHandler {
         Player player = gameCommand.getPlayer();
         ExternalGameState externalGameState = server.getExternalGameState();
         boolean startGame = false;
+        boolean shouldNotifyClients = true;
 
         Quest quest = null;
         boolean startQuest = false;
@@ -146,6 +147,41 @@ public class GameCommandHandler {
                 break;
             }
 
+            case TAKE_QUEST_STAGE_CARD: {
+                int playerId = gameCommand.getPlayerId();
+                Card card = gameCommand.getCard();
+                System.out.println("== Command handler says: Player " + playerId + " took stage card");
+
+                quest = internalGameState.getCurrentQuest();
+                quest.getQuestPlayerByPlayerId(playerId).addCard(card);
+
+                returnCommand.setCommand(Command.TOOK_QUEST_STAGE_CARD);
+                returnCommand.setPlayer(internalGameState.getPlayer(playerId));
+                returnCommand.setPlayerId(playerId);
+
+                internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
+                shouldNotifyClients = false;
+
+                break;
+            }
+
+            case DISCARD_QUEST_STAGE_CARD: {
+                int playerId = gameCommand.getPlayerId();
+                Card card = gameCommand.getCard();
+                System.out.println("== Command handler says: Player " + playerId + " discarded stage card");
+
+                internalGameState.discardAdventureCard(card);
+
+                returnCommand.setCommand(Command.DISCARDED_QUEST_STAGE_CARD);
+                returnCommand.setPlayer(internalGameState.getPlayer(playerId));
+                returnCommand.setPlayerId(playerId);
+
+                internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
+                shouldNotifyClients = false;
+
+                break;
+            }
+
             case TAKE_QUEST_TURN: {
                 int playerId = gameCommand.getPlayerId();
                 ArrayList<Card> stageCards = gameCommand.getCards();
@@ -183,10 +219,9 @@ public class GameCommandHandler {
             }
         }
 
-        server.notifyClients(returnCommand);
+        if(shouldNotifyClients) server.notifyClients(returnCommand);
 
         if(startGame)  new Thread(new GameRunner(server, server.getGameState())).start();
-        //if(startQuest)  new Thread(new QuestRunner(server, quest)).start();
 
         return returnCommand;
     }

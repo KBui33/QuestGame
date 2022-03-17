@@ -33,7 +33,19 @@ public class QuestRunner extends Runner {
                 // Deal adventure cards to participants
                 System.out.println("== Quest runner says: Dealing an adventure card to each participant");
                 for (QuestPlayer questPlayer : quest.getQuestPlayers()) {
-                    questPlayer.addCard(gameState.drawAdventureCard());
+                    int playerId = questPlayer.getPlayerId();
+                    System.out.println("== Game runner says: Sending quest stage card to player " + playerId);
+                    gameState.setGameStatus(GameStatus.TAKING_QUEST_STAGE_CARD);
+
+                    GameCommand questStageCardCommand = new GameCommand(Command.PLAYER_TAKE_STAGE_CARD);
+                    questStageCardCommand.setQuest(quest);
+                    questStageCardCommand.setCard(gameState.drawAdventureCard());
+                    server.notifyClientByPlayerId(playerId, questStageCardCommand);
+
+                    // Wait for player to take card
+                    while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
+                        Thread.sleep(1000);
+                    }
                 }
 
                 for (QuestPlayer questPlayer : quest.getQuestPlayers()) {
@@ -48,7 +60,7 @@ public class QuestRunner extends Runner {
 
                     // Wait for player to take turn
                     while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
-                        Thread.sleep(2000);
+                        Thread.sleep(1000);
                     }
                 }
 

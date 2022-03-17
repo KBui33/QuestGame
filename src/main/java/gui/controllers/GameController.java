@@ -82,6 +82,11 @@ public class GameController {
                             questJoin(questCard);
                             disableView(false);
                         });
+                    } else if(command.equals(Command.PLAYER_TAKE_STAGE_CARD)) { // Handle accepting/discarding quest stage card
+                        System.out.println("== It's my turn to accept/discard stage card");
+                        Card questStageAdventureCard = receivedCommand.getCard();
+                        Quest quest = receivedCommand.getQuest();
+
                     } else if(command.equals(Command.PLAYER_QUEST_TURN)) { // Handle taking quest turn
                         System.out.println("== It's my turn to take turn for quest stage");
                         Card questStageCard = receivedCommand.getCard();
@@ -100,7 +105,6 @@ public class GameController {
                             questController.pickCards(gc, quest);
                             disableView(false);
                         });
-
                     } else if(command.equals(Command.QUEST_STAGE_WON)) { // Handle end quest stage turn when stage won -> continue quest
                         System.out.println("== I just won this stage. Continuing...");
                         Quest quest = receivedCommand.getQuest();
