@@ -132,6 +132,8 @@ public class QuestRunner extends Runner {
                 );
             }
 
+            gameState.discardStoryCard(quest.getQuestCard());
+
             shouldStopRunner();
             System.out.println("== Quest runner says: Quest completed");
             server.notifyClients(new GameCommand(Command.ENDED_QUEST));
