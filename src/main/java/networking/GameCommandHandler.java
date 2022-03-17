@@ -3,7 +3,6 @@ package networking;
 import game.components.card.Card;
 import model.*;
 import networking.server.GameRunner;
-import networking.server.QuestRunner;
 import networking.server.Server;
 
 import java.io.IOException;
@@ -150,7 +149,7 @@ public class GameCommandHandler {
                 System.out.println("== Command handler says: Player " + playerId + " took stage turn");
 
                 quest = internalGameState.getCurrentQuest();
-                quest.getQuestPlayerByPlayerId(playerId).setPlayerQuestCardUsed(stageCards);
+                quest.getQuestPlayerByPlayerId(playerId).setPlayerQuestCardsUsed(stageCards);
                 player = internalGameState.getPlayer(playerId);
                 boolean discardedQuestCards = player.discardCards(stageCards);
 
