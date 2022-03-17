@@ -1,10 +1,8 @@
 package component.card;
 
 public class EventCard extends Card{
-    private String description;
-    public EventCard(String title, String cardImg, String description) {
+    public EventCard(String title, String cardImg) {
         super(title, cardImg);
-        this.description = description;
     }
 
 }
