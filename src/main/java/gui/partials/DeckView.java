@@ -38,8 +38,12 @@ public class DeckView {
         setListViewItems(input);
     }
 
-    public void setSize(int height) {
+    public void setHeight(int height) {
         listView.setMaxHeight(height);
+    }
+
+    public void setWidth(int width) {
+        listView.setMaxWidth(width);
     }
 
     public void setListViewItems (ObservableList<CardView> input) {

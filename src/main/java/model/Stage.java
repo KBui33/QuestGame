@@ -14,7 +14,6 @@ public abstract class Stage implements Serializable {
         this.stageResults = new HashMap<>();
         this.stageCard = stageCard;
     }
-
     public Card getStageCard() {
         return stageCard;
     }

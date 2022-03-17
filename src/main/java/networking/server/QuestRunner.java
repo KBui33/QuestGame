@@ -23,6 +23,8 @@ public class QuestRunner extends Runner {
         server.notifyClients(new GameCommand(Command.QUEST_STARTED));
         System.out.println("== Quest runner says: initializing quest");
 
+
+        // Setup already done in quest setup controller
         try {
             int stageIndex = 1;
             for(Stage stage: quest.getStages()) {
@@ -67,9 +69,9 @@ public class QuestRunner extends Runner {
                     server.notifyClient(playerId - 1, questStageLostCommand);
 
                     // Wait for player to end turn
-                    while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
-                        Thread.sleep(1000);
-                    }
+//                    while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
+//                        Thread.sleep(1000);
+//                    }
                 }
 
                 // Send notification to quest winners
@@ -85,9 +87,9 @@ public class QuestRunner extends Runner {
                     server.notifyClient(playerId - 1, questStageWonCommand);
 
                     // Wait for player to end turn
-                    while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
-                        Thread.sleep(1000);
-                    }
+//                    while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
+//                        Thread.sleep(1000);
+//                    }
                 }
 
                 // If no players are left, end quest
@@ -98,6 +100,13 @@ public class QuestRunner extends Runner {
                 // Reset cards of winners
                 for(QuestPlayer stageWinner: stageWinners) {
                     stageWinner.resetQuestCardsUsed();
+                }
+
+                // Give card(s) to the sponsor
+                for(int i = 0; i < quest.distributeToSponsor(); i++) {
+                    quest.getSponsor().getCards().add(
+                            gameState.drawAdventureCard()
+                    );
                 }
 
                 System.out.println("== Quest runner says: Stage " + stageIndex++ + " completed");

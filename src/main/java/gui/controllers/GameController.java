@@ -87,7 +87,6 @@ public class GameController {
                         view.getHud().getCurrentStateText().setText("Quest Stage: " + (questStageCard instanceof FoeCard ? "Foe" : "Test"));
                         System.out.println("== Quest Card: " + questStageCard.getTitle());
 
-                        // see line ~110
                         Platform.runLater(() -> {
                             // if quest controller is null you are sponsor i guess? not really -> NO NEED: If sponsoring, will never receive this command
                             try {
@@ -107,6 +106,8 @@ public class GameController {
                         view.getHud().getCurrentStateText().setText("Quest Stage: " + currentStage.getStageCard().getTitle());
 
                         // Should show button to continue
+                        questController.stageComplete(gc, currentStage, true);
+
                     } else if(command.equals(Command.QUEST_STAGE_LOST)) { // Handle end quest stage turn when stage lost -> sit out of quest
                         System.out.println("== I just lost this stage. Sitting out...");
                         Quest quest = receivedCommand.getQuest();
@@ -114,6 +115,8 @@ public class GameController {
                         view.getHud().getCurrentStateText().setText("Quest Stage: " + currentStage.getStageCard().getTitle());
 
                         // Should show sit out of quest button
+                        questController.stageComplete(gc, currentStage, false);
+
                     }
                 }
             });
@@ -249,6 +252,31 @@ public class GameController {
         return view;
     }
 
+    public void cleanUpGui() {
+        // clear quest setup
+        getView().getMainPane().getChildren().clear();
+
+        // reset view
+        getView().getHud().getEndTurnButton().setVisible(true);
+
+        // fix list view - need better fix at some point
+        ObservableList<CardView> tmp = FXCollections.observableArrayList();
+
+        getMyHandList().forEach(c -> {
+            CardView n = new CardView(c.getCard());
+            setCardViewButtonActions(n);
+            tmp.add(n);
+        });
+        setMyHandList(tmp);
+        getView().getHud().getMyHand().setListViewItems(getMyHandList());
+    }
+
+    public void playerStageContinue() {
+        // TODO :: - SEND CONTINUE TO SERVER
+
+        //
+    }
+
     public void playerStageCardsPicked(ArrayList<Card> weaponCards) {
         disableView(true);
         // send cards to server
@@ -258,6 +286,7 @@ public class GameController {
         takeQuestTurnCommand.setCards(weaponCards);
         GameCommand tookQuestTurnCommand =  client.sendCommand(takeQuestTurnCommand);
         player = tookQuestTurnCommand.getPlayer();
+        waitTurn();
     }
 
     private void waitTurn() {
@@ -281,6 +310,7 @@ public class GameController {
             GameCommand joinedQuestCommand =  client.sendCommand(willJoinQuestCommand);
             if (joinedQuestCommand.getPlayer() != null) player = joinedQuestCommand.getPlayer();
             view.getMainPane().remove(drawnCard);
+            waitTurn();
         }, e -> {
             // player chooses decline
             // Send will not join command to server
@@ -290,6 +320,7 @@ public class GameController {
             GameCommand didNotJoinQuestCommand =  client.sendCommand(willNotJoinQuestCommand);
             if (didNotJoinQuestCommand.getPlayer() != null) player = didNotJoinQuestCommand.getPlayer();
             view.getMainPane().remove(drawnCard);
+            waitTurn();
         });
     }
 
@@ -337,6 +368,7 @@ public class GameController {
         cardView.setButtonEvents(posButtonEvent, negButtonEvent);
 
         // add cardview to center of main pane
+        // might want to add card stack pane as its own thing later on.....
         view.getMainPane().add(cardView, Pos.CENTER, true);
     }
 
@@ -408,6 +440,7 @@ public class GameController {
         questSetupCompleteCommand.setQuest(quest);
         GameCommand questSetupCompletedCommand =  client.sendCommand(questSetupCompleteCommand);
         player = questSetupCompletedCommand.getPlayer();
+        waitTurn();
     }
 
     public void setCardViewButtonActions(CardView cardView) {

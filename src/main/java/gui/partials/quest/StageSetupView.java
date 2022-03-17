@@ -1,7 +1,9 @@
-package gui.partials;
+package gui.partials.quest;
 
 import game.components.card.Card;
 import game.components.card.FoeCard;
+import gui.partials.CardView;
+import gui.partials.DeckView;
 import javafx.geometry.Pos;
 import javafx.scene.layout.BorderPane;
 
@@ -32,7 +34,7 @@ public class StageSetupView extends BorderPane {
         this.setTop(stageCard);
 
         weaponsView = new DeckView();
-        weaponsView.setSize(225);
+        weaponsView.setHeight(225);
         if (card instanceof FoeCard) {
             this.setCenter(weaponsView.getListView());
         } else {
