@@ -1,7 +1,7 @@
 package networking.server;
 
-import game.components.card.Card;
-import game.components.card.QuestCard;
+import component.card.Card;
+import component.card.QuestCard;
 import model.*;
 
 import java.util.ArrayList;

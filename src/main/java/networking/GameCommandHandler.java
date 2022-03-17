@@ -1,9 +1,8 @@
 package networking;
 
-import game.components.card.Card;
+import component.card.Card;
 import model.*;
 import networking.server.GameRunner;
-import networking.server.QuestRunner;
 import networking.server.Server;
 
 import java.io.IOException;

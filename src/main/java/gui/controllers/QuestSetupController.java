@@ -1,6 +1,6 @@
 package gui.controllers;
 
-import game.components.card.*;
+import component.card.*;
 import gui.other.AlertBox;
 import gui.partials.CardView;
 import gui.partials.QuestSetupView;

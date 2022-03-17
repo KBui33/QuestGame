@@ -1,6 +1,6 @@
-package game.components.deck;
+package component.deck;
 
-import game.components.card.QuestCard;
+import component.card.QuestCard;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

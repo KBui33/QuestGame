@@ -1,6 +1,6 @@
-package game.components.deck;
+package component.deck;
 
-import game.components.card.Card;
+import component.card.Card;
 
 import java.io.Serializable;
 import java.util.ArrayList;

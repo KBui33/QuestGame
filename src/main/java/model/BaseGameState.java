@@ -1,6 +1,6 @@
 package model;
 
-import game.components.card.Card;
+import component.card.Card;
 
 import java.util.ArrayList;
 import java.util.List;

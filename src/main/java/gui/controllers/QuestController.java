@@ -1,8 +1,8 @@
 package gui.controllers;
 
-import game.components.card.Card;
-import game.components.card.QuestCard;
-import game.components.card.WeaponCard;
+import component.card.Card;
+import component.card.QuestCard;
+import component.card.WeaponCard;
 import gui.other.AlertBox;
 import gui.partials.CardView;
 import gui.partials.QuestView;

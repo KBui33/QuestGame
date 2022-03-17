@@ -1,6 +1,6 @@
 package model;
 
-import game.components.card.EventCard;
+import component.card.EventCard;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,4 +15,11 @@ public class Event implements Serializable {
         this.players = new ArrayList<>();
     }
 
+    public EventCard getEvent() {
+        return event;
+    }
+
+    public ArrayList<EventPlayer> getPlayers() {
+        return players;
+    }
 }

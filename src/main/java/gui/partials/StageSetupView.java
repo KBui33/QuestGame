@@ -1,7 +1,7 @@
 package gui.partials;
 
-import game.components.card.Card;
-import game.components.card.FoeCard;
+import component.card.Card;
+import component.card.FoeCard;
 import javafx.geometry.Pos;
 import javafx.scene.layout.BorderPane;
 

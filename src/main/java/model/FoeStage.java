@@ -1,10 +1,8 @@
 package model;
 
-import game.components.card.Card;
-import game.components.card.FoeCard;
-import game.components.card.WeaponCard;
+import component.card.FoeCard;
+import component.card.WeaponCard;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class FoeStage extends Stage{

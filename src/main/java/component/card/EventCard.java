@@ -1,4 +1,4 @@
-package game.components.card;
+package component.card;
 
 public class EventCard extends Card{
     private String description;

@@ -1,7 +1,5 @@
 package networking.server;
 
-import game.components.card.Card;
-import game.components.card.FoeCard;
 import model.*;
 
 import java.util.ArrayList;
@@ -107,7 +105,7 @@ public class QuestRunner extends Runner {
                 quest.incrementStage(); // Increment stage
                 Thread.sleep(2000);
             }
-
+            System.out.println("== Quest runner says: All stages completed");
             System.out.println("== Quest runner says: Discarding cards used in stage(s)");
             quest.getStages().forEach(
                     s -> {
@@ -124,13 +122,15 @@ public class QuestRunner extends Runner {
             });
 
 
-            System.out.println("== Quest runner says: Distributing cards");
+            System.out.println("== Quest runner says: Distributing cards to sponsor");
             int amount = quest.distributeToSponsor();
             for(int i = 0; i < amount; i++) {
                 quest.getSponsor().getCards().add(
                         gameState.drawAdventureCard()
                 );
             }
+
+            // TODO Distribute shields to players
 
             gameState.discardStoryCard(quest.getQuestCard());
 

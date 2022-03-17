@@ -1,6 +1,6 @@
 package gui.partials;
 
-import game.components.card.Card;
+import component.card.Card;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
