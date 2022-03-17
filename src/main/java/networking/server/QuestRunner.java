@@ -111,12 +111,15 @@ public class QuestRunner extends Runner {
             System.out.println("== Quest runner says: Quest completed");
 
             // Give card(s) to the sponsor
-            /*System.out.println("== Quest runner says: Distributing cards to sponsor");
-            for (int i = 0; i < quest.distributeToSponsor(); i++) {
-                quest.getSponsor().getCards().add(
-                        gameState.drawAdventureCard()
-                );
-            }*/
+            System.out.println("== Quest runner says: Distributing cards to sponsor");
+            int sponsorCardsNum = quest.distributeToSponsor();
+            for (int i = 0; i < sponsorCardsNum; i++) {
+                quest.getSponsor().addCard(gameState.drawAdventureCard());
+            }
+
+            // Distribute shields to winners
+            System.out.println("== Quest runner says: Distributing shields to winners");
+            quest.distributeShieldsToWinners();
 
             server.notifyClients(new GameCommand(Command.ENDED_QUEST));
             gameState.setGameStatus(GameStatus.RUNNING);

@@ -183,4 +183,14 @@ public class Quest implements Serializable {
         cardsForSponsor[0] = cardsForSponsor[0] > 0 ? cardsForSponsor[0] - difference : cardsForSponsor[0];
         return cardsForSponsor[0];
     }
+
+    /**
+     * Distribute shields accordingly to quest winners.
+     * Winners receive as many shields as there are stages in the quest
+     */
+    public void distributeShieldsToWinners() {
+        for(QuestPlayer questPlayer: questPlayers) {
+            questPlayer.incrementShields(stages.size());
+        }
+    }
 }

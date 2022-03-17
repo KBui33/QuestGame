@@ -52,4 +52,8 @@ public class QuestPlayer extends Player implements Serializable {
         this.player.addCard(card);
     }
 
+    @Override
+    public void incrementShields(int inc) {
+        this.player.incrementShields(inc);
+    }
 }
