@@ -7,6 +7,7 @@ import game.components.card.WeaponCard;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -165,12 +166,17 @@ public class Quest implements Serializable {
      */
     public ArrayList<QuestPlayer> computeStageWinners(Stage stage) {
         ArrayList<QuestPlayer> stageLosers = new ArrayList<>();
+        Map<String, String> stageResults = new HashMap<>();
         if (stage instanceof FoeStage) {
             int stageBattlePoints = ((FoeStage) stage).calculateBattlePoints();
             System.out.println("== Stage battle points: " + stageBattlePoints);
             for (QuestPlayer questPlayer : questPlayers) {
                 System.out.println("== Player " + questPlayer.getPlayerId() + " battle points: " + questPlayer.calculateBattlePoints());
-                if (questPlayer.calculateBattlePoints() >= stageBattlePoints) continue;
+                if (questPlayer.calculateBattlePoints() >= stageBattlePoints) {
+                    stageResults.put(Integer.toString(questPlayer.getPlayerId()), "won");
+                    continue;
+                }
+                stageResults.put(Integer.toString(questPlayer.getPlayerId()), "lost");
                 stageLosers.add(questPlayer);
             }
         }
@@ -178,6 +184,8 @@ public class Quest implements Serializable {
         for (QuestPlayer questPlayer : stageLosers) {
             questPlayers.remove(questPlayer);
         }
+
+        stage.setStageResults(stageResults);
 
         return stageLosers;
     }
