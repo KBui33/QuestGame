@@ -42,6 +42,7 @@ public class QuestRunner extends Runner {
                     gameState.setGameStatus(GameStatus.TAKING_QUEST_TURN);
 
                     GameCommand questStageCommand = new GameCommand(Command.PLAYER_QUEST_TURN);
+                    questStageCommand.setQuest(quest);
                     questStageCommand.setCard(stage.getStageCard());
                     server.notifyClientByPlayerId(playerId, questStageCommand);
 
