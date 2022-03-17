@@ -286,6 +286,7 @@ public class GameController {
         takeQuestTurnCommand.setCards(weaponCards);
         GameCommand tookQuestTurnCommand =  client.sendCommand(takeQuestTurnCommand);
         player = tookQuestTurnCommand.getPlayer();
+        waitTurn();
     }
 
     private void waitTurn() {
@@ -309,6 +310,7 @@ public class GameController {
             GameCommand joinedQuestCommand =  client.sendCommand(willJoinQuestCommand);
             if (joinedQuestCommand.getPlayer() != null) player = joinedQuestCommand.getPlayer();
             view.getMainPane().remove(drawnCard);
+            waitTurn();
         }, e -> {
             // player chooses decline
             // Send will not join command to server
@@ -318,6 +320,7 @@ public class GameController {
             GameCommand didNotJoinQuestCommand =  client.sendCommand(willNotJoinQuestCommand);
             if (didNotJoinQuestCommand.getPlayer() != null) player = didNotJoinQuestCommand.getPlayer();
             view.getMainPane().remove(drawnCard);
+            waitTurn();
         });
     }
 
@@ -437,6 +440,7 @@ public class GameController {
         questSetupCompleteCommand.setQuest(quest);
         GameCommand questSetupCompletedCommand =  client.sendCommand(questSetupCompleteCommand);
         player = questSetupCompletedCommand.getPlayer();
+        waitTurn();
     }
 
     public void setCardViewButtonActions(CardView cardView) {
