@@ -22,15 +22,14 @@ public class QuestView extends BorderPane {
     private VBox infoBox;
     private StageCompleteView stageCompletedView;
     private StageCardSelectionView scsv;
-    private Quest quest;
     public static final int PICK_CARDS = 1;
     public static final int SHOW_RESULTS = 2;
 
     public static final String STAGE_TEXT = "Stage: ";
 
-    public void setStageCompleted(Stage stage, boolean passed) {
-        this.stageCompletedView = new StageCompleteView();
-        stageCompletedView.setStage(stage, passed);
+    public void setStageCompleted(Stage s, boolean passed) {
+        this.stageCompletedView.setStage(s, passed);
+        mode(SHOW_RESULTS);
     }
 
     public StageCardSelectionView getStageCardSelectionView() {
@@ -68,10 +67,6 @@ public class QuestView extends BorderPane {
 
     }
 
-    public QuestView(Quest quest) {
-        this();
-        setQuest(quest);
-    }
 
     public void mode(int c) {
         switch (c) {
@@ -84,12 +79,6 @@ public class QuestView extends BorderPane {
             default:
                 clearStage();
         }
-    }
-
-    public void setQuest(Quest q) {
-        this.quest = q;
-        this.questCard.setCard(q.getQuestCard());
-//        this.setStage(q.getCurrentStage());
     }
 
     public CardView getQuestCard() {

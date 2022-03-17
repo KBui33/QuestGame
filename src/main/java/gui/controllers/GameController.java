@@ -85,6 +85,7 @@ public class GameController {
                     } else if(command.equals(Command.PLAYER_QUEST_TURN)) { // Handle taking quest turn
                         System.out.println("== It's my turn to take turn for quest stage");
                         Card questStageCard = receivedCommand.getCard();
+                        Quest quest = receivedCommand.getQuest();
                         view.getHud().getCurrentStateText().setText("Quest Stage: " + (questStageCard instanceof FoeCard ? "Foe" : "Test"));
                         System.out.println("== Quest Card: " + questStageCard.getTitle());
 
@@ -96,7 +97,7 @@ public class GameController {
 
                             view.getMainPane().clear();
                             view.getMainPane().add(questController.getQuestView());
-                            questController.pickCards(gc);
+                            questController.pickCards(gc, quest);
                             disableView(false);
                         });
 
@@ -107,7 +108,7 @@ public class GameController {
                         view.getHud().getCurrentStateText().setText("Quest Stage: " + currentStage.getStageCard().getTitle());
 
                         // Should show button to continue
-                        questController.stageComplete(gc, currentStage, true);
+                        Platform.runLater(() -> questController.stageComplete(gc, quest, true));
 
                     } else if(command.equals(Command.QUEST_STAGE_LOST)) { // Handle end quest stage turn when stage lost -> sit out of quest
                         System.out.println("== I just lost this stage. Sitting out...");
@@ -116,7 +117,7 @@ public class GameController {
                         view.getHud().getCurrentStateText().setText("Quest Stage: " + currentStage.getStageCard().getTitle());
 
                         // Should show sit out of quest button
-                        questController.stageComplete(gc, currentStage, false);
+                        Platform.runLater(() -> questController.stageComplete(gc, quest, false));
 
                     }
                 }
@@ -256,7 +257,7 @@ public class GameController {
 
     public void cleanUpGui() {
         // clear quest setup
-        getView().getMainPane().getChildren().clear();
+        // getView().getMainPane().getChildren().clear();
 
         // reset view
         getView().getHud().getEndTurnButton().setVisible(true);

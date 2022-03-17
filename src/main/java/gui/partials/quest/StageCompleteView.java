@@ -35,7 +35,7 @@ public class StageCompleteView extends BorderPane {
         stageText.getStyleClass().add("body-font");
 
         stageCard = new CardView();
-        stageCard.setSize(150);
+        stageCard.setSize(225);
         stageCard.getButtonBox().setVisible(false);
         setAlignment(stageCard, Pos.CENTER);
 
@@ -43,18 +43,22 @@ public class StageCompleteView extends BorderPane {
         weaponsView.setHeight(225);
         weaponsView.setWidth(400);
         this.weapons = FXCollections.observableArrayList();
+        weaponsView.setListViewItems(weapons);
 
         continueButton = new Button();
 
         stageBox = new HBox();
         stageBox.setAlignment(Pos.CENTER);
         setAlignment(stageBox, Pos.CENTER);
+        stageBox.setSpacing(5);
         stageBox.getChildren().add(stageCard);
 
         topBox = new VBox();
         topBox.setAlignment(Pos.CENTER);
+        topBox.setSpacing(5);
         setAlignment(stageBox, Pos.CENTER);
-        topBox.getChildren().addAll(stageText, stageBox);
+
+        topBox.getChildren().addAll(stageText, stageBox, continueButton);
 
         this.setTop(topBox);
 
@@ -74,7 +78,9 @@ public class StageCompleteView extends BorderPane {
         if (s instanceof FoeStage) {
             if (((FoeStage) s).getWeapons().size() > 0) {
                 ((FoeStage) s).getWeapons().forEach(w -> {
-                    weapons.add(new CardView(w));
+                    CardView cv = new CardView(w);
+                    cv.setSize(200);
+                    weapons.add(cv);
                 });
                 this.stageBox.getChildren().add(weaponsView.getListView());
             }

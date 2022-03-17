@@ -22,21 +22,19 @@ import java.util.HashSet;
  */
 public class QuestController {
     private QuestView questView;
-    private int stageCount;
-    private QuestCard quest;
+    private Quest quest;
     private ObservableList<CardView> weaponCards;
     private HashSet<String> weaponNames;
 
     public QuestController(Quest quest) {
-        this.questView = new QuestView(quest);
-        this.quest = quest.getQuestCard();
+        this.questView = new QuestView();
+        updateQuest(quest);
+        this.quest = quest;
 
         questView.clearStage();
-        stageCount = 1;
 
         this.weaponNames = new HashSet<String>();
         this.weaponCards = FXCollections.observableArrayList();
-
         // take in quest
 
         // show player current stage
@@ -50,14 +48,17 @@ public class QuestController {
         // LOTS OF DUPLICATE CODE WILL NEED MAJOR REFACTORING
     }
 
-    public void stageComplete(GameController parent, Stage stage, boolean passed) {
+    public void stageComplete(GameController parent, Quest quest, boolean passed) {
+        updateQuest(quest);
+        questView.setStageCompleted(quest.getCurrentStage(), passed);
         questView.mode(QuestView.SHOW_RESULTS);
-        questView.setStageCompleted(stage, passed);
 
         parent.hideDecks();
 
         questView.getStageCompletedView().getContinueButton().setOnAction(e -> {
             parent.cleanUpGui();
+
+            parent.playerStageContinue();
 
 
         });
@@ -65,9 +66,9 @@ public class QuestController {
 
     }
 
-    public void pickCards(GameController parent) {
-        questView.mode(QuestView.PICK_CARDS);
-        questView.getStageText().setText(QuestView.STAGE_TEXT + stageCount);
+    public void pickCards(GameController parent, Quest quest) {
+        updateQuest(quest);
+        this.questView.mode(QuestView.PICK_CARDS);
 
         ObservableList<CardView> weapons = parent.getMyHandList().filtered(c -> c.getCard() instanceof WeaponCard);
         ObservableList<CardView> addedWeapons = FXCollections.observableArrayList();
@@ -111,6 +112,7 @@ public class QuestController {
             weaponCards.clear();
 
             parent.cleanUpGui();
+            questView.clearStage();
 
             parent.playerStageCardsPicked(wl);
         });
@@ -144,5 +146,12 @@ public class QuestController {
 
     public QuestView getQuestView() {
         return questView;
+    }
+
+    public void updateQuest(Quest q) {
+        this.quest = q;
+        this.questView.getQuestCard().setCard(q.getQuestCard());
+
+        this.questView.getStageText().setText(QuestView.STAGE_TEXT + q.getCurrentStageNumber());
     }
 }

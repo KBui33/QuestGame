@@ -113,6 +113,7 @@ public class QuestSetupController {
             if (quest.currentStageCount() == questCard.getStages()) {
                 // quest set up complete
                 parent.questSetupComplete(quest);
+                parent.getView().getMainPane().getChildren().clear();
                 parent.cleanUpGui();
             } else {
                 if (questCard.getStages() - quest.currentStageCount() <= 1) {
