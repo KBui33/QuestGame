@@ -55,8 +55,6 @@ public class Quest implements Serializable {
         return this.stages.size();
     }
 
-    public void startQuest() {
-    }
 
     public QuestCard getQuestCard() {
         return questCard;
@@ -69,6 +67,8 @@ public class Quest implements Serializable {
     public Stage getCurrentStage() {
         return stages.get(currentStageIndex);
     }
+
+    public int getCurrentStageIndex() {return this.currentStageIndex; }
 
     public void incrementStage() { this.currentStageIndex++; }
 

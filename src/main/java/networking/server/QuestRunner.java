@@ -23,7 +23,6 @@ public class QuestRunner extends Runner {
         server.notifyClients(new GameCommand(Command.QUEST_STARTED));
         System.out.println("== Quest runner says: initializing quest");
 
-
         // Setup already done in quest setup controller
         try {
             int stageIndex = 1;

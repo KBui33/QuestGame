@@ -71,6 +71,7 @@ public class QuestController {
 
     public void pickCards(GameController parent) {
         questView.mode(true);
+        // TODO show the current stage number
         questView.getStageText().setText(QuestView.STAGE_TEXT + stageCount);
 
         ObservableList<CardView> weapons = parent.getMyHandList().filtered(c -> c.getCard() instanceof WeaponCard);
