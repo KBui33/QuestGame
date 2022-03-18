@@ -334,7 +334,7 @@ public class GameController {
 //            drawnCard.getPlayButton().setText("Play");
             drawnCard.getPlayButton().setVisible(false);
 
-            AlertBox.alert("You have too many cards so you must forfeit this draw.");
+            AlertBox.alert("You currently have too many cards so you must forfeit this draw.");
         } else {
             drawnCard.getDiscardButton().setVisible(false);
 

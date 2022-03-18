@@ -8,6 +8,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
+/**
+ * @author James DiNovo
+ *
+ * Display information about the outcome of the quest to all players.
+ */
 public class QuestCompleteView extends BorderPane {
 
     private Text headerText, infoText;
@@ -16,7 +21,7 @@ public class QuestCompleteView extends BorderPane {
     private VBox infoBox;
     private Button continueButton;
 
-    public static final String INFO_STRING = "Earned shields: ";
+    public static final String SHIELDS_STRING = "Earned shields: ";
 
     public QuestCompleteView() {
 

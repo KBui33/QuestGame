@@ -1,7 +1,6 @@
 package gui.controllers;
 
 import game.components.card.Card;
-import game.components.card.QuestCard;
 import game.components.card.WeaponCard;
 import gui.other.AlertBox;
 import gui.partials.CardView;
@@ -9,10 +8,7 @@ import gui.partials.quest.QuestView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
-import model.Command;
-import model.GameCommand;
 import model.Quest;
-import model.Stage;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,11 +18,9 @@ import java.util.HashSet;
  *
  * Control QuestView and handle interactions
  */
-public class QuestController {
+public class QuestController extends AbstractQuestController {
     private QuestView questView;
     private Quest quest;
-    private ObservableList<CardView> weaponCards;
-    private HashSet<String> weaponNames;
     private boolean questStarted = false;
 
     public QuestController(Quest quest) {
@@ -119,31 +113,6 @@ public class QuestController {
             parent.playerStageCardsPicked(wl);
         });
 
-    }
-
-    public boolean canAddWeapon(Card card) {
-        if (card instanceof WeaponCard) {
-            return !weaponNames.contains(card.getTitle());
-        }
-        return false;
-    }
-
-    public CardView addWeapon(WeaponCard card) {
-        CardView tmp = new CardView(card);
-        tmp.getButtonBox().setVisible(true);
-        tmp.getPlayButton().setVisible(false);
-        tmp.getDiscardButton().setText("Remove");
-        tmp.setSize(200);
-        weaponCards.add(tmp);
-        weaponNames.add(tmp.getCard().getTitle());
-
-
-        return tmp;
-    }
-
-    public void removeWeapon(CardView cardView) {
-        weaponCards.remove(cardView);
-        weaponNames.remove(cardView.getCard().getTitle());
     }
 
     public QuestView getQuestView() {

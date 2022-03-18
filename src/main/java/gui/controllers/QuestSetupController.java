@@ -23,11 +23,9 @@ import java.util.List;
  *
  * Controls QuestSetupView and StageSetupView to allow users to set up quests
  */
-public class QuestSetupController {
+public class QuestSetupController extends AbstractQuestController {
     private QuestSetupView questSetupView;
     private StageSetupView currentStage;
-    private ObservableList<CardView> weaponCards;
-    private HashSet<String> weaponNames;
     private ArrayList<Stage> stages;
     private GameController parent;
     private Quest quest;
@@ -128,14 +126,6 @@ public class QuestSetupController {
         });
     }
 
-
-    public boolean canAddWeapon(Card card) {
-        if (card instanceof WeaponCard) {
-            return !weaponNames.contains(card.getTitle());
-        }
-        return false;
-    }
-
     public QuestSetupView getView() {
         return questSetupView;
     }
@@ -155,24 +145,6 @@ public class QuestSetupController {
         questSetupView.getNextStageButton().setVisible(false);
         questSetupView.clearStage();
 
-    }
-
-    public CardView addWeapon(WeaponCard card) {
-        CardView tmp = new CardView(card);
-        tmp.getButtonBox().setVisible(true);
-        tmp.getPlayButton().setVisible(false);
-        tmp.getDiscardButton().setText("Remove");
-        tmp.setSize(200);
-        weaponCards.add(tmp);
-        weaponNames.add(tmp.getCard().getTitle());
-
-
-        return tmp;
-    }
-
-    public void removeWeapon(CardView cardView) {
-        weaponCards.remove(cardView);
-        weaponNames.remove(cardView.getCard().getTitle());
     }
 
     private void setStageView(StageSetupView ssv) {
