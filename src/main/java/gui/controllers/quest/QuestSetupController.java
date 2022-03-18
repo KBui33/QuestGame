@@ -14,6 +14,7 @@ import javafx.scene.control.Alert;
 import model.FoeStage;
 import model.Quest;
 import model.Stage;
+import utils.Callback;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -31,7 +32,7 @@ public class QuestSetupController extends AbstractQuestController {
     private GameController parent;
     private Quest quest;
 
-    public QuestSetupController(GameController parent, QuestCard questCard) {
+    public QuestSetupController(GameController parent, QuestCard questCard, Callback<Quest> callback) {
         this.parent = parent;
         this.quest = new Quest(questCard);
         this.questSetupView = new QuestSetupView(questCard);
@@ -111,7 +112,8 @@ public class QuestSetupController extends AbstractQuestController {
 
             if (quest.currentStageCount() == questCard.getStages()) {
                 // quest set up complete
-                parent.questSetupComplete(quest);
+//                parent.questSetupComplete(quest);
+                callback.call(quest);
                 parent.getView().getMainPane().getChildren().clear();
                 parent.cleanUpGui();
             } else {

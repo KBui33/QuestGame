@@ -108,7 +108,19 @@ public class GameController {
 
                             view.getMainPane().clear();
                             view.getMainPane().add(questController.getQuestView());
-                            questController.pickCards(gc, quest);
+                            questController.pickCards(gc, quest, (wl) -> {
+                                // once player has picked cards
+                                disableView(true);
+                                // send cards to server
+                                GameCommand takeQuestTurnCommand = new GameCommand(Command.TAKE_QUEST_TURN);
+                                takeQuestTurnCommand.setPlayerId(client.getPlayerId());
+                                takeQuestTurnCommand.setClientIndex(client.getClientIndex());
+                                takeQuestTurnCommand.setPlayer(player);
+                                takeQuestTurnCommand.setCards((ArrayList<Card>) wl);
+                                GameCommand tookQuestTurnCommand =  client.sendCommand(takeQuestTurnCommand);
+                                player = tookQuestTurnCommand.getPlayer();
+                                waitTurn();
+                            });
                             disableView(false);
                         });
                     } else if(command.equals(Command.QUEST_STAGE_WON)) { // Handle end quest stage turn when stage won -> continue quest
@@ -118,7 +130,9 @@ public class GameController {
                         view.getHud().getCurrentStateText().setText("Quest Stage: " + currentStage.getStageCard().getTitle());
 
                         // Should show button to continue
-                        Platform.runLater(() -> questController.stageComplete(gc, quest, true));
+                        Platform.runLater(() -> questController.stageComplete(gc, quest, true, () -> {
+                            playerStageContinue();
+                        }));
 
                     } else if(command.equals(Command.QUEST_STAGE_LOST)) { // Handle end quest stage turn when stage lost -> sit out of quest
                         System.out.println("== I just lost this stage. Sitting out...");
@@ -127,7 +141,9 @@ public class GameController {
                         view.getHud().getCurrentStateText().setText("Quest Stage: " + currentStage.getStageCard().getTitle());
 
                         // Should show sit out of quest button
-                        Platform.runLater(() -> questController.stageComplete(gc, quest, false));
+                        Platform.runLater(() -> questController.stageComplete(gc, quest, false, () -> {
+                            playerStageContinue();
+                        }));
 
                     }
                 }
@@ -294,18 +310,6 @@ public class GameController {
         if (endedQuestTurnCommand.getPlayer() != null) player = endedQuestTurnCommand.getPlayer();
     }
 
-    public void playerStageCardsPicked(ArrayList<Card> weaponCards) {
-        disableView(true);
-        // send cards to server
-        GameCommand takeQuestTurnCommand = new GameCommand(Command.TAKE_QUEST_TURN);
-        takeQuestTurnCommand.setPlayerId(client.getPlayerId());
-        takeQuestTurnCommand.setClientIndex(client.getClientIndex());
-        takeQuestTurnCommand.setPlayer(player);
-        takeQuestTurnCommand.setCards(weaponCards);
-        GameCommand tookQuestTurnCommand =  client.sendCommand(takeQuestTurnCommand);
-        player = tookQuestTurnCommand.getPlayer();
-        waitTurn();
-    }
 
     private void waitTurn() {
         disableView(true);
@@ -497,22 +501,21 @@ public class GameController {
 
     private void questSetup(QuestCard questCard) {
         view.getHud().getEndTurnButton().setVisible(false);
-        QuestSetupController qsc = new QuestSetupController(this, questCard);
+        QuestSetupController qsc = new QuestSetupController(this, questCard, (quest) -> {
+            System.out.println("== Quest setup completed");
+            // send sponsor to server
+            GameCommand questSetupCompleteCommand = new GameCommand(Command.WILL_SPONSOR_QUEST);
+            questSetupCompleteCommand.setPlayerId(client.getPlayerId());
+            questSetupCompleteCommand.setClientIndex(client.getClientIndex());
+            questSetupCompleteCommand.setPlayer(player);
+            questSetupCompleteCommand.setQuest(quest);
+            GameCommand questSetupCompletedCommand =  client.sendCommand(questSetupCompleteCommand);
+            player = questSetupCompletedCommand.getPlayer();
+            waitTurn();
+        });
         view.getMainPane().add(qsc.getView(), Pos.CENTER, false);
     }
 
-    public void questSetupComplete(Quest quest) {
-        System.out.println("== Quest setup completed");
-        // send sponsor to server
-        GameCommand questSetupCompleteCommand = new GameCommand(Command.WILL_SPONSOR_QUEST);
-        questSetupCompleteCommand.setPlayerId(client.getPlayerId());
-        questSetupCompleteCommand.setClientIndex(client.getClientIndex());
-        questSetupCompleteCommand.setPlayer(player);
-        questSetupCompleteCommand.setQuest(quest);
-        GameCommand questSetupCompletedCommand =  client.sendCommand(questSetupCompleteCommand);
-        player = questSetupCompletedCommand.getPlayer();
-        waitTurn();
-    }
 
     public void setCardViewButtonActions(CardView cardView) {
         cardView.getDiscardButton().setOnAction(e -> {
@@ -535,11 +538,5 @@ public class GameController {
         cardView.setOnMouseExited(e -> {
             cardView.getButtonBox().setVisible(false);
         });
-    }
-
-
-    public void playerQuestCompleteContinue() {
-        // TODO :: - send complete click stuff to server
-
     }
 }

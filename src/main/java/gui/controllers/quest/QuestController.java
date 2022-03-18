@@ -11,6 +11,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import model.Quest;
+import utils.Callback;
+import utils.CallbackEmpty;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -45,7 +47,7 @@ public class QuestController extends AbstractQuestController {
 
     }
 
-    public void stageComplete(GameController parent, Quest quest, boolean passed) {
+    public void stageComplete(GameController parent, Quest quest, boolean passed, CallbackEmpty callback) {
         updateQuest(quest);
         questView.setStageCompleted(quest.getCurrentStage(), passed);
         questView.mode(QuestView.Mode.SHOW_RESULTS);
@@ -56,13 +58,13 @@ public class QuestController extends AbstractQuestController {
             // Send continue command to server
 
             parent.cleanUpGui();
-            parent.playerStageContinue();
+            callback.call();
         });
 
 
     }
 
-    public void pickCards(GameController parent, Quest quest) {
+    public void pickCards(GameController parent, Quest quest, Callback<Object> callback) {
         updateQuest(quest);
         this.questStarted = true;
         this.questView.mode(QuestView.Mode.PICK_CARDS);
@@ -111,12 +113,12 @@ public class QuestController extends AbstractQuestController {
             parent.cleanUpGui();
             questView.clearStage();
 
-            parent.playerStageCardsPicked(wl);
+            callback.call(wl);
         });
 
     }
 
-    public void questComplete(GameController parent, Quest quest) {
+    public void questComplete(GameController parent, Quest quest, CallbackEmpty callback) {
 
         updateQuest(quest);
 
@@ -139,7 +141,7 @@ public class QuestController extends AbstractQuestController {
 
         this.questView.getQuestCompleteView().getContinueButton().setOnAction(e -> {
             parent.cleanUpGui();
-            parent.playerQuestCompleteContinue();
+            callback.call();
         });
 
     }
