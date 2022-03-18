@@ -27,11 +27,11 @@ public class QuestController {
     private Quest quest;
     private ObservableList<CardView> weaponCards;
     private HashSet<String> weaponNames;
+    private boolean questStarted = false;
 
     public QuestController(Quest quest) {
         this.questView = new QuestView();
         updateQuest(quest);
-        this.quest = quest;
 
         questView.clearStage();
 
@@ -62,8 +62,6 @@ public class QuestController {
 
             parent.cleanUpGui();
             parent.playerStageContinue();
-
-
         });
 
 
@@ -71,6 +69,7 @@ public class QuestController {
 
     public void pickCards(GameController parent, Quest quest) {
         updateQuest(quest);
+        this.questStarted = true;
         this.questView.mode(QuestView.PICK_CARDS);
 
         ObservableList<CardView> weapons = parent.getMyHandList().filtered(c -> c.getCard() instanceof WeaponCard);
@@ -156,5 +155,9 @@ public class QuestController {
         this.questView.getQuestCard().setCard(q.getQuestCard());
 
         this.questView.getStageText().setText(QuestView.STAGE_TEXT + q.getCurrentStageNumber());
+    }
+
+    public boolean hasQuestStarted() {
+        return questStarted;
     }
 }

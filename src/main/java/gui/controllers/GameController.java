@@ -78,7 +78,6 @@ public class GameController {
                         Platform.runLater(() -> {
                             view.getHud().getCurrentStateText().setText("Quest: " + questCard.getTitle() + "\nDo you want to join this quest?");
                             System.out.println(questCard.getCardImg());
-                            // TODO::Prompt player to join quest
                             questJoin(questCard);
                             disableView(false);
                         });
@@ -86,6 +85,11 @@ public class GameController {
                         System.out.println("== It's my turn to accept/discard stage card");
                         Card questStageAdventureCard = receivedCommand.getCard();
                         Quest quest = receivedCommand.getQuest();
+
+                        Platform.runLater(() -> {
+                            questController.updateQuest(quest);
+                            acceptQuestCard(questStageAdventureCard);
+                        });
 
                     } else if(command.equals(Command.PLAYER_QUEST_TURN)) { // Handle taking quest turn
                         System.out.println("== It's my turn to take turn for quest stage");
@@ -264,7 +268,7 @@ public class GameController {
         // getView().getMainPane().getChildren().clear();
 
         // reset view
-        getView().getHud().getEndTurnButton().setVisible(true);
+//        getView().getHud().getEndTurnButton().setVisible(true);
 
         // fix list view - need better fix at some point
         ObservableList<CardView> tmp = FXCollections.observableArrayList();
@@ -308,6 +312,53 @@ public class GameController {
 
     private void takeTurn() {
         disableView(false);
+    }
+
+    private void acceptQuestCard(Card card) {
+        CardView drawnCard = new CardView(card, true, "Accept", "Discard");
+
+        if (myHand.size() == 12 && questController.hasQuestStarted()) {
+            // drawing card during quest
+            drawnCard.getPlayButton().setText("Play");
+
+            if (!(card instanceof WeaponCard)) {
+                // if it isnt a weapon we cant play it
+                drawnCard.getPlayButton().setVisible(false);
+            } else {
+                AlertBox.alert("You may choose to play this card this stage or discard it.");
+            }
+
+        } else if (myHand.size() == 12) {
+            // this is for drawing the card at the start of the quest
+            // hide play button for now, will possibly need to deal with later
+//            drawnCard.getPlayButton().setText("Play");
+            drawnCard.getPlayButton().setVisible(false);
+
+            AlertBox.alert("You have too many cards so you must forfeit this draw.");
+        } else {
+            drawnCard.getDiscardButton().setVisible(false);
+
+            AlertBox.alert("You have received a new card.");
+        }
+
+        displayCard(drawnCard, e -> {
+            if (myHand.size() == 12 && questController.hasQuestStarted()) {
+                questController.addWeapon((WeaponCard) card);
+            } else if (myHand.size() < 12) {
+                // we have room in hand
+                addCardToHand(myHand, card);
+                // TODO :: - send response to server
+
+            }
+            view.getMainPane().remove(drawnCard);
+        }, e -> {
+            discardCard(drawnCard);
+
+            // TODO :: - send discard response to server
+
+            view.getMainPane().remove(drawnCard);
+        });
+
     }
 
     private void questJoin(Card card) {
