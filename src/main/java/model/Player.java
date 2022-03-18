@@ -12,6 +12,7 @@ public class Player implements Serializable {
     private int playerId;
     private List<Card> cards;
     private RankCard rankCard;
+    private int shields;
 
     // -- TODO:: Add cards array list
     // -- TODO:: Add weapons array list
@@ -19,6 +20,7 @@ public class Player implements Serializable {
     public Player() {
         cards = new ArrayList<Card>();
         rankCard = new RankCard("", "", Rank.SQUIRE);
+        shields = rankCard.getShields();
     }
 
     public Player(int playerId) {
@@ -29,6 +31,8 @@ public class Player implements Serializable {
     public void addCard(Card card) {
         cards.add(card);
     }
+
+    public void addCards(ArrayList<Card> cards) { cards.addAll(cards); }
 
     public Card discardCard(int cardIndex) {
         return cards.remove(cardIndex);
@@ -63,7 +67,15 @@ public class Player implements Serializable {
     }
 
     public int getShields() {
-        return rankCard.getShields();
+        return shields;
+    }
+
+    public void setShields(int shields) {
+        this.shields = shields;
+    }
+
+    public void incrementShields(int inc) {
+        shields += inc;
     }
 
     @Override

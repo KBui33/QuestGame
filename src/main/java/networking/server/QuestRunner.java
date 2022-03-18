@@ -26,27 +26,40 @@ public class QuestRunner extends Runner {
         // Setup already done in quest setup controller
         try {
             int stageIndex = 1;
-            for(Stage stage: quest.getStages()) {
+            for (Stage stage : quest.getStages()) {
                 System.out.println("== Quest runner says: Stage " + stageIndex + " started");
 
                 // Deal adventure cards to participants
                 System.out.println("== Quest runner says: Dealing an adventure card to each participant");
-                for(QuestPlayer questPlayer: quest.getQuestPlayers()) {
-                    questPlayer.addCard(gameState.drawAdventureCard());
+                for (QuestPlayer questPlayer : quest.getQuestPlayers()) {
+                    int playerId = questPlayer.getPlayerId();
+                    System.out.println("== Game runner says: Sending quest stage card to player " + playerId);
+                    gameState.setGameStatus(GameStatus.TAKING_QUEST_STAGE_CARD);
+
+                    GameCommand questStageCardCommand = new GameCommand(Command.PLAYER_TAKE_STAGE_CARD);
+                    questStageCardCommand.setQuest(quest);
+                    questStageCardCommand.setCard(gameState.drawAdventureCard());
+                    server.notifyClientByPlayerId(playerId, questStageCardCommand);
+
+                    // Wait for player to take card
+                    while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
+                        Thread.sleep(1000);
+                    }
                 }
 
-                for(QuestPlayer questPlayer: quest.getQuestPlayers()) {
+                for (QuestPlayer questPlayer : quest.getQuestPlayers()) {
                     int playerId = questPlayer.getPlayerId();
                     System.out.println("== Game runner says: Sending take quest turn command to player " + playerId);
                     gameState.setGameStatus(GameStatus.TAKING_QUEST_TURN);
 
                     GameCommand questStageCommand = new GameCommand(Command.PLAYER_QUEST_TURN);
+                    questStageCommand.setQuest(quest);
                     questStageCommand.setCard(stage.getStageCard());
-                    server.notifyClient(playerId - 1, questStageCommand);
+                    server.notifyClientByPlayerId(playerId, questStageCommand);
 
                     // Wait for player to take turn
                     while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
-                        Thread.sleep(2000);
+                        Thread.sleep(1000);
                     }
                 }
 
@@ -56,7 +69,7 @@ public class QuestRunner extends Runner {
                 System.out.println("== Stage:\tin game -> " + quest.getQuestPlayers().size() + "\tlosers -> " + stageLosers.size());
 
                 // Send notification to quest losers
-                for(QuestPlayer stageLoser: stageLosers) {
+                for (QuestPlayer stageLoser : stageLosers) {
                     int playerId = stageLoser.getPlayerId();
                     System.out.println("== Game runner says: Sending end quest turn to loser " + playerId);
                     gameState.setGameStatus(GameStatus.ENDING_QUEST_TURN);
@@ -65,16 +78,16 @@ public class QuestRunner extends Runner {
                     questStageLostCommand.setPlayerId(playerId);
                     questStageLostCommand.setPlayer(stageLoser.getPlayer());
                     questStageLostCommand.setQuest(quest);
-                    server.notifyClient(playerId - 1, questStageLostCommand);
+                    server.notifyClientByPlayerId(playerId, questStageLostCommand);
 
                     // Wait for player to end turn
-//                    while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
-//                        Thread.sleep(1000);
-//                    }
+                    while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
+                        Thread.sleep(1000);
+                    }
                 }
 
                 // Send notification to quest winners
-                for(QuestPlayer stageWinner: stageWinners) {
+                for (QuestPlayer stageWinner : stageWinners) {
                     int playerId = stageWinner.getPlayerId();
                     System.out.println("== Game runner says: Sending end quest turn to winner " + playerId);
                     gameState.setGameStatus(GameStatus.ENDING_QUEST_TURN);
@@ -83,27 +96,26 @@ public class QuestRunner extends Runner {
                     questStageWonCommand.setPlayerId(playerId);
                     questStageWonCommand.setPlayer(stageWinner.getPlayer());
                     questStageWonCommand.setQuest(quest);
-                    server.notifyClient(playerId - 1, questStageWonCommand);
+                    server.notifyClientByPlayerId(playerId, questStageWonCommand);
 
                     // Wait for player to end turn
-//                    while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
-//                        Thread.sleep(1000);
-//                    }
+                    while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
+                        Thread.sleep(1000);
+                    }
                 }
 
                 // If no players are left, end quest
-                if(stageWinners.size() <= 0) {
+                if (stageWinners.size() <= 0) {
                     break;
                 }
 
                 // Reset cards of winners
-                for(QuestPlayer stageWinner: stageWinners) {
+                for (QuestPlayer stageWinner : stageWinners) {
                     stageWinner.resetQuestCardsUsed();
                 }
 
                 System.out.println("== Quest runner says: Stage " + stageIndex++ + " completed");
                 quest.incrementStage(); // Increment stage
-                Thread.sleep(2000);
             }
             System.out.println("== Quest runner says: All stages completed");
             System.out.println("== Quest runner says: Discarding cards used in stage(s)");
@@ -136,6 +148,18 @@ public class QuestRunner extends Runner {
 
             shouldStopRunner();
             System.out.println("== Quest runner says: Quest completed");
+
+            // Give card(s) to the sponsor
+            System.out.println("== Quest runner says: Distributing cards to sponsor");
+            int sponsorCardsNum = quest.distributeToSponsor();
+            for (int i = 0; i < sponsorCardsNum; i++) {
+                quest.getSponsor().addCard(gameState.drawAdventureCard());
+            }
+
+            // Distribute shields to winners
+            System.out.println("== Quest runner says: Distributing shields to winners");
+            quest.distributeShieldsToWinners();
+
             server.notifyClients(new GameCommand(Command.ENDED_QUEST));
             gameState.setGameStatus(GameStatus.RUNNING);
 

@@ -1,6 +1,8 @@
-package gui.partials;
+package gui.partials.quest;
 
 import component.card.Card;
+import gui.partials.CardView;
+import gui.partials.quest.StageSetupView;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;

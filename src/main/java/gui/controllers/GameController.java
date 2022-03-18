@@ -50,6 +50,7 @@ public class GameController {
             // Fetch corresponding player
             GameCommand getAttachedPlayerCommand = new GameCommand(Command.GET_ATTACHED_PLAYER);
             getAttachedPlayerCommand.setPlayerId(client.getPlayerId());
+            getAttachedPlayerCommand.setClientIndex(client.getClientIndex());
             GameCommand returnedAttachedPlayerCommand = client.sendCommand(getAttachedPlayerCommand);
             player = returnedAttachedPlayerCommand.getPlayer();
             System.out.println("== My Player: \n\t" + player);
@@ -84,13 +85,18 @@ public class GameController {
                             questJoin(questCard);
                             disableView(false);
                         });
+                    } else if(command.equals(Command.PLAYER_TAKE_STAGE_CARD)) { // Handle accepting/discarding quest stage card
+                        System.out.println("== It's my turn to accept/discard stage card");
+                        Card questStageAdventureCard = receivedCommand.getCard();
+                        Quest quest = receivedCommand.getQuest();
+
                     } else if(command.equals(Command.PLAYER_QUEST_TURN)) { // Handle taking quest turn
                         System.out.println("== It's my turn to take turn for quest stage");
                         Card questStageCard = receivedCommand.getCard();
+                        Quest quest = receivedCommand.getQuest();
                         view.getHud().getCurrentStateText().setText("Quest Stage: " + (questStageCard instanceof FoeCard ? "Foe" : "Test"));
                         System.out.println("== Quest Card: " + questStageCard.getTitle());
 
-                        // see line ~110
                         Platform.runLater(() -> {
                             // if quest controller is null you are sponsor i guess? not really -> NO NEED: If sponsoring, will never receive this command
                             try {
@@ -99,10 +105,9 @@ public class GameController {
 
                             view.getMainPane().clear();
                             view.getMainPane().add(questController.getQuestView());
-                            questController.pickCards(gc);
+                            questController.pickCards(gc, quest);
                             disableView(false);
                         });
-
                     } else if(command.equals(Command.QUEST_STAGE_WON)) { // Handle end quest stage turn when stage won -> continue quest
                         System.out.println("== I just won this stage. Continuing...");
                         Quest quest = receivedCommand.getQuest();
@@ -110,6 +115,8 @@ public class GameController {
                         view.getHud().getCurrentStateText().setText("Quest Stage: " + currentStage.getStageCard().getTitle());
 
                         // Should show button to continue
+                        Platform.runLater(() -> questController.stageComplete(gc, quest, true));
+
                     } else if(command.equals(Command.QUEST_STAGE_LOST)) { // Handle end quest stage turn when stage lost -> sit out of quest
                         System.out.println("== I just lost this stage. Sitting out...");
                         Quest quest = receivedCommand.getQuest();
@@ -117,6 +124,8 @@ public class GameController {
                         view.getHud().getCurrentStateText().setText("Quest Stage: " + currentStage.getStageCard().getTitle());
 
                         // Should show sit out of quest button
+                        Platform.runLater(() -> questController.stageComplete(gc, quest, false));
+
                     }
                 }
             });
@@ -206,6 +215,7 @@ public class GameController {
             GameCommand endTurnCommand = new GameCommand(Command.END_TURN);
             endTurnCommand.setPlayerId(client.getPlayerId());
             endTurnCommand.setPlayer(player);
+            endTurnCommand.setClientIndex(client.getClientIndex());
             GameCommand endedTurnCommand =  client.sendCommand(endTurnCommand);
             player = endedTurnCommand.getPlayer();
             waitTurn();
@@ -252,15 +262,46 @@ public class GameController {
         return view;
     }
 
+    public void cleanUpGui() {
+        // clear quest setup
+        // getView().getMainPane().getChildren().clear();
+
+        // reset view
+        getView().getHud().getEndTurnButton().setVisible(true);
+
+        // fix list view - need better fix at some point
+        ObservableList<CardView> tmp = FXCollections.observableArrayList();
+
+        getMyHandList().forEach(c -> {
+            CardView n = new CardView(c.getCard());
+            setCardViewButtonActions(n);
+            tmp.add(n);
+        });
+        setMyHandList(tmp);
+        getView().getHud().getMyHand().setListViewItems(getMyHandList());
+    }
+
+    public void playerStageContinue() {
+        // send quest turn complete command to server
+        GameCommand endQuestTurnCommand = new GameCommand(Command.END_QUEST_TURN);
+        endQuestTurnCommand.setPlayerId(client.getPlayerId());
+        endQuestTurnCommand.setClientIndex(client.getClientIndex());
+        endQuestTurnCommand.setPlayer(player);
+        GameCommand endedQuestTurnCommand =  client.sendCommand(endQuestTurnCommand);
+        if (endedQuestTurnCommand.getPlayer() != null) player = endedQuestTurnCommand.getPlayer();
+    }
+
     public void playerStageCardsPicked(ArrayList<Card> weaponCards) {
         disableView(true);
         // send cards to server
         GameCommand takeQuestTurnCommand = new GameCommand(Command.TAKE_QUEST_TURN);
         takeQuestTurnCommand.setPlayerId(client.getPlayerId());
+        takeQuestTurnCommand.setClientIndex(client.getClientIndex());
         takeQuestTurnCommand.setPlayer(player);
         takeQuestTurnCommand.setCards(weaponCards);
         GameCommand tookQuestTurnCommand =  client.sendCommand(takeQuestTurnCommand);
         player = tookQuestTurnCommand.getPlayer();
+        waitTurn();
     }
 
     private void waitTurn() {
@@ -280,19 +321,23 @@ public class GameController {
             // Send will join command to server
             GameCommand willJoinQuestCommand = new GameCommand(Command.WILL_JOIN_QUEST);
             willJoinQuestCommand.setPlayerId(client.getPlayerId());
+            willJoinQuestCommand.setClientIndex(client.getClientIndex());
             willJoinQuestCommand.setPlayer(player);
             GameCommand joinedQuestCommand =  client.sendCommand(willJoinQuestCommand);
             if (joinedQuestCommand.getPlayer() != null) player = joinedQuestCommand.getPlayer();
             view.getMainPane().remove(drawnCard);
+            waitTurn();
         }, e -> {
             // player chooses decline
             // Send will not join command to server
             GameCommand willNotJoinQuestCommand = new GameCommand(Command.WILL_NOT_JOIN_QUEST);
             willNotJoinQuestCommand.setPlayerId(client.getPlayerId());
+            willNotJoinQuestCommand.setClientIndex(client.getClientIndex());
             willNotJoinQuestCommand.setPlayer(player);
             GameCommand didNotJoinQuestCommand =  client.sendCommand(willNotJoinQuestCommand);
             if (didNotJoinQuestCommand.getPlayer() != null) player = didNotJoinQuestCommand.getPlayer();
             view.getMainPane().remove(drawnCard);
+            waitTurn();
         });
     }
 
@@ -310,6 +355,7 @@ public class GameController {
                     // send decline to server
                     GameCommand declineSponsorQuestCommand = new GameCommand(Command.WILL_NOT_SPONSOR_QUEST);
                     declineSponsorQuestCommand.setPlayerId(client.getPlayerId());
+                    declineSponsorQuestCommand.setClientIndex(client.getClientIndex());
                     declineSponsorQuestCommand.setPlayer(player);
                     GameCommand declinedSponsorQuestCommand =  client.sendCommand(declineSponsorQuestCommand);
                     player = declinedSponsorQuestCommand.getPlayer();
@@ -324,6 +370,7 @@ public class GameController {
             // send decline to server
             GameCommand declineSponsorQuestCommand = new GameCommand(Command.WILL_NOT_SPONSOR_QUEST);
             declineSponsorQuestCommand.setPlayerId(client.getPlayerId());
+            declineSponsorQuestCommand.setClientIndex(client.getClientIndex());
             declineSponsorQuestCommand.setPlayer(player);
             GameCommand declinedSponsorQuestCommand =  client.sendCommand(declineSponsorQuestCommand);
             player =  declinedSponsorQuestCommand.getPlayer();
@@ -340,6 +387,7 @@ public class GameController {
         cardView.setButtonEvents(posButtonEvent, negButtonEvent);
 
         // add cardview to center of main pane
+        // might want to add card stack pane as its own thing later on.....
         view.getMainPane().add(cardView, Pos.CENTER, true);
     }
 
@@ -347,6 +395,7 @@ public class GameController {
         // Send discard card command
         GameCommand discardCardCommand = new GameCommand(Command.DISCARD_CARD);
         discardCardCommand.setPlayerId(client.getPlayerId());
+        discardCardCommand.setClientIndex(client.getClientIndex());
         discardCardCommand.setPlayer(player);
         discardCardCommand.setCard(card.getCard());
         GameCommand discardedCardCommand =  client.sendCommand(discardCardCommand);
@@ -407,10 +456,12 @@ public class GameController {
         // send sponsor to server
         GameCommand questSetupCompleteCommand = new GameCommand(Command.WILL_SPONSOR_QUEST);
         questSetupCompleteCommand.setPlayerId(client.getPlayerId());
+        questSetupCompleteCommand.setClientIndex(client.getClientIndex());
         questSetupCompleteCommand.setPlayer(player);
         questSetupCompleteCommand.setQuest(quest);
         GameCommand questSetupCompletedCommand =  client.sendCommand(questSetupCompleteCommand);
         player = questSetupCompletedCommand.getPlayer();
+        waitTurn();
     }
 
     public void setCardViewButtonActions(CardView cardView) {

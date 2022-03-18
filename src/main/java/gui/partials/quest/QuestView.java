@@ -1,5 +1,8 @@
-package gui.partials;
+package gui.partials.quest;
 
+import gui.partials.CardView;
+import gui.partials.quest.StageCardSelectionView;
+import gui.partials.quest.StageCompleteView;
 import javafx.geometry.Pos;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -17,14 +20,16 @@ public class QuestView extends BorderPane {
     private CardView questCard;
     private Text stageText, headerText;
     private VBox infoBox;
-    private StageCompleteView stageView;
+    private StageCompleteView stageCompletedView;
     private StageCardSelectionView scsv;
-    private Quest quest;
+    public static final int PICK_CARDS = 1;
+    public static final int SHOW_RESULTS = 2;
 
     public static final String STAGE_TEXT = "Stage: ";
 
-    public void setStage(Stage stage) {
-        StageCompleteView sv = new StageCompleteView(stage);
+    public void setStageCompleted(Stage s, boolean passed) {
+        this.stageCompletedView.setStage(s, passed);
+        mode(SHOW_RESULTS);
     }
 
     public StageCardSelectionView getStageCardSelectionView() {
@@ -57,28 +62,23 @@ public class QuestView extends BorderPane {
         this.setTop(infoBox);
 
         // show stages in the middle
-        stageView = new StageCompleteView();
+        stageCompletedView = new StageCompleteView();
         scsv = new StageCardSelectionView();
 
     }
 
-    public QuestView(Quest quest) {
-        this();
-        setQuest(quest);
-    }
 
-    public void mode(boolean pickCards) {
-        if (pickCards) {
-            this.setCenter(this.scsv);
-        } else {
-            this.setCenter(this.stageView);
+    public void mode(int c) {
+        switch (c) {
+            case PICK_CARDS:
+                this.setCenter(this.scsv);
+                break;
+            case SHOW_RESULTS:
+                this.setCenter(this.stageCompletedView);
+                break;
+            default:
+                clearStage();
         }
-    }
-
-    public void setQuest(Quest q) {
-        this.quest = q;
-        this.questCard.setCard(q.getQuestCard());
-        this.setStage(q.getCurrentStage());
     }
 
     public CardView getQuestCard() {
@@ -93,8 +93,8 @@ public class QuestView extends BorderPane {
         return headerText;
     }
 
-    public StageCompleteView getStageView() {
-        return stageView;
+    public StageCompleteView getStageCompletedView() {
+        return stageCompletedView;
     }
 
     public StageCardSelectionView getScsv() {

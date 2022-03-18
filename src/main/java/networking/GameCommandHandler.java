@@ -21,6 +21,7 @@ public class GameCommandHandler {
         Player player = gameCommand.getPlayer();
         ExternalGameState externalGameState = server.getExternalGameState();
         boolean startGame = false;
+        boolean shouldNotifyClients = true;
 
         Quest quest = null;
         boolean startQuest = false;
@@ -29,6 +30,9 @@ public class GameCommandHandler {
             case READY: {
                 System.out.println("== Command handler says:  Adding new player");
                 int playerId = internalGameState.addPlayer(new Player());
+
+                server.setClientPlayerId(gameCommand.getClientIndex(), playerId);
+
                 returnCommand.setCommand(Command.IS_READY);
                 returnCommand.setPlayerId(playerId);
                 returnCommand.setReadyPlayers(internalGameState.getNumPlayers());
@@ -143,13 +147,48 @@ public class GameCommandHandler {
                 break;
             }
 
+            case TAKE_QUEST_STAGE_CARD: {
+                int playerId = gameCommand.getPlayerId();
+                Card card = gameCommand.getCard();
+                System.out.println("== Command handler says: Player " + playerId + " took stage card");
+
+                quest = internalGameState.getCurrentQuest();
+                quest.getQuestPlayerByPlayerId(playerId).addCard(card);
+
+                returnCommand.setCommand(Command.TOOK_QUEST_STAGE_CARD);
+                returnCommand.setPlayer(internalGameState.getPlayer(playerId));
+                returnCommand.setPlayerId(playerId);
+
+                internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
+                shouldNotifyClients = false;
+
+                break;
+            }
+
+            case DISCARD_QUEST_STAGE_CARD: {
+                int playerId = gameCommand.getPlayerId();
+                Card card = gameCommand.getCard();
+                System.out.println("== Command handler says: Player " + playerId + " discarded stage card");
+
+                internalGameState.discardAdventureCard(card);
+
+                returnCommand.setCommand(Command.DISCARDED_QUEST_STAGE_CARD);
+                returnCommand.setPlayer(internalGameState.getPlayer(playerId));
+                returnCommand.setPlayerId(playerId);
+
+                internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
+                shouldNotifyClients = false;
+
+                break;
+            }
+
             case TAKE_QUEST_TURN: {
                 int playerId = gameCommand.getPlayerId();
                 ArrayList<Card> stageCards = gameCommand.getCards();
                 System.out.println("== Command handler says: Player " + playerId + " took stage turn");
 
                 quest = internalGameState.getCurrentQuest();
-                quest.getQuestPlayerByPlayerId(playerId).setPlayerQuestCardUsed(stageCards);
+                quest.getQuestPlayerByPlayerId(playerId).setPlayerQuestCardsUsed(stageCards);
                 player = internalGameState.getPlayer(playerId);
                 boolean discardedQuestCards = player.discardCards(stageCards);
 
@@ -180,10 +219,9 @@ public class GameCommandHandler {
             }
         }
 
-        server.notifyClients(returnCommand);
+        if(shouldNotifyClients) server.notifyClients(returnCommand);
 
         if(startGame)  new Thread(new GameRunner(server, server.getGameState())).start();
-        //if(startQuest)  new Thread(new QuestRunner(server, quest)).start();
 
         return returnCommand;
     }

@@ -1,5 +1,6 @@
-package gui.partials;
+package gui.partials.quest;
 
+import gui.partials.DeckView;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
@@ -33,7 +34,7 @@ public class StageCardSelectionView extends BorderPane {
         infoText.getStyleClass().add("body-font");
 
         weaponsView = new DeckView();
-        weaponsView.setSize(225);
+        weaponsView.setHeight(225);
 
         cardSelectionBox.getChildren().addAll(infoText, doneButton, weaponsView.getListView());
         this.setCenter(cardSelectionBox);

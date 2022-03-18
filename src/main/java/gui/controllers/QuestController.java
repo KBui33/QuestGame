@@ -5,12 +5,14 @@ import component.card.QuestCard;
 import component.card.WeaponCard;
 import gui.other.AlertBox;
 import gui.partials.CardView;
-import gui.partials.QuestView;
-import gui.partials.StageCompleteView;
+import gui.partials.quest.QuestView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import model.Command;
+import model.GameCommand;
 import model.Quest;
+import model.Stage;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,21 +24,19 @@ import java.util.HashSet;
  */
 public class QuestController {
     private QuestView questView;
-    private StageCompleteView currentStage;
-    private int stageCount;
-    private QuestCard quest;
+    private Quest quest;
     private ObservableList<CardView> weaponCards;
     private HashSet<String> weaponNames;
 
     public QuestController(Quest quest) {
-        this.questView = new QuestView(quest);
+        this.questView = new QuestView();
+        updateQuest(quest);
+        this.quest = quest;
 
         questView.clearStage();
-        stageCount = 1;
 
         this.weaponNames = new HashSet<String>();
         this.weaponCards = FXCollections.observableArrayList();
-
         // take in quest
 
         // show player current stage
@@ -50,29 +50,28 @@ public class QuestController {
         // LOTS OF DUPLICATE CODE WILL NEED MAJOR REFACTORING
     }
 
-    private void cleanUpGui(GameController parent) {
-        // clear quest setup
-        parent.getView().getMainPane().getChildren().clear();
+    public void stageComplete(GameController parent, Quest quest, boolean passed) {
+        updateQuest(quest);
+        questView.setStageCompleted(quest.getCurrentStage(), passed);
+        questView.mode(QuestView.SHOW_RESULTS);
 
-        // reset view
-        parent.getView().getHud().getEndTurnButton().setVisible(true);
+        parent.hideDecks();
 
-        // fix list view - need better fix at some point
-        ObservableList<CardView> tmp = FXCollections.observableArrayList();
+        questView.getStageCompletedView().getContinueButton().setOnAction(e -> {
+            // Send continue command to server
 
-        parent.getMyHandList().forEach(c -> {
-            CardView n = new CardView(c.getCard());
-            parent.setCardViewButtonActions(n);
-            tmp.add(n);
+            parent.cleanUpGui();
+            parent.playerStageContinue();
+
+
         });
-        parent.setMyHandList(tmp);
-        parent.getView().getHud().getMyHand().setListViewItems(parent.getMyHandList());
+
+
     }
 
-    public void pickCards(GameController parent) {
-        questView.mode(true);
-        // TODO show the current stage number
-        questView.getStageText().setText(QuestView.STAGE_TEXT + stageCount);
+    public void pickCards(GameController parent, Quest quest) {
+        updateQuest(quest);
+        this.questView.mode(QuestView.PICK_CARDS);
 
         ObservableList<CardView> weapons = parent.getMyHandList().filtered(c -> c.getCard() instanceof WeaponCard);
         ObservableList<CardView> addedWeapons = FXCollections.observableArrayList();
@@ -115,7 +114,8 @@ public class QuestController {
             weaponNames.clear();
             weaponCards.clear();
 
-            cleanUpGui(parent);
+            parent.cleanUpGui();
+            questView.clearStage();
 
             parent.playerStageCardsPicked(wl);
         });
@@ -147,11 +147,14 @@ public class QuestController {
         weaponNames.remove(cardView.getCard().getTitle());
     }
 
-    public StageCompleteView getCurrentStageView() {
-        return currentStage;
-    }
-
     public QuestView getQuestView() {
         return questView;
+    }
+
+    public void updateQuest(Quest q) {
+        this.quest = q;
+        this.questView.getQuestCard().setCard(q.getQuestCard());
+
+        this.questView.getStageText().setText(QuestView.STAGE_TEXT + q.getCurrentStageNumber());
     }
 }

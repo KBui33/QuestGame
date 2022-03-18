@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class QuestPlayer extends Player implements Serializable {
     private Player player;
-    private ArrayList<Card> playerQuestCardUsed;
+    private ArrayList<Card> playerQuestCardsUsed;
 
     public QuestPlayer(Player player) {
         this.player = player;
@@ -20,18 +20,18 @@ public class QuestPlayer extends Player implements Serializable {
         return player.getPlayerId();
     }
 
-    public void setPlayerQuestCardUsed(ArrayList<Card> playerQuestCardUsed) {
-        this.playerQuestCardUsed = new ArrayList<>(playerQuestCardUsed);
+    public void setPlayerQuestCardsUsed(ArrayList<Card> playerQuestCardsUsed) {
+        this.playerQuestCardsUsed = new ArrayList<>(playerQuestCardsUsed);
     }
 
-    public ArrayList<Card> getPlayerQuestCardUsed() {
-        return playerQuestCardUsed;
+    public ArrayList<Card> getPlayerQuestCardsUsed() {
+        return playerQuestCardsUsed;
     }
 
     public int calculateBattlePoints() {
         int battlePoints = player.getShields(); // Minimum battle points
 
-        for(Card questCardUsed: playerQuestCardUsed) { // Sum up battle points based on quest cards used
+        for(Card questCardUsed: playerQuestCardsUsed) { // Sum up battle points based on quest cards used
             if(questCardUsed instanceof WeaponCard) {
                 battlePoints += ((WeaponCard) questCardUsed).getBattlePoints();
             }
@@ -41,7 +41,7 @@ public class QuestPlayer extends Player implements Serializable {
     }
 
     public void resetQuestCardsUsed() {
-        playerQuestCardUsed.clear();
+        playerQuestCardsUsed.clear();
     }
 
     public Player getPlayer() {
@@ -52,4 +52,8 @@ public class QuestPlayer extends Player implements Serializable {
         this.player.addCard(card);
     }
 
+    @Override
+    public void incrementShields(int inc) {
+        this.player.incrementShields(inc);
+    }
 }

@@ -7,6 +7,7 @@ import component.card.WeaponCard;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,7 +39,10 @@ public class Quest implements Serializable {
     }
 
 
-    public boolean addPlayer(Player player){return questPlayers.add((QuestPlayer) player);}
+    public boolean addPlayer(Player player) {
+        return questPlayers.add((QuestPlayer) player);
+    }
+
     public void addStage(Stage stage) {
         this.stages.add(stage);
     }
@@ -55,6 +59,8 @@ public class Quest implements Serializable {
         return this.stages.size();
     }
 
+    public void startQuest() {
+    }
 
     public QuestCard getQuestCard() {
         return questCard;
@@ -68,9 +74,14 @@ public class Quest implements Serializable {
         return stages.get(currentStageIndex);
     }
 
-    public int getCurrentStageIndex() {return this.currentStageIndex; }
+    public void incrementStage() {
+        this.currentStageIndex++;
+    }
 
-    public void incrementStage() { this.currentStageIndex++; }
+    // note this is the number of the current stage not the index in the array
+    public int getCurrentStageNumber() {
+        return this.currentStageIndex + 1;
+    }
 
     public ArrayList<Stage> getStages() {
         return stages;
@@ -105,12 +116,17 @@ public class Quest implements Serializable {
      */
     public ArrayList<QuestPlayer> computeStageWinners(Stage stage) {
         ArrayList<QuestPlayer> stageLosers = new ArrayList<>();
+        Map<String, String> stageResults = new HashMap<>();
         if (stage instanceof FoeStage) {
             int stageBattlePoints = ((FoeStage) stage).calculateBattlePoints();
             System.out.println("== Stage battle points: " + stageBattlePoints);
             for (QuestPlayer questPlayer : questPlayers) {
                 System.out.println("== Player " + questPlayer.getPlayerId() + " battle points: " + questPlayer.calculateBattlePoints());
-                if (questPlayer.calculateBattlePoints() >= stageBattlePoints) continue;
+                if (questPlayer.calculateBattlePoints() >= stageBattlePoints) {
+                    stageResults.put(Integer.toString(questPlayer.getPlayerId()), "won");
+                    continue;
+                }
+                stageResults.put(Integer.toString(questPlayer.getPlayerId()), "lost");
                 stageLosers.add(questPlayer);
             }
         }
@@ -119,15 +135,17 @@ public class Quest implements Serializable {
             questPlayers.remove(questPlayer);
         }
 
+        stage.setStageResults(stageResults);
+
         return stageLosers;
     }
 
     /**
      * Sets up the quest
-     * */
-    public void setupQuest(Map<Card, List<Card>> stageCards){
+     */
+    public void setupQuest(Map<Card, List<Card>> stageCards) {
         // Adding stages to the current quest
-        for(int i = 0; i < questCard.getStages(); i++){
+        for (int i = 0; i < questCard.getStages(); i++) {
             stageCards
                     .forEach((key, value) -> {
                         if (key instanceof WeaponCard) {
@@ -149,14 +167,13 @@ public class Quest implements Serializable {
     /**
      * Return the amount of cards the sponsor gets
      */
-    public int distributeToSponsor(){
-        int[] cardsForSponsor = {0}; // Amount of cards sponsor gets
-        // Get all cards used for quest
+    public int distributeToSponsor() {
+        int[] cardsForSponsor = {0}; // amount of cards the sponsor gets
         stages.forEach(
                 s -> {
-                    if(s instanceof FoeStage stage){
+                    if (s instanceof FoeStage stage) {
                         cardsForSponsor[0] += 1 + stage.getWeapons().size(); // The foe card itself and weapons if any
-                    }else{
+                    } else {
                         cardsForSponsor[0] += 1; // The test card itself
                     }
                 }
@@ -166,5 +183,13 @@ public class Quest implements Serializable {
         return cardsForSponsor[0];
     }
 
-
+    /**
+     * Distribute shields accordingly to quest winners.
+     * Winners receive as many shields as there are stages in the quest
+     */
+    public void distributeShieldsToWinners() {
+        for(QuestPlayer questPlayer: questPlayers) {
+            questPlayer.incrementShields(stages.size());
+        }
+    }
 }
