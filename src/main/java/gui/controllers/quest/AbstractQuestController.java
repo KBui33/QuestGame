@@ -1,4 +1,4 @@
-package gui.controllers;
+package gui.controllers.quest;
 
 import game.components.card.Card;
 import game.components.card.WeaponCard;

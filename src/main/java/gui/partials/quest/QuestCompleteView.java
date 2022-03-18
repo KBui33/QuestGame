@@ -25,8 +25,8 @@ public class QuestCompleteView extends BorderPane {
 
     public QuestCompleteView() {
 
-        headerText = new Text("Complete");
-        headerText.getStyleClass().add("body-font");
+//        headerText = new Text("Complete");
+//        headerText.getStyleClass().add("body-font");
         infoText = new Text();
         infoText.getStyleClass().add("stats-font");
 
@@ -44,7 +44,8 @@ public class QuestCompleteView extends BorderPane {
         infoBox = new VBox();
         infoBox.setSpacing(5);
         infoBox.setAlignment(Pos.CENTER);
-        infoBox.getChildren().addAll(headerText, infoText);
+//        infoBox.getChildren().addAll(headerText, infoText);
+        infoBox.getChildren().add(infoText);
 
         continueButton = new Button("Continue");
         continueButton.getStyleClass().add("success");
@@ -56,9 +57,9 @@ public class QuestCompleteView extends BorderPane {
 
     }
 
-    public Text getHeaderText() {
-        return headerText;
-    }
+//    public Text getHeaderText() {
+//        return headerText;
+//    }
 
     public Text getInfoText() {
         return infoText;

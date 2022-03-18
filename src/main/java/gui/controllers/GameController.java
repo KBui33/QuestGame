@@ -1,6 +1,8 @@
 package gui.controllers;
 
 import game.components.card.*;
+import gui.controllers.quest.QuestController;
+import gui.controllers.quest.QuestSetupController;
 import gui.other.AlertBox;
 import gui.panes.GamePane;
 import gui.partials.CardView;
@@ -536,4 +538,8 @@ public class GameController {
     }
 
 
+    public void playerQuestCompleteContinue() {
+        // TODO :: - send complete click stuff to server
+
+    }
 }

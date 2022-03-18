@@ -1,9 +1,11 @@
-package gui.controllers;
+package gui.controllers.quest;
 
 import game.components.card.Card;
 import game.components.card.WeaponCard;
+import gui.controllers.GameController;
 import gui.other.AlertBox;
 import gui.partials.CardView;
+import gui.partials.quest.QuestCompleteView;
 import gui.partials.quest.QuestView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -41,13 +43,12 @@ public class QuestController extends AbstractQuestController {
 
         // show results to player and then move to next quest player or after each player has chosen cards?
 
-        // LOTS OF DUPLICATE CODE WILL NEED MAJOR REFACTORING
     }
 
     public void stageComplete(GameController parent, Quest quest, boolean passed) {
         updateQuest(quest);
         questView.setStageCompleted(quest.getCurrentStage(), passed);
-        questView.mode(QuestView.SHOW_RESULTS);
+        questView.mode(QuestView.Mode.SHOW_RESULTS);
 
         parent.hideDecks();
 
@@ -64,7 +65,7 @@ public class QuestController extends AbstractQuestController {
     public void pickCards(GameController parent, Quest quest) {
         updateQuest(quest);
         this.questStarted = true;
-        this.questView.mode(QuestView.PICK_CARDS);
+        this.questView.mode(QuestView.Mode.PICK_CARDS);
 
         ObservableList<CardView> weapons = parent.getMyHandList().filtered(c -> c.getCard() instanceof WeaponCard);
         ObservableList<CardView> addedWeapons = FXCollections.observableArrayList();
@@ -111,6 +112,34 @@ public class QuestController extends AbstractQuestController {
             questView.clearStage();
 
             parent.playerStageCardsPicked(wl);
+        });
+
+    }
+
+    public void questComplete(GameController parent, Quest quest) {
+
+        updateQuest(quest);
+
+        ObservableList<String> players = FXCollections.observableArrayList();
+        ObservableList<String> outcomes = FXCollections.observableArrayList();
+
+        // get all players and when they failed or if they succeeded
+        quest.getQuestPlayers().forEach(p -> {
+            players.add("Player " + p.getPlayerId());
+            // TODO :: - get player outcomes
+//            outcomes.add(p.failed ? "Failed" : "Passed");
+        });
+
+        this.questView.getQuestCompleteView().getPlayers().setItems(players);
+        this.questView.getQuestCompleteView().getOutcomes().setItems(outcomes);
+
+        // if this player succeeded, add shields and display that
+        // if this player failed, display that
+        this.questView.getQuestCompleteView().getInfoText().setText(QuestCompleteView.SHIELDS_STRING + 3);
+
+        this.questView.getQuestCompleteView().getContinueButton().setOnAction(e -> {
+            parent.cleanUpGui();
+            parent.playerQuestCompleteContinue();
         });
 
     }
