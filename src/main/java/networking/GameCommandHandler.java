@@ -24,6 +24,7 @@ public class GameCommandHandler {
         boolean shouldNotifyClients = true;
 
         Quest quest = null;
+        Event event = null;
         boolean startQuest = false;
 
         switch (command) {
@@ -214,6 +215,33 @@ public class GameCommandHandler {
                 returnCommand.setPlayerId(playerId);
 
                 internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
+
+                break;
+            }
+            case EVENT_STARTED: {
+                event = internalGameState.getCurrentEvent();
+
+                System.out.println("== Command handler say: An event started");
+
+                returnCommand.setCommand(Command.EVENT_STARTED);
+                returnCommand.setPlayer(internalGameState.getPlayer(gameCommand.getPlayerId()));
+                returnCommand.setPlayerId(gameCommand.getPlayerId());
+
+
+
+
+//                int playerId = gameCommand.getPlayerId();
+//
+//                quest = internalGameState.getCurrentQuest();
+//                quest.addQuestPlayer(player); // Add participant to quest
+//
+//                System.out.println("== Command handler says: Player " + playerId + " agreed to participate in quest");
+//
+//                returnCommand.setCommand(Command.JOINED_QUEST);
+//                returnCommand.setPlayer(internalGameState.getPlayer(playerId));
+//                returnCommand.setPlayerId(playerId);
+//
+//                internalGameState.setGameStatus(GameStatus.FINDING_QUEST_PARTICIPANTS);
 
                 break;
             }

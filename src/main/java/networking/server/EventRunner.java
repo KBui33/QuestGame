@@ -22,22 +22,30 @@ public class EventRunner extends Runner{
         try{
             // Figure out which event is being played
             switch(event.getEvent().getTitle()){
-                case "King's Recognition":
+                case "King's Recognition":{
                     break;
-                case "Queen's Favor":
+                }
+                case "Queen's Favor": {
                     break;
-                case "Court Called to Camelot":
+                }
+                case "Court Called to Camelot": {
                     break;
-                case "Pox":
+                }
+                case "Pox": {
                     break;
-                case "Plague":
+                }
+                case "Plague": {
                     break;
-                case "Chivalrous Deed":
+                }
+                case "Chivalrous Deed": {
                     break;
-                case "Prosperity Throughout the Realm":
+                }
+                case "Prosperity Throughout the Realm": {
                     break;
-                case "King's Call to Arms":
+                }
+                case "King's Call to Arms": {
                     break;
+                }
             }
         }catch(Exception e){
             e.printStackTrace();
