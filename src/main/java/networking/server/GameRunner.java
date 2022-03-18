@@ -1,6 +1,7 @@
 package networking.server;
 
 import component.card.Card;
+import component.card.EventCard;
 import component.card.QuestCard;
 import model.*;
 
@@ -46,7 +47,11 @@ public class GameRunner extends Runner {
 
                     // Start quest sponsor thread if card is a quest card
                     if(currentStoryCard instanceof QuestCard) {
+                        System.out.println("== Game runner says: Quest card played");
                         new Thread(new QuestSponsorRunner(server)).start();
+                    } else if (currentStoryCard instanceof EventCard){
+                        System.out.println("== Game runner says: Event card played");
+                        new Thread(new EventRunner(server, gameState.getCurrentEvent()));
                     } else {
                         playerTurnCommand.setCard(currentStoryCard); // Deal story card to current player
                         server.notifyClients(playerTurnCommand);

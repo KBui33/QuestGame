@@ -42,9 +42,9 @@ public class QuestRunner extends Runner {
                     server.notifyClientByPlayerId(playerId, questStageCardCommand);
 
                     // Wait for player to take card
-                    while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
-                        Thread.sleep(1000);
-                    }
+//                    while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
+//                        Thread.sleep(1000);
+//                    }
                 }
 
                 for (QuestPlayer questPlayer : quest.getQuestPlayers()) {
