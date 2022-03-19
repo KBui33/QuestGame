@@ -28,14 +28,16 @@ public class QuestCompleteView extends BorderPane {
 //        headerText = new Text("Complete");
 //        headerText.getStyleClass().add("body-font");
         infoText = new Text();
-        infoText.getStyleClass().add("stats-font");
+        infoText.getStyleClass().add("body-font");
 
         players = new ListView<>();
         players.setEditable(false);
-        players.setMaxHeight(200);
+        players.setMaxHeight(100);
+        players.setMaxWidth(100);
         outcomes = new ListView<>();
         outcomes.setEditable(false);
-        outcomes.setMaxHeight(200);
+        outcomes.setMaxHeight(100);
+        outcomes.setMaxWidth(100);
 
         outcomeBox = new HBox();
         outcomeBox.setAlignment(Pos.CENTER);

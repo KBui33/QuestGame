@@ -162,7 +162,7 @@ public class GameController {
                         Quest quest = receivedCommand.getQuest();
 
                         Platform.runLater(() -> {
-                            questController.questComplete(gc, quest, () -> {
+                            questController.questComplete(gc, quest, player, () -> {
                                 // TODO :: Send response to server
                             });
                         });

@@ -10,6 +10,7 @@ import gui.partials.quest.QuestView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import model.Player;
 import model.Quest;
 import utils.Callback;
 import utils.CallbackEmpty;
@@ -119,7 +120,7 @@ public class QuestController extends AbstractQuestController {
 
     }
 
-    public void questComplete(GameController parent, Quest quest, CallbackEmpty callback) {
+    public void questComplete(GameController parent, Quest quest, Player player, CallbackEmpty callback) {
 
         updateQuest(quest);
         this.questView.mode(QuestView.Mode.COMPLETE);
@@ -140,7 +141,12 @@ public class QuestController extends AbstractQuestController {
 
         // if this player succeeded, add shields and display that
         // if this player failed, display that
-        this.questView.getQuestCompleteView().getInfoText().setText(QuestCompleteView.SHIELDS_STRING + 3);
+        Boolean res = quest.getCurrentStage().getStageResults().get(player.getPlayerId());
+        if (res != null && res) {
+            this.questView.getQuestCompleteView().getInfoText().setText(QuestCompleteView.SHIELDS_STRING + quest.getStages().size());
+        } else {
+            this.questView.getQuestCompleteView().getInfoText().setText("You were defeated. No shields earned.");
+        }
 
         this.questView.getQuestCompleteView().getContinueButton().setOnAction(e -> {
             parent.cleanUpGui();

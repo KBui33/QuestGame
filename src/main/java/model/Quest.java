@@ -75,7 +75,9 @@ public class Quest implements Serializable {
     }
 
     public void incrementStage() {
-        this.currentStageIndex++;
+        if (this.currentStageIndex < this.getStages().size() - 1) {
+            this.currentStageIndex++;
+        }
     }
 
     // note this is the number of the current stage not the index in the array
