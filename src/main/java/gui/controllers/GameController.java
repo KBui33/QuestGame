@@ -153,13 +153,11 @@ public class GameController {
 
                         // TODO :: Display quest sponsor cards to sponsor and add accept button
 
-                    }  else if (command.equals(Command.PLAYER_TAKE_QUEST_SHIELDS)) { // Accept shields for quest winner
+                    }  /* else if (command.equals(Command.PLAYER_TAKE_QUEST_SHIELDS)) { // Accept shields for quest winner -> NOT NEEDED - REMOVE
                         System.out.println("== As winner, I accept quest shields");
                         Quest quest = receivedCommand.getQuest();
-
-                        // TODO :: Display just dialog with appropriate number of shields (== just quest stages)
-
-                    } else if (command.equals(Command.PLAYER_END_QUEST)) { // Complete quest
+                        
+                    }*/ else if (command.equals(Command.PLAYER_END_QUEST)) { // Complete quest
                         System.out.println("== As quest participant, I end the quest");
                         Quest quest = receivedCommand.getQuest();
 

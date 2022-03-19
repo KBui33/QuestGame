@@ -151,6 +151,7 @@ public class QuestRunner extends Runner {
             }
 
 
+            /* NOT NEEDED - TO BE REMOVED
             // Distribute shields to winners
             System.out.println("== Quest runner says: Distributing shields to winners");
             quest.distributeShieldsToWinners();
@@ -172,6 +173,7 @@ public class QuestRunner extends Runner {
                     Thread.sleep(1000);
                 }
             }
+             */
 
             // Send end quest command to all participants
             for (QuestPlayer questPlayer : quest.getQuestPlayers()) {
