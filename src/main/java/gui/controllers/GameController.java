@@ -22,9 +22,8 @@ import java.util.ArrayList;
 
 /**
  * @author James DiNovo
- *
+ * <p>
  * Controller for manipulating GamePane view
- *
  */
 public class GameController {
 
@@ -35,7 +34,7 @@ public class GameController {
     private GamePane view;
     private QuestController questController;
 
-    public GameController (GamePane view) {
+    public GameController(GamePane view) {
         myHand = FXCollections.observableArrayList();
         discarded = FXCollections.observableArrayList();
         this.view = view;
@@ -61,11 +60,11 @@ public class GameController {
                     GameCommand receivedCommand = (GameCommand) o;
                     Command command = receivedCommand.getCommand();
                     System.out.println("== Game Controller command update says: " + receivedCommand);
-                    if(command.equals(Command.PLAYER_TURN) && receivedCommand.getPlayerId() == client.getPlayerId()) { // Take turn if it's player's turn
+                    if (command.equals(Command.PLAYER_TURN) && receivedCommand.getPlayerId() == client.getPlayerId()) { // Take turn if it's player's turn
                         System.out.println("== It's my turn. Player: " + receivedCommand.getPlayerId());
                         view.getHud().getCurrentStateText().setText("Take your turn!");
                         disableView(false);
-                    } else if(command.equals(Command.SHOULD_SPONSOR_QUEST)) { // Prompt player to sponsor quest
+                    } else if (command.equals(Command.SHOULD_SPONSOR_QUEST)) { // Prompt player to sponsor quest
                         System.out.println("== It's my turn to decide to sponsor the quest");
                         Card questCard = receivedCommand.getCard();
                         Platform.runLater(() -> {
@@ -74,7 +73,7 @@ public class GameController {
                             questSponsor(questCard);
                             disableView(false);
                         });
-                    } else if(command.equals(Command.SHOULD_JOIN_QUEST)) { // Prompt player to join quest
+                    } else if (command.equals(Command.SHOULD_JOIN_QUEST)) { // Prompt player to join quest
                         System.out.println("== It's my turn to decide to join the quest");
                         Card questCard = receivedCommand.getCard();
                         Platform.runLater(() -> {
@@ -83,7 +82,7 @@ public class GameController {
                             questJoin(questCard);
                             disableView(false);
                         });
-                    } else if(command.equals(Command.PLAYER_TAKE_STAGE_CARD)) { // Handle accepting/discarding quest stage card
+                    } else if (command.equals(Command.PLAYER_TAKE_STAGE_CARD)) { // Handle accepting/discarding quest stage card
                         System.out.println("== It's my turn to accept/discard stage card");
                         Card questStageAdventureCard = receivedCommand.getCard();
                         Quest quest = receivedCommand.getQuest();
@@ -93,7 +92,7 @@ public class GameController {
                             acceptQuestCard(questStageAdventureCard);
                         });
 
-                    } else if(command.equals(Command.PLAYER_QUEST_TURN)) { // Handle taking quest turn
+                    } else if (command.equals(Command.PLAYER_QUEST_TURN)) { // Handle taking quest turn
                         System.out.println("== It's my turn to take turn for quest stage");
                         Card questStageCard = receivedCommand.getCard();
                         Quest quest = receivedCommand.getQuest();
@@ -103,8 +102,11 @@ public class GameController {
                         Platform.runLater(() -> {
                             // if quest controller is null you are sponsor i guess? not really -> NO NEED: If sponsoring, will never receive this command
                             try {
-                                while (questController == null) Thread.sleep(1000); // Wait for quest controller to be setup
-                            } catch (InterruptedException e) {e.printStackTrace();}
+                                while (questController == null)
+                                    Thread.sleep(1000); // Wait for quest controller to be setup
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
 
                             view.getMainPane().clear();
                             view.getMainPane().add(questController.getQuestView());
@@ -117,13 +119,13 @@ public class GameController {
                                 takeQuestTurnCommand.setClientIndex(client.getClientIndex());
                                 takeQuestTurnCommand.setPlayer(player);
                                 takeQuestTurnCommand.setCards((ArrayList<Card>) wl);
-                                GameCommand tookQuestTurnCommand =  client.sendCommand(takeQuestTurnCommand);
+                                GameCommand tookQuestTurnCommand = client.sendCommand(takeQuestTurnCommand);
                                 player = tookQuestTurnCommand.getPlayer();
                                 waitTurn();
                             });
                             disableView(false);
                         });
-                    } else if(command.equals(Command.QUEST_STAGE_WON)) { // Handle end quest stage turn when stage won -> continue quest
+                    } else if (command.equals(Command.QUEST_STAGE_WON)) { // Handle end quest stage turn when stage won -> continue quest
                         System.out.println("== I just won this stage. Continuing...");
                         Quest quest = receivedCommand.getQuest();
                         Stage currentStage = quest.getCurrentStage();
@@ -134,7 +136,7 @@ public class GameController {
                             playerStageContinue();
                         }));
 
-                    } else if(command.equals(Command.QUEST_STAGE_LOST)) { // Handle end quest stage turn when stage lost -> sit out of quest
+                    } else if (command.equals(Command.QUEST_STAGE_LOST)) { // Handle end quest stage turn when stage lost -> sit out of quest
                         System.out.println("== I just lost this stage. Sitting out...");
                         Quest quest = receivedCommand.getQuest();
                         Stage currentStage = quest.getCurrentStage();
@@ -144,6 +146,24 @@ public class GameController {
                         Platform.runLater(() -> questController.stageComplete(gc, quest, false, () -> {
                             playerStageContinue();
                         }));
+                    } else if (command.equals(Command.PLAYER_TAKE_SPONSOR_QUEST_CARDS)) { // Accept quest cards for sponsor
+                        System.out.println("== As sponsor, I accept quest cards");
+                        Quest quest = receivedCommand.getQuest();
+                        ArrayList<Card> cards = receivedCommand.getCards();
+
+                        // TODO :: Display quest sponsor cards to sponsor and add accept button
+
+                    }  else if (command.equals(Command.PLAYER_TAKE_QUEST_SHIELDS)) { // Accept shields for quest winner
+                        System.out.println("== As winner, I accept quest shields");
+                        Quest quest = receivedCommand.getQuest();
+
+                        // TODO :: Display just dialog with appropriate number of shields (== just quest stages)
+
+                    } else if (command.equals(Command.PLAYER_END_QUEST)) { // Complete quest
+                        System.out.println("== As quest participant, I end the quest");
+                        Quest quest = receivedCommand.getQuest();
+
+                        // TODO :: Just display button to complete/end/continue
 
                     }
                 }
@@ -161,17 +181,17 @@ public class GameController {
                         }
                     });
                     Card currentStoryCard = externalGameState.getCurrentStoryCard();
-                    if(currentStoryCard != null) // Display this on GUI
-                        System.out.println("Game Controller state update says: Current story " + currentStoryCard.getClass() + " -> " +  currentStoryCard.getTitle());
+                    if (currentStoryCard != null) // Display this on GUI
+                        System.out.println("Game Controller state update says: Current story " + currentStoryCard.getClass() + " -> " + currentStoryCard.getTitle());
 
                     // needs quest to initialize quest controller
                     Quest q = externalGameState.getCurrentQuest();
                     if (q != null) {
-                        if(questController == null) {
+                        if (questController == null) {
                             Platform.runLater(() -> {
                                 questController = new QuestController(q);
                             });
-                        } else if(externalGameState.getGameStatus().equals(GameStatus.RUNNING_QUEST) && q.getSponsor().getPlayerId() != player.getPlayerId() && q.getQuestPlayerByPlayerId(player.getPlayerId()) == null) { // Check if player is still in quest
+                        } else if (externalGameState.getGameStatus().equals(GameStatus.RUNNING_QUEST) && q.getSponsor().getPlayerId() != player.getPlayerId() && q.getQuestPlayerByPlayerId(player.getPlayerId()) == null) { // Check if player is still in quest
                             System.out.println("== Game Controller state update says: You have fallen out of the quest");
                             view.getHud().getCurrentStateText().setText("Quest Stage: Sitting out till the end of the quest");
                         }
@@ -179,7 +199,7 @@ public class GameController {
                 }
             });
 
-        } catch(IOException err) {
+        } catch (IOException err) {
             err.printStackTrace();
         }
 
@@ -235,7 +255,7 @@ public class GameController {
             endTurnCommand.setPlayerId(client.getPlayerId());
             endTurnCommand.setPlayer(player);
             endTurnCommand.setClientIndex(client.getClientIndex());
-            GameCommand endedTurnCommand =  client.sendCommand(endTurnCommand);
+            GameCommand endedTurnCommand = client.sendCommand(endTurnCommand);
             player = endedTurnCommand.getPlayer();
             waitTurn();
         });
@@ -306,7 +326,7 @@ public class GameController {
         endQuestTurnCommand.setPlayerId(client.getPlayerId());
         endQuestTurnCommand.setClientIndex(client.getClientIndex());
         endQuestTurnCommand.setPlayer(player);
-        GameCommand endedQuestTurnCommand =  client.sendCommand(endQuestTurnCommand);
+        GameCommand endedQuestTurnCommand = client.sendCommand(endQuestTurnCommand);
         if (endedQuestTurnCommand.getPlayer() != null) player = endedQuestTurnCommand.getPlayer();
     }
 
@@ -353,14 +373,22 @@ public class GameController {
             } else if (myHand.size() < 12) {
                 // we have room in hand
                 addCardToHand(myHand, card);
-                // TODO :: - send response to server
 
+                GameCommand acceptQuestStageCardCommand = defaultServerCommand(new GameCommand(Command.ACCEPT_QUEST_STAGE_CARD));
+                acceptQuestStageCardCommand.setCard(card);
+                GameCommand acceptedQuestStageCardCommand = client.sendCommand(acceptQuestStageCardCommand);
+                if (acceptedQuestStageCardCommand.getPlayer() != null)
+                    player = acceptedQuestStageCardCommand.getPlayer();
             }
             view.getMainPane().remove(drawnCard);
         }, e -> {
             discardCard(drawnCard);
 
-            // TODO :: - send discard response to server
+            // Server command
+            GameCommand discardQuestStageCardCommand = defaultServerCommand(new GameCommand(Command.DISCARD_QUEST_STAGE_CARD));
+            discardQuestStageCardCommand.setCard(card);
+            GameCommand discardedQuestStageCardCommand = client.sendCommand(discardQuestStageCardCommand);
+            if (discardedQuestStageCardCommand.getPlayer() != null) player = discardedQuestStageCardCommand.getPlayer();
 
             view.getMainPane().remove(drawnCard);
         });
@@ -377,7 +405,7 @@ public class GameController {
             willJoinQuestCommand.setPlayerId(client.getPlayerId());
             willJoinQuestCommand.setClientIndex(client.getClientIndex());
             willJoinQuestCommand.setPlayer(player);
-            GameCommand joinedQuestCommand =  client.sendCommand(willJoinQuestCommand);
+            GameCommand joinedQuestCommand = client.sendCommand(willJoinQuestCommand);
             if (joinedQuestCommand.getPlayer() != null) player = joinedQuestCommand.getPlayer();
             view.getMainPane().remove(drawnCard);
             waitTurn();
@@ -388,7 +416,7 @@ public class GameController {
             willNotJoinQuestCommand.setPlayerId(client.getPlayerId());
             willNotJoinQuestCommand.setClientIndex(client.getClientIndex());
             willNotJoinQuestCommand.setPlayer(player);
-            GameCommand didNotJoinQuestCommand =  client.sendCommand(willNotJoinQuestCommand);
+            GameCommand didNotJoinQuestCommand = client.sendCommand(willNotJoinQuestCommand);
             if (didNotJoinQuestCommand.getPlayer() != null) player = didNotJoinQuestCommand.getPlayer();
             view.getMainPane().remove(drawnCard);
             waitTurn();
@@ -399,19 +427,16 @@ public class GameController {
         CardView drawnCard = new CardView(card, true, "Sponsor", "Decline");
 
         displayCard(drawnCard, e -> {
-            if (myHand.filtered(c -> c.getCard() instanceof FoeCard || c.getCard() instanceof TestCard).size()
-                    < ((QuestCard) drawnCard.getCard()).getStages()) {
+            if (myHand.filtered(c -> c.getCard() instanceof FoeCard || c.getCard() instanceof TestCard).size() < ((QuestCard) drawnCard.getCard()).getStages()) {
                 // notify user they dont have enough cards to sponsor
-                AlertBox.alert("Insufficient cards in hand. This Quest requires at least "
-                        + ((QuestCard) drawnCard.getCard()).getStages() +
-                        " Foe or Test cards to sponsor.", Alert.AlertType.WARNING, e2 -> {
+                AlertBox.alert("Insufficient cards in hand. This Quest requires at least " + ((QuestCard) drawnCard.getCard()).getStages() + " Foe or Test cards to sponsor.", Alert.AlertType.WARNING, e2 -> {
 
                     // send decline to server
                     GameCommand declineSponsorQuestCommand = new GameCommand(Command.WILL_NOT_SPONSOR_QUEST);
                     declineSponsorQuestCommand.setPlayerId(client.getPlayerId());
                     declineSponsorQuestCommand.setClientIndex(client.getClientIndex());
                     declineSponsorQuestCommand.setPlayer(player);
-                    GameCommand declinedSponsorQuestCommand =  client.sendCommand(declineSponsorQuestCommand);
+                    GameCommand declinedSponsorQuestCommand = client.sendCommand(declineSponsorQuestCommand);
                     player = declinedSponsorQuestCommand.getPlayer();
 
                     drawnCard.getDiscardButton().fire();
@@ -426,17 +451,15 @@ public class GameController {
             declineSponsorQuestCommand.setPlayerId(client.getPlayerId());
             declineSponsorQuestCommand.setClientIndex(client.getClientIndex());
             declineSponsorQuestCommand.setPlayer(player);
-            GameCommand declinedSponsorQuestCommand =  client.sendCommand(declineSponsorQuestCommand);
-            player =  declinedSponsorQuestCommand.getPlayer();
+            GameCommand declinedSponsorQuestCommand = client.sendCommand(declineSponsorQuestCommand);
+            player = declinedSponsorQuestCommand.getPlayer();
             view.getMainPane().remove(drawnCard);
 
             waitTurn();
         });
     }
 
-    private void displayCard(CardView cardView,
-                             EventHandler<ActionEvent> posButtonEvent,
-                             EventHandler<ActionEvent> negButtonEvent) {
+    private void displayCard(CardView cardView, EventHandler<ActionEvent> posButtonEvent, EventHandler<ActionEvent> negButtonEvent) {
 
         cardView.setButtonEvents(posButtonEvent, negButtonEvent);
 
@@ -447,14 +470,6 @@ public class GameController {
 
     private void discardCard(CardView card) {
         // Send discard card command
-        GameCommand discardCardCommand = new GameCommand(Command.DISCARD_CARD);
-        discardCardCommand.setPlayerId(client.getPlayerId());
-        discardCardCommand.setClientIndex(client.getClientIndex());
-        discardCardCommand.setPlayer(player);
-        discardCardCommand.setCard(card.getCard());
-        GameCommand discardedCardCommand =  client.sendCommand(discardCardCommand);
-        player = discardedCardCommand.getPlayer();
-
         myHand.remove(card);
     }
 
@@ -509,7 +524,7 @@ public class GameController {
             questSetupCompleteCommand.setClientIndex(client.getClientIndex());
             questSetupCompleteCommand.setPlayer(player);
             questSetupCompleteCommand.setQuest(quest);
-            GameCommand questSetupCompletedCommand =  client.sendCommand(questSetupCompleteCommand);
+            GameCommand questSetupCompletedCommand = client.sendCommand(questSetupCompleteCommand);
             player = questSetupCompletedCommand.getPlayer();
             waitTurn();
         });
@@ -525,6 +540,11 @@ public class GameController {
             // Send discard card command
             discardCard(cardView);
 
+            // Server command
+            GameCommand discardCardCommand = defaultServerCommand(new GameCommand(Command.DISCARD_CARD));
+            discardCardCommand.setCard(cardView.getCard());
+            GameCommand discardedCardCommand = client.sendCommand(discardCardCommand);
+            if (discardedCardCommand.getPlayer() != null) player = discardedCardCommand.getPlayer();
         });
 
         cardView.getPlayButton().setVisible(false);
@@ -538,5 +558,18 @@ public class GameController {
         cardView.setOnMouseExited(e -> {
             cardView.getButtonBox().setVisible(false);
         });
+    }
+
+    /**
+     * Default boiler plate for server commands
+     *
+     * @param command the game command to be sent to the server
+     * @return an initialized command with all the default values
+     */
+    public GameCommand defaultServerCommand(GameCommand command) {
+        command.setPlayerId(client.getPlayerId());
+        command.setClientIndex(client.getClientIndex());
+        command.setPlayer(player);
+        return command;
     }
 }
