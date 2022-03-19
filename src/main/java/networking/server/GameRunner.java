@@ -55,7 +55,7 @@ public class GameRunner extends Runner {
 
                     // Wait for player to play
                     while (!gameState.getGameStatus().equals(GameStatus.RUNNING)) {
-                        Thread.sleep(2000);
+                        Thread.sleep(1000);
                     }
 
                     // Notify clients
@@ -64,7 +64,7 @@ public class GameRunner extends Runner {
 
                     server.notifyClients(endTurnCommand);
 
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                 }
 
                 System.out.println("== All players have taken a turn");

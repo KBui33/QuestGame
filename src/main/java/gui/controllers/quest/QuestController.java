@@ -126,7 +126,7 @@ public class QuestController extends AbstractQuestController {
         ObservableList<String> outcomes = FXCollections.observableArrayList();
 
         // get all players and when they failed or if they succeeded
-        quest.getQuestPlayers().forEach(p -> {
+        quest.getCurrentQuestPlayers().forEach(p -> {
             players.add("Player " + p.getPlayerId());
             // TODO :: - get player outcomes
 //            outcomes.add(p.failed ? "Failed" : "Passed");
