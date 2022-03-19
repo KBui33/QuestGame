@@ -161,8 +161,11 @@ public class GameController {
                         System.out.println("== As quest participant, I end the quest");
                         Quest quest = receivedCommand.getQuest();
 
-                        // TODO :: Just display button to complete/end/continue
-
+                        Platform.runLater(() -> {
+                            questController.questComplete(gc, quest, () -> {
+                                // TODO :: Send response to server
+                            });
+                        });
                     }
                 }
             });

@@ -8,7 +8,7 @@ import java.util.Map;
 
 public abstract class Stage implements Serializable {
     private Card stageCard;
-    private Map<String, String> stageResults;
+    private Map<Integer, Boolean> stageResults;
 
     public Stage(Card stageCard) {
         this.stageResults = new HashMap<>();
@@ -18,11 +18,11 @@ public abstract class Stage implements Serializable {
         return stageCard;
     }
 
-    public void setStageResults(Map<String, String> stageResults) {
+    public void setStageResults(Map<Integer, Boolean> stageResults) {
         this.stageResults = stageResults;
     }
 
-    public Map<String, String> getStageResults() {
+    public Map<Integer, Boolean> getStageResults() {
         return stageResults;
     }
 }

@@ -120,17 +120,17 @@ public class Quest implements Serializable {
      */
     public ArrayList<QuestPlayer> computeStageWinners(Stage stage) {
         ArrayList<QuestPlayer> stageLosers = new ArrayList<>();
-        Map<String, String> stageResults = new HashMap<>();
+        Map<Integer, Boolean> stageResults = new HashMap<>();
         if (stage instanceof FoeStage) {
             int stageBattlePoints = ((FoeStage) stage).calculateBattlePoints();
             System.out.println("== Stage battle points: " + stageBattlePoints);
             for (QuestPlayer questPlayer : currentQuestPlayers) {
                 System.out.println("== Player " + questPlayer.getPlayerId() + " battle points: " + questPlayer.calculateBattlePoints());
                 if (questPlayer.calculateBattlePoints() >= stageBattlePoints) {
-                    stageResults.put(Integer.toString(questPlayer.getPlayerId()), "won");
+                    stageResults.put(questPlayer.getPlayerId(), true);
                     continue;
                 }
-                stageResults.put(Integer.toString(questPlayer.getPlayerId()), "lost");
+                stageResults.put(questPlayer.getPlayerId(), false);
                 stageLosers.add(questPlayer);
             }
         }

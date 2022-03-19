@@ -16,6 +16,7 @@ import utils.CallbackEmpty;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 
 /**
  * @author James DiNovo
@@ -121,15 +122,17 @@ public class QuestController extends AbstractQuestController {
     public void questComplete(GameController parent, Quest quest, CallbackEmpty callback) {
 
         updateQuest(quest);
+        this.questView.mode(QuestView.Mode.COMPLETE);
 
         ObservableList<String> players = FXCollections.observableArrayList();
         ObservableList<String> outcomes = FXCollections.observableArrayList();
 
         // get all players and when they failed or if they succeeded
-        quest.getCurrentQuestPlayers().forEach(p -> {
+        quest.getQuestPlayers().forEach(p -> {
             players.add("Player " + p.getPlayerId());
-            // TODO :: - get player outcomes
-//            outcomes.add(p.failed ? "Failed" : "Passed");
+            System.out.println();
+            Boolean res = quest.getCurrentStage().getStageResults().get(p.getPlayerId());
+            outcomes.add(res != null && res ? "Passed" : "Failed");
         });
 
         this.questView.getQuestCompleteView().getPlayers().setItems(players);
