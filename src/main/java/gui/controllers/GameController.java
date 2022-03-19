@@ -116,7 +116,7 @@ public class GameController {
                                 takeQuestTurnCommand.setPlayerId(client.getPlayerId());
                                 takeQuestTurnCommand.setClientIndex(client.getClientIndex());
                                 takeQuestTurnCommand.setPlayer(player);
-                                takeQuestTurnCommand.setCards((ArrayList<Card>) wl);
+                                takeQuestTurnCommand.setCards(wl);
                                 GameCommand tookQuestTurnCommand =  client.sendCommand(takeQuestTurnCommand);
                                 player = tookQuestTurnCommand.getPlayer();
                                 waitTurn();

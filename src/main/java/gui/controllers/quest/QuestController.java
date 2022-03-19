@@ -64,7 +64,7 @@ public class QuestController extends AbstractQuestController {
 
     }
 
-    public void pickCards(GameController parent, Quest quest, Callback<Object> callback) {
+    public void pickCards(GameController parent, Quest quest, Callback<ArrayList<Card>> callback) {
         updateQuest(quest);
         this.questStarted = true;
         this.questView.mode(QuestView.Mode.PICK_CARDS);
