@@ -199,9 +199,18 @@ public class Quest implements Serializable {
         int[] foeBP = ((FoeStage) stage).getFoeBattlePoints();
 
         // Add higher/lower foe battle points based on foe name and quest title
-        if (questCard.getTitle().toLowerCase().contains(stage.getStageCard().getTitle().toLowerCase()))
-            battlePoints += Integer.max(foeBP[0], foeBP[1]);
-        else battlePoints += Integer.min(foeBP[0], foeBP[1]);
+//        if (questCard.getTitle().toLowerCase().contains(stage.getStageCard().getTitle().toLowerCase()))
+            // TODO :: - fix bug
+            /* error output
+            Exception in thread "Thread-4" java.lang.ArrayIndexOutOfBoundsException: Index 1 out of bounds for length 1
+	            at gui/model.Quest.computeFoeStageBattlePoints(Quest.java:204)
+	            at gui/model.Quest.computeStageWinners(Quest.java:128)
+	            at gui/networking.server.QuestRunner.loop(QuestRunner.java:71)
+	            at gui/networking.server.Runner.run(Runner.java:7)
+	            at java.base/java.lang.Thread.run(Thread.java:831)
+             */
+//            battlePoints += Integer.max(foeBP[0], foeBP[1]);
+//        else battlePoints += Integer.min(foeBP[0], foeBP[1]);
 
         return battlePoints;
     }

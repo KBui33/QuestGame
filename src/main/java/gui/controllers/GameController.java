@@ -584,6 +584,12 @@ public class GameController {
         });
     }
 
+    public void gameOver() {
+        // show end game screen
+
+        // once players hit continue they can either be returned to connect screen or lobby (not sure yet)
+    }
+
     /**
      * Default boiler plate for server commands
      *
