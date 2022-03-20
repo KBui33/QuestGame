@@ -1,6 +1,7 @@
 package networking.server;
 
 import game.components.card.Card;
+import game.components.card.WeaponCard;
 import model.*;
 
 import java.util.ArrayList;
@@ -150,31 +151,6 @@ public class QuestRunner extends Runner {
                 }
             }
 
-
-            /* NOT NEEDED - TO BE REMOVED
-            // Distribute shields to winners
-            System.out.println("== Quest runner says: Distributing shields to winners");
-            quest.distributeShieldsToWinners();
-            // Send notification to quest winners
-            for (QuestPlayer questWinner : quest.getCurrentQuestPlayers()) {
-                Player winner = questWinner.getPlayer();
-                int playerId = winner.getPlayerId();
-                System.out.println("== Game runner says: Sending shields command to player " + playerId);
-                gameState.setGameStatus(GameStatus.TAKING_QUEST_SHIELDS);
-
-                GameCommand takeQuestShieldsCommand = new GameCommand(Command.PLAYER_TAKE_QUEST_SHIELDS);
-                takeQuestShieldsCommand.setPlayerId(playerId);
-                takeQuestShieldsCommand.setPlayer(winner);
-                takeQuestShieldsCommand.setQuest(quest);
-                server.notifyClientByPlayerId(playerId, takeQuestShieldsCommand);
-
-                // Wait for player to accept shields
-                while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
-                    Thread.sleep(1000);
-                }
-            }
-             */
-
             // Send end quest command to all participants
             for (QuestPlayer questPlayer : quest.getQuestPlayers()) {
                 Player player = questPlayer.getPlayer();
@@ -194,6 +170,10 @@ public class QuestRunner extends Runner {
                 }
             }
 
+            // Discard quest and stage cards
+            System.out.println("== Game runner says: Discarding all stage cards");
+            discardQuestStageCards();
+
             server.notifyClients(new GameCommand(Command.QUEST_COMPLETED));
 
             gameState.setGameStatus(GameStatus.RUNNING);
@@ -201,6 +181,17 @@ public class QuestRunner extends Runner {
         } catch (InterruptedException e) {
             e.printStackTrace();
             shouldStopRunner();
+        }
+    }
+
+    private void discardQuestStageCards() {
+        for (Stage stage : quest.getStages()) {
+            gameState.discardAdventureCard(stage.getStageCard());
+            if (stage instanceof FoeStage) {
+                for (WeaponCard weaponCard : ((FoeStage) stage).getWeapons()) {
+                    gameState.discardAdventureCard(weaponCard);
+                }
+            }
         }
     }
 }

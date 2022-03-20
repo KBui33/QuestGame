@@ -160,7 +160,6 @@ public class GameCommandHandler {
                 returnCommand.setPlayerId(playerId);
 
                 internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
-                shouldNotifyClients = false;
 
                 break;
             }
@@ -177,7 +176,6 @@ public class GameCommandHandler {
                 returnCommand.setPlayerId(playerId);
 
                 internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
-                shouldNotifyClients = false;
 
                 break;
             }
@@ -232,7 +230,6 @@ public class GameCommandHandler {
                 returnCommand.setPlayerId(sponsor.getPlayerId());
 
                 internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
-                shouldNotifyClients = false;
 
                 break;
             }
@@ -248,7 +245,6 @@ public class GameCommandHandler {
                 returnCommand.setPlayerId(playerId);
 
                 internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
-                shouldNotifyClients = false;
 
                 break;
             }

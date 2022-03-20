@@ -14,6 +14,7 @@ public enum Command {
     RETURN_ATTACHED_PLAYER,
     GAME_STARTED,
     PLAYER_TURN,
+    NOT_PLAYER_TURN,
     TAKE_TURN,
     END_TURN,
     PLAYER_QUEST_TURN,
