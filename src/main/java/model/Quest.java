@@ -195,26 +195,18 @@ public class Quest implements Serializable {
         battlePoints += ((FoeStage) stage).getWeaponsBattlePoints();
         int[] foeBP = ((FoeStage) stage).getFoeBattlePoints();
 
-        // Add higher/lower foe battle points based on foe name and quest title
-
         String currentFoe = questCard.getFoe() == null ? "none" : questCard.getFoe().toLowerCase();
         String stageFoe = stage.getStageCard().getTitle().toLowerCase();
 
-
+        // Add higher/lower foe battle points based on foe name and quest title
+        // or if the foe is all
         if(foeBP.length == 2 && (currentFoe.equals(stageFoe)
                 || currentFoe.equals("all"))
-                || stageFoe.contains("saxon")){
+                || (stageFoe.contains("saxon") && currentFoe.equals("all saxons"))){
             battlePoints += Integer.max(foeBP[0], foeBP[1]);
         }else{
             battlePoints += foeBP[0];
         }
-
-
-//        if (questCard.getTitle().toLowerCase().contains(stage.getStageCard().getTitle().toLowerCase()))
-//            battlePoints += Integer.max(foeBP[0], foeBP[1]);
-//        else battlePoints += foeBP[0];
-//
-//        if()
 
         return battlePoints;
     }
