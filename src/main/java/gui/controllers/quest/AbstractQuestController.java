@@ -25,6 +25,14 @@ public abstract class AbstractQuestController {
         return tmp;
     }
 
+    public CardView addWeapon(WeaponCard card, boolean removable) {
+        CardView tmp = addWeapon(card);
+
+        tmp.getButtonBox().setVisible(removable);
+
+        return tmp;
+    }
+
     public void removeWeapon(CardView cardView) {
         weaponCards.remove(cardView);
         weaponNames.remove(cardView.getCard().getTitle());
