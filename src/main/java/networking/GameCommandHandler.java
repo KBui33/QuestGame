@@ -218,30 +218,16 @@ public class GameCommandHandler {
 
                 break;
             }
-            case EVENT_STARTED: {
-                event = internalGameState.getCurrentEvent();
-
+            case EVENT_START: {
                 System.out.println("== Command handler say: An event started");
 
-                returnCommand.setCommand(Command.EVENT_STARTED);
+                returnCommand.setCommand(Command.EVENT_START);
                 returnCommand.setPlayer(internalGameState.getPlayer(gameCommand.getPlayerId()));
                 returnCommand.setPlayerId(gameCommand.getPlayerId());
 
+                internalGameState.setGameStatus(GameStatus.RUNNING_EVENT);
 
-
-
-//                int playerId = gameCommand.getPlayerId();
-//
-//                quest = internalGameState.getCurrentQuest();
-//                quest.addQuestPlayer(player); // Add participant to quest
-//
-//                System.out.println("== Command handler says: Player " + playerId + " agreed to participate in quest");
-//
-//                returnCommand.setCommand(Command.JOINED_QUEST);
-//                returnCommand.setPlayer(internalGameState.getPlayer(playerId));
-//                returnCommand.setPlayerId(playerId);
-//
-//                internalGameState.setGameStatus(GameStatus.FINDING_QUEST_PARTICIPANTS);
+                startGame = true;
 
                 break;
             }

@@ -47,6 +47,6 @@ public enum Command {
     QUEST_STAGE_WON,
     QUEST_STAGE_STATE,
     ENDED_QUEST,
-    EVENT_STARTED,
-    EVENT_ENDED
+    EVENT_START,
+    EVENT_END
 }
