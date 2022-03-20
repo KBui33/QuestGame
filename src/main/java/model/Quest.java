@@ -6,10 +6,7 @@ import component.card.QuestCard;
 import component.card.WeaponCard;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Quest implements Serializable {
@@ -199,9 +196,25 @@ public class Quest implements Serializable {
         int[] foeBP = ((FoeStage) stage).getFoeBattlePoints();
 
         // Add higher/lower foe battle points based on foe name and quest title
-        if (questCard.getTitle().toLowerCase().contains(stage.getStageCard().getTitle().toLowerCase()))
+
+        String currentFoe = questCard.getFoe() == null ? "none" : questCard.getFoe().toLowerCase();
+        String stageFoe = stage.getStageCard().getTitle().toLowerCase();
+
+
+        if(foeBP.length == 2 && (currentFoe.equals(stageFoe)
+                || currentFoe.equals("all"))
+                || stageFoe.contains("saxon")){
             battlePoints += Integer.max(foeBP[0], foeBP[1]);
-        else battlePoints += Integer.min(foeBP[0], foeBP[1]);
+        }else{
+            battlePoints += foeBP[0];
+        }
+
+
+//        if (questCard.getTitle().toLowerCase().contains(stage.getStageCard().getTitle().toLowerCase()))
+//            battlePoints += Integer.max(foeBP[0], foeBP[1]);
+//        else battlePoints += foeBP[0];
+//
+//        if()
 
         return battlePoints;
     }
