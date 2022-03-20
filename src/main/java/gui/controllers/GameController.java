@@ -163,6 +163,7 @@ public class GameController {
                                 GameCommand acceptedSponsorQuestCardsCommand = client.sendCommand(acceptSponsorQuestCardsCommand);
                                 if (acceptedSponsorQuestCardsCommand.getPlayer() != null)
                                     player = acceptedSponsorQuestCardsCommand.getPlayer();
+                                waitTurn();
                             });
                         });
                     } else if (command.equals(Command.PLAYER_END_QUEST)) { // Complete quest
@@ -176,6 +177,7 @@ public class GameController {
                                 GameCommand endedQuestCommand = client.sendCommand(endQuestCommand);
                                 if (endedQuestCommand.getPlayer() != null)
                                     player = endedQuestCommand.getPlayer();
+                                waitTurn();
                             });
                         });
                     }
@@ -424,6 +426,7 @@ public class GameController {
             GameCommand joinedQuestCommand = client.sendCommand(willJoinQuestCommand);
             if (joinedQuestCommand.getPlayer() != null) player = joinedQuestCommand.getPlayer();
             view.getMainPane().remove(drawnCard);
+
             waitTurn();
         }, e -> {
             // player chooses decline
@@ -473,6 +476,10 @@ public class GameController {
 
             waitTurn();
         });
+    }
+
+    public void sponsorDiscardRewardCard(Card card) {
+        // TODO :: - send message to server
     }
 
     private void displayCard(CardView cardView, EventHandler<ActionEvent> posButtonEvent, EventHandler<ActionEvent> negButtonEvent) {

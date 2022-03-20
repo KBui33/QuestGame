@@ -150,6 +150,7 @@ public class QuestController extends AbstractQuestController {
 
         this.questView.getQuestCompleteView().getContinueButton().setOnAction(e -> {
             parent.cleanUpGui();
+            parent.getView().getMainPane().clear();
             callback.call();
         });
 
@@ -167,6 +168,7 @@ public class QuestController extends AbstractQuestController {
                 tmp.getButtonBox().setVisible(true);
                 tmp.getPlayButton().setVisible(false);
                 tmp.getDiscardButton().setOnAction(e -> {
+                    parent.sponsorDiscardRewardCard(tmp.getCard());
                     cardsAwarded.remove(tmp);
                 });
             }
@@ -182,6 +184,7 @@ public class QuestController extends AbstractQuestController {
                         "reward.", Alert.AlertType.WARNING);
             } else {
                 parent.cleanUpGui();
+                parent.getView().getMainPane().clear();
                 ArrayList<Card> cardsKept = new ArrayList<>();
                 cardsAwarded.forEach(card -> {
                     cardsKept.add(card.getCard());

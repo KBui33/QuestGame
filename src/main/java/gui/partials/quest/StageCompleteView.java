@@ -89,10 +89,12 @@ public class StageCompleteView extends BorderPane {
         if (passed) {
             stageText.setText("Stage Complete: Passed");
             continueButton.setText("Continue");
+            continueButton.getStyleClass().remove("warn");
             continueButton.getStyleClass().add("success");
         } else {
             stageText.setText("Stage Complete: Defeated");
             continueButton.setText("Sit out");
+            continueButton.getStyleClass().remove("success");
             continueButton.getStyleClass().add("warn");
         }
     }
