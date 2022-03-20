@@ -113,9 +113,9 @@ public class QuestSetupController extends AbstractQuestController {
             if (quest.currentStageCount() == questCard.getStages()) {
                 // quest set up complete
 //                parent.questSetupComplete(quest);
-                callback.call(quest);
                 parent.getView().getMainPane().getChildren().clear();
                 parent.cleanUpGui();
+                callback.call(quest);
             } else {
                 if (questCard.getStages() - quest.currentStageCount() <= 1) {
                     questSetupView.getNextStageButton().setText("Finish");

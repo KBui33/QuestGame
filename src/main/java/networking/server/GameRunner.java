@@ -1,7 +1,6 @@
 package networking.server;
 
-import component.card.Card;
-import component.card.EventCard;
+import component.card.*;
 import component.card.QuestCard;
 import model.*;
 
@@ -24,7 +23,7 @@ public class GameRunner extends Runner {
 
 
         try {
-            Thread.sleep(5000);
+            Thread.sleep(2000);
 
             ArrayList<Player> players = gameState.getPlayers();
             gameState.setGameStatus(GameStatus.RUNNING);
@@ -65,13 +64,17 @@ public class GameRunner extends Runner {
                         Thread.sleep(1000);
                     }
 
+                    // Discard story card
+                    System.out.println("== Game runner says: Discarding story card");
+                    gameState.discardStoryCard(currentStoryCard);
+                    gameState.setCurrentQuest(null);
+                    gameState.setCurrentStoryCard(null);
+
                     // Notify clients
                     GameCommand endTurnCommand = new GameCommand(Command.TOOK_TURN);
+
                     endTurnCommand.setPlayerId(playerId);
-
                     server.notifyClients(endTurnCommand);
-
-                    Thread.sleep(1000);
                 }
 
                 System.out.println("== All players have taken a turn");

@@ -7,7 +7,7 @@ import java.util.List;
 
 public class FoeStage extends Stage{
 
-    private FoeCard foe;
+    private FoeCard foe; // TODO :: Stage already has stage card. Is FoeCard needed?
     private List<WeaponCard> weapons;
     private String questCardFoe;
 
@@ -16,6 +16,19 @@ public class FoeStage extends Stage{
         this.foe = foe;
         this.weapons = weapons;
         this.questCardFoe = questCardFoe;
+    }
+
+    public int[] getFoeBattlePoints() {
+        return foe.getBp();
+    }
+
+    public int getWeaponsBattlePoints() {
+        int battlePoints = 0;
+        for(WeaponCard weapon: weapons) {
+            battlePoints += weapon.getBattlePoints();
+        }
+
+        return battlePoints;
     }
 
     public Integer calculateBattlePoints(){

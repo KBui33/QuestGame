@@ -1,9 +1,5 @@
 package gui.controllers;
 
-import component.card.Card;
-import component.card.FoeCard;
-import component.card.QuestCard;
-import component.card.TestCard;
 import component.card.*;
 import gui.controllers.quest.QuestController;
 import gui.controllers.quest.QuestSetupController;
@@ -122,7 +118,7 @@ public class GameController {
                                 takeQuestTurnCommand.setPlayerId(client.getPlayerId());
                                 takeQuestTurnCommand.setClientIndex(client.getClientIndex());
                                 takeQuestTurnCommand.setPlayer(player);
-                                takeQuestTurnCommand.setCards((ArrayList<Card>) wl);
+                                takeQuestTurnCommand.setCards(wl);
                                 GameCommand tookQuestTurnCommand = client.sendCommand(takeQuestTurnCommand);
                                 player = tookQuestTurnCommand.getPlayer();
                                 waitTurn();
@@ -154,19 +150,34 @@ public class GameController {
                         System.out.println("== As sponsor, I accept quest cards");
                         Quest quest = receivedCommand.getQuest();
                         ArrayList<Card> cards = receivedCommand.getCards();
+                        view.getHud().getCurrentStateText().setText("Quest Complete");
 
                         // TODO :: Display quest sponsor cards to sponsor and add accept button
-
-                    }  /* else if (command.equals(Command.PLAYER_TAKE_QUEST_SHIELDS)) { // Accept shields for quest winner -> NOT NEEDED - REMOVE
-                        System.out.println("== As winner, I accept quest shields");
-                        Quest quest = receivedCommand.getQuest();
-
-                    }*/ else if (command.equals(Command.PLAYER_END_QUEST)) { // Complete quest
+                        Platform.runLater(() -> {
+                            view.getMainPane().clear();
+                            view.getMainPane().add(questController.getQuestView());
+                            System.out.println("Received cards: " + cards.size());
+                            questController.sponsorQuestRewards(gc, quest, cards, (keptCards) -> {
+                                GameCommand acceptSponsorQuestCardsCommand = defaultServerCommand(new GameCommand(Command.ACCEPT_SPONSOR_QUEST_CARDS));
+                                acceptSponsorQuestCardsCommand.setCards(keptCards);
+                                GameCommand acceptedSponsorQuestCardsCommand = client.sendCommand(acceptSponsorQuestCardsCommand);
+                                if (acceptedSponsorQuestCardsCommand.getPlayer() != null)
+                                    player = acceptedSponsorQuestCardsCommand.getPlayer();
+                            });
+                        });
+                    } else if (command.equals(Command.PLAYER_END_QUEST)) { // Complete quest
                         System.out.println("== As quest participant, I end the quest");
+                        view.getHud().getCurrentStateText().setText("Quest Over");
                         Quest quest = receivedCommand.getQuest();
 
-                        // TODO :: Just display button to complete/end/continue
-
+                        Platform.runLater(() -> {
+                            questController.questComplete(gc, quest, player, () -> {
+                                GameCommand endQuestCommand = defaultServerCommand(new GameCommand(Command.END_QUEST));
+                                GameCommand endedQuestCommand = client.sendCommand(endQuestCommand);
+                                if (endedQuestCommand.getPlayer() != null)
+                                    player = endedQuestCommand.getPlayer();
+                            });
+                        });
                     }
                 }
             });
