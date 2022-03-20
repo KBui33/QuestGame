@@ -9,7 +9,7 @@ import java.util.List;
 
 public class FoeStage extends Stage{
 
-    private FoeCard foe;
+    private FoeCard foe; // TODO :: Stage already has stage card. Is FoeCard needed?
     private List<WeaponCard> weapons;
     private String questCardFoe;
 
