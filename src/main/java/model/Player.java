@@ -20,7 +20,7 @@ public class Player implements Serializable {
     public Player() {
         cards = new ArrayList<Card>();
         rankCard = new RankCard("", "", Rank.SQUIRE);
-        shields = rankCard.getShields();
+        shields = 0;
     }
 
     public Player(int playerId) {
@@ -74,10 +74,40 @@ public class Player implements Serializable {
 
     public void setShields(int shields) {
         this.shields = shields;
+        this.incrementRank();
     }
 
     public void incrementShields(int inc) {
         shields += inc;
+        this.incrementRank();
+    }
+
+    public void incrementRank() {
+        Rank currentRank = rankCard.getRank();
+        boolean shouldIncrementRank = false;
+        switch (currentRank) {
+            case SQUIRE: {
+                if(this.shields >= 5) {
+                    shouldIncrementRank = true;
+                    this.shields -= 5;
+                }
+                break;
+            } case KNIGHT: {
+                if(this.shields >= 7) {
+                    shouldIncrementRank = true;
+                    this.shields -= 7;
+                }
+                break;
+            } case CHAMPION_KNIGHT: {
+                if(this.shields >= 10) {
+                    shouldIncrementRank = true;
+                    this.shields -= 10;
+                }
+                break;
+            }
+        }
+
+        if(shouldIncrementRank) this.rankCard.setRank(RankCard.getNextRank(currentRank));
     }
 
     @Override

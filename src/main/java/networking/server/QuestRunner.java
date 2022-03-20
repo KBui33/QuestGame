@@ -156,6 +156,9 @@ public class QuestRunner extends Runner {
                 }
             }
 
+            // Distribute shields to winners
+            quest.distributeShieldsToWinners();
+
             // Send end quest command to all participants
             for (QuestPlayer questPlayer : quest.getQuestPlayers()) {
                 quest.setCurrentTurnPlayer(questPlayer.getPlayer());
