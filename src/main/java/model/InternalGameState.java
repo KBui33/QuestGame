@@ -86,6 +86,14 @@ public class InternalGameState implements BaseGameState, Serializable {
         return discardPile;
     }
 
+    public ArrayList<Card> getDiscardedAdventureCards() {
+        return (ArrayList<Card>) adventureDeck.getDiscarded();
+    }
+
+    public ArrayList<Card> getDiscardedStoryCards() {
+        return (ArrayList<Card>) storyDeck.getDiscarded();
+    }
+
     public void discardAdventureCard(Card card) {
         adventureDeck.discard(card);
     }

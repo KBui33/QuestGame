@@ -16,6 +16,10 @@ public interface BaseGameState {
 
     public List<Card> getDiscardedCards();
 
+    public ArrayList<Card> getDiscardedAdventureCards();
+
+    public ArrayList<Card> getDiscardedStoryCards();
+
     public GameStatus getGameStatus();
 
     public Card getCurrentStoryCard();
