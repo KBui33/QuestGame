@@ -29,21 +29,23 @@ public class Player implements Serializable {
     }
 
     public void addCard(Card card) {
-        cards.add(card);
+        this.cards.add(card);
     }
 
-    public void addCards(ArrayList<Card> cards) { cards.addAll(cards); }
+    public void addCards(ArrayList<Card> cards) {
+        this.cards.addAll(cards);
+    }
 
     public Card discardCard(int cardIndex) {
-        return cards.remove(cardIndex);
+        return this.cards.remove(cardIndex);
     }
 
     public boolean discardCard(Card card) {
-        return cards.remove(card);
+        return this.cards.remove(card);
     }
 
     public boolean discardCards(ArrayList<Card> cards) {
-        return cards.removeAll(cards);
+        return this.cards.removeAll(cards);
     }
 
     public int getPlayerId() {
@@ -76,6 +78,15 @@ public class Player implements Serializable {
 
     public void incrementShields(int inc) {
         shields += inc;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (o == this) return true;
+        if (!(o instanceof Player)) return false;
+        Player p = (Player) o;
+        return p.playerId == this.playerId;
     }
 
     @Override

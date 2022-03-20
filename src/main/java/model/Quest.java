@@ -59,6 +59,14 @@ public class Quest implements Serializable {
         return this.stages.size();
     }
 
+    public Player getCurrentTurnPlayer() {
+        return currentTurnPlayer;
+    }
+
+    public void setCurrentTurnPlayer(Player currentTurnPlayer) {
+        this.currentTurnPlayer = currentTurnPlayer;
+    }
+
     public void startQuest() {
         this.currentQuestPlayers = new ArrayList<>(questPlayers);
     }
@@ -199,9 +207,11 @@ public class Quest implements Serializable {
         int[] foeBP = ((FoeStage) stage).getFoeBattlePoints();
 
         // Add higher/lower foe battle points based on foe name and quest title
-        if (questCard.getTitle().toLowerCase().contains(stage.getStageCard().getTitle().toLowerCase()))
-            battlePoints += Integer.max(foeBP[0], foeBP[1]);
-        else battlePoints += Integer.min(foeBP[0], foeBP[1]);
+        if (foeBP.length > 1) {
+            if (questCard.getTitle().toLowerCase().contains(stage.getStageCard().getTitle().toLowerCase()))
+                battlePoints += Integer.max(foeBP[0], foeBP[1]);
+            else battlePoints += Integer.min(foeBP[0], foeBP[1]);
+        }
 
         return battlePoints;
     }
@@ -214,5 +224,27 @@ public class Quest implements Serializable {
         for (QuestPlayer questPlayer : currentQuestPlayers) {
             questPlayer.incrementShields(stages.size());
         }
+    }
+
+    public ArrayList<Card> getAllQuestCards(boolean includeQuestCard) {
+        ArrayList<Card> stageCards = getAllStageCards();
+        if (includeQuestCard) stageCards.add(questCard);
+        return stageCards;
+    }
+
+    public ArrayList<Card> getAllStageCards() {
+        ArrayList<Card> stageCards = new ArrayList<>();
+        for (Stage stage : stages) {
+            stageCards.add(stage.getStageCard());
+
+            if (stage instanceof FoeStage) {
+                stage = (FoeStage) stage;
+                for (WeaponCard weaponCard : ((FoeStage) stage).getWeapons()) {
+                    stageCards.add(weaponCard);
+                }
+            }
+        }
+
+        return stageCards;
     }
 }
