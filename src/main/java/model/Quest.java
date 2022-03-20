@@ -20,6 +20,7 @@ public class Quest implements Serializable {
     private ArrayList<QuestPlayer> questPlayers; // All players that joined quest
     private Player sponsor;
     private int currentStageIndex = 0;
+    private Player currentTurnPlayer;
 
     public Quest() {
         this.stages = new ArrayList<>();
@@ -28,8 +29,8 @@ public class Quest implements Serializable {
     }
 
     public Quest(QuestCard quest) {
-       this();
-       this.questCard = quest;
+        this();
+        this.questCard = quest;
     }
 
     public Quest(QuestCard quest, Player sponsor) {
@@ -124,7 +125,7 @@ public class Quest implements Serializable {
         ArrayList<QuestPlayer> stageLosers = new ArrayList<>();
         Map<Integer, Boolean> stageResults = new HashMap<>();
         if (stage instanceof FoeStage) {
-            int stageBattlePoints = ((FoeStage) stage).calculateBattlePoints();
+            int stageBattlePoints = computeFoeStageBattlePoints((FoeStage) stage);
             System.out.println("== Stage battle points: " + stageBattlePoints);
             for (QuestPlayer questPlayer : currentQuestPlayers) {
                 System.out.println("== Player " + questPlayer.getPlayerId() + " battle points: " + questPlayer.calculateBattlePoints());
@@ -190,12 +191,27 @@ public class Quest implements Serializable {
         return cardsForSponsor[0];
     }
 
+
+    public int computeFoeStageBattlePoints(FoeStage stage) {
+        int battlePoints = 0;
+
+        battlePoints += ((FoeStage) stage).getWeaponsBattlePoints();
+        int[] foeBP = ((FoeStage) stage).getFoeBattlePoints();
+
+        // Add higher/lower foe battle points based on foe name and quest title
+        if (questCard.getTitle().toLowerCase().contains(stage.getStageCard().getTitle().toLowerCase()))
+            battlePoints += Integer.max(foeBP[0], foeBP[1]);
+        else battlePoints += Integer.min(foeBP[0], foeBP[1]);
+
+        return battlePoints;
+    }
+
     /**
      * Distribute shields accordingly to quest winners.
      * Winners receive as many shields as there are stages in the quest
      */
     public void distributeShieldsToWinners() {
-        for(QuestPlayer questPlayer: currentQuestPlayers) {
+        for (QuestPlayer questPlayer : currentQuestPlayers) {
             questPlayer.incrementShields(stages.size());
         }
     }
