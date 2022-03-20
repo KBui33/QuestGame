@@ -17,7 +17,7 @@ import utils.CallbackEmpty;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Map;
+
 
 /**
  * @author James DiNovo
@@ -151,6 +151,43 @@ public class QuestController extends AbstractQuestController {
         this.questView.getQuestCompleteView().getContinueButton().setOnAction(e -> {
             parent.cleanUpGui();
             callback.call();
+        });
+
+    }
+
+    public void sponsorQuestRewards(GameController parent, Quest quest, ArrayList<Card> cards, Callback<ArrayList<Card>> callback) {
+        updateQuest(quest);
+        this.questView.mode(QuestView.Mode.SPONSOR_CARDS);
+
+        ObservableList<CardView> cardsAwarded = FXCollections.observableArrayList();
+
+        cards.forEach(card -> {
+            CardView tmp = new CardView(card);
+            if (parent.getMyHandList().size() + cards.size() > 12) {
+                tmp.getButtonBox().setVisible(true);
+                tmp.getPlayButton().setVisible(false);
+                tmp.getDiscardButton().setOnAction(e -> {
+                    cardsAwarded.remove(tmp);
+                });
+            }
+            cardsAwarded.add(tmp);
+        });
+
+        this.questView.getQuestSponsorCardsView().getDeckView().setListViewItems(cardsAwarded);
+
+        this.questView.getQuestSponsorCardsView().getAcceptButton().setOnAction(e -> {
+            if (cardsAwarded.size() + parent.getMyHandList().size() > 12) {
+                AlertBox.alert("You cannot have more than 12 cards in your hand. You must choose "
+                        + ((cardsAwarded.size() + parent.getMyHandList().size()) - 12) + " cards to discard from your " +
+                        "reward.", Alert.AlertType.WARNING);
+            } else {
+                parent.cleanUpGui();
+                ArrayList<Card> cardsKept = new ArrayList<>();
+                cardsAwarded.forEach(card -> {
+                    cardsKept.add(card.getCard());
+                });
+                callback.call(cardsKept);
+            }
         });
 
     }
