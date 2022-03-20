@@ -63,8 +63,6 @@ public class GameRunner extends Runner {
                     endTurnCommand.setPlayerId(playerId);
 
                     server.notifyClients(endTurnCommand);
-
-                    Thread.sleep(1000);
                 }
 
                 System.out.println("== All players have taken a turn");

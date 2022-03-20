@@ -237,6 +237,7 @@ public class GameCommandHandler {
                 break;
             }
 
+            // TODO :: Remove. No longer needed
             case ACCEPT_QUEST_SHIELDS: {
                 int playerId = gameCommand.getPlayerId();
                 ArrayList<Card> cards = gameCommand.getCards();
@@ -248,6 +249,19 @@ public class GameCommandHandler {
 
                 internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
                 shouldNotifyClients = false;
+
+                break;
+            }
+
+            case END_QUEST: {
+                int playerId = gameCommand.getPlayerId();
+                System.out.println("== Command handler says: Player " + playerId + " ended quest");
+
+                returnCommand.setCommand(Command.ENDED_QUEST);
+                returnCommand.setPlayer(player);
+                returnCommand.setPlayerId(playerId);
+
+                internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
 
                 break;
             }

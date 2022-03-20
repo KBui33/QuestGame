@@ -177,16 +177,16 @@ public class Quest implements Serializable {
         int[] cardsForSponsor = {0}; // amount of cards the sponsor gets
         stages.forEach(
                 s -> {
-                    if (s instanceof FoeStage stage) {
-                        cardsForSponsor[0] += 1 + stage.getWeapons().size(); // The foe card itself and weapons if any
+                    if (s instanceof FoeStage) {
+                        cardsForSponsor[0] += 1 + ((FoeStage) s).getWeapons().size(); // The foe card itself and weapons if any
                     } else {
                         cardsForSponsor[0] += 1; // The test card itself
                     }
                 }
         );
         cardsForSponsor[0] += stages.size(); //add the amount of stages to total amount of cards the sponsor gets
-        int difference = (sponsor.getCards().size() + cardsForSponsor[0]) - 12;
-        cardsForSponsor[0] = cardsForSponsor[0] > 0 ? cardsForSponsor[0] - difference : cardsForSponsor[0];
+        //int difference = (sponsor.getCards().size() + cardsForSponsor[0]) - 12; -- THIS WILL BE HANDLED ON THE GUI
+        //cardsForSponsor[0] = cardsForSponsor[0] > 0 ? cardsForSponsor[0] - difference : cardsForSponsor[0]; -- THIS WILL BE HANDLED ON THE GUI
         return cardsForSponsor[0];
     }
 
