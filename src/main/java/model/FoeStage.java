@@ -20,6 +20,19 @@ public class FoeStage extends Stage{
         this.questCardFoe = questCardFoe;
     }
 
+    public int[] getFoeBattlePoints() {
+        return foe.getBp();
+    }
+
+    public int getWeaponsBattlePoints() {
+        int battlePoints = 0;
+        for(WeaponCard weapon: weapons) {
+            battlePoints += weapon.getBattlePoints();
+        }
+
+        return battlePoints;
+    }
+
     public Integer calculateBattlePoints(){
         int[] totalBp = {foe.getBp()[0]};
         if(questCardFoe != null && questCardFoe.equals(foe.getTitle())){totalBp[0] = foe.getBp()[1];}

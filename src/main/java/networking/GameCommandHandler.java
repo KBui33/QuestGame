@@ -177,7 +177,6 @@ public class GameCommandHandler {
                 returnCommand.setPlayerId(playerId);
 
                 internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
-                shouldNotifyClients = false;
 
                 break;
             }

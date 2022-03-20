@@ -172,15 +172,7 @@ public class QuestRunner extends Runner {
 
             // Discard quest and stage cards
             System.out.println("== Game runner says: Discarding all stage cards");
-            gameState.discardStoryCard(quest.getQuestCard());
-            for (Stage stage: quest.getStages()) {
-                gameState.discardAdventureCard(stage.getStageCard());
-                if(stage instanceof FoeStage) {
-                    for(WeaponCard weaponCard: ((FoeStage) stage).getWeapons()) {
-                        gameState.discardAdventureCard(weaponCard);
-                    }
-                }
-            }
+            discardQuestStageCards();
 
             server.notifyClients(new GameCommand(Command.QUEST_COMPLETED));
 
@@ -189,6 +181,17 @@ public class QuestRunner extends Runner {
         } catch (InterruptedException e) {
             e.printStackTrace();
             shouldStopRunner();
+        }
+    }
+
+    private void discardQuestStageCards() {
+        for (Stage stage : quest.getStages()) {
+            gameState.discardAdventureCard(stage.getStageCard());
+            if (stage instanceof FoeStage) {
+                for (WeaponCard weaponCard : ((FoeStage) stage).getWeapons()) {
+                    gameState.discardAdventureCard(weaponCard);
+                }
+            }
         }
     }
 }
