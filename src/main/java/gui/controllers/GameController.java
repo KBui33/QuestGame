@@ -118,8 +118,8 @@ public class GameController {
                                 takeQuestTurnCommand.setPlayerId(client.getPlayerId());
                                 takeQuestTurnCommand.setClientIndex(client.getClientIndex());
                                 takeQuestTurnCommand.setPlayer(player);
-                                takeQuestTurnCommand.setCards((ArrayList<Card>) wl);
-                                GameCommand tookQuestTurnCommand = client.sendCommand(takeQuestTurnCommand);
+                                takeQuestTurnCommand.setCards(wl);
+                                GameCommand tookQuestTurnCommand =  client.sendCommand(takeQuestTurnCommand);
                                 player = tookQuestTurnCommand.getPlayer();
                                 waitTurn();
                             });
@@ -150,8 +150,17 @@ public class GameController {
                         System.out.println("== As sponsor, I accept quest cards");
                         Quest quest = receivedCommand.getQuest();
                         ArrayList<Card> cards = receivedCommand.getCards();
+                        view.getHud().getCurrentStateText().setText("Quest Complete");
 
                         // TODO :: Display quest sponsor cards to sponsor and add accept button
+                        Platform.runLater(() -> {
+                            view.getMainPane().clear();
+                            view.getMainPane().add(questController.getQuestView());
+                            System.out.println("Received cards: " + cards.size());
+                            questController.sponsorQuestRewards(gc, quest, cards, (keptCards) -> {
+                                // send kept cards back to server
+                            });
+                        });
 
                     }  /* else if (command.equals(Command.PLAYER_TAKE_QUEST_SHIELDS)) { // Accept shields for quest winner -> NOT NEEDED - REMOVE
                         System.out.println("== As winner, I accept quest shields");
@@ -159,10 +168,14 @@ public class GameController {
 
                     }*/ else if (command.equals(Command.PLAYER_END_QUEST)) { // Complete quest
                         System.out.println("== As quest participant, I end the quest");
+                        view.getHud().getCurrentStateText().setText("Quest Over");
                         Quest quest = receivedCommand.getQuest();
 
-                        // TODO :: Just display button to complete/end/continue
-
+                        Platform.runLater(() -> {
+                            questController.questComplete(gc, quest, player, () -> {
+                                // TODO :: Send response to server
+                            });
+                        });
                     }
                 }
             });
@@ -215,13 +228,13 @@ public class GameController {
             addCardToHand(myHand, card);
         }
 
+        view.getHud().getShieldsView().setShields(player.getShields());
+
         // hide endturn button for now
         view.getHud().getEndTurnButton().setVisible(false);
 
         waitTurn();
 
-        // a lot of this is just for laying out gui will be removed later
-        view.getHud().getShieldsView().setShields(1);
 
 
         // set action for draw card button
@@ -330,8 +343,12 @@ public class GameController {
 
 
     private void waitTurn() {
+        waitTurn("Wait for your turn");
+    }
+
+    private void waitTurn(String message) {
         disableView(true);
-        view.getHud().getCurrentStateText().setText("Wait for your turn");
+        view.getHud().getCurrentStateText().setText(message);
     }
 
     private void takeTurn() {
@@ -524,7 +541,7 @@ public class GameController {
             questSetupCompleteCommand.setQuest(quest);
             GameCommand questSetupCompletedCommand = client.sendCommand(questSetupCompleteCommand);
             player = questSetupCompletedCommand.getPlayer();
-            waitTurn();
+            waitTurn("Wait for players to complete your quest");
         });
         view.getMainPane().add(qsc.getView(), Pos.CENTER, false);
     }

@@ -21,7 +21,8 @@ public class QuestView extends BorderPane {
     public enum Mode {
         PICK_CARDS,
         SHOW_RESULTS,
-        COMPLETE
+        COMPLETE,
+        SPONSOR_CARDS
     }
 
     private CardView questCard;
@@ -30,6 +31,7 @@ public class QuestView extends BorderPane {
     private StageCompleteView stageCompletedView;
     private StageCardSelectionView scsv;
     private QuestCompleteView questCompleteView;
+    private QuestSponsorCardsView questSponsorCardsView;
 
     public static final String STAGE_TEXT = "Stage: ";
 
@@ -71,6 +73,7 @@ public class QuestView extends BorderPane {
         stageCompletedView = new StageCompleteView();
         scsv = new StageCardSelectionView();
         questCompleteView = new QuestCompleteView();
+        questSponsorCardsView = new QuestSponsorCardsView();
 
     }
 
@@ -86,6 +89,10 @@ public class QuestView extends BorderPane {
             case COMPLETE:
                 this.setCenter(this.questCompleteView);
                 this.stageText.setText("Quest Complete");
+                break;
+            case SPONSOR_CARDS:
+                this.setCenter(this.questSponsorCardsView);
+                this.stageText.setText("Sponsored Quest has ended");
                 break;
             default:
                 clearStage();
@@ -114,5 +121,9 @@ public class QuestView extends BorderPane {
 
     public QuestCompleteView getQuestCompleteView() {
         return questCompleteView;
+    }
+
+    public QuestSponsorCardsView getQuestSponsorCardsView() {
+        return questSponsorCardsView;
     }
 }

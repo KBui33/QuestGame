@@ -10,12 +10,14 @@ import gui.partials.quest.QuestView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import model.Player;
 import model.Quest;
 import utils.Callback;
 import utils.CallbackEmpty;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+
 
 /**
  * @author James DiNovo
@@ -64,7 +66,7 @@ public class QuestController extends AbstractQuestController {
 
     }
 
-    public void pickCards(GameController parent, Quest quest, Callback<Object> callback) {
+    public void pickCards(GameController parent, Quest quest, Callback<ArrayList<Card>> callback) {
         updateQuest(quest);
         this.questStarted = true;
         this.questView.mode(QuestView.Mode.PICK_CARDS);
@@ -118,18 +120,20 @@ public class QuestController extends AbstractQuestController {
 
     }
 
-    public void questComplete(GameController parent, Quest quest, CallbackEmpty callback) {
+    public void questComplete(GameController parent, Quest quest, Player player, CallbackEmpty callback) {
 
         updateQuest(quest);
+        this.questView.mode(QuestView.Mode.COMPLETE);
 
         ObservableList<String> players = FXCollections.observableArrayList();
         ObservableList<String> outcomes = FXCollections.observableArrayList();
 
         // get all players and when they failed or if they succeeded
-        quest.getCurrentQuestPlayers().forEach(p -> {
+        quest.getQuestPlayers().forEach(p -> {
             players.add("Player " + p.getPlayerId());
-            // TODO :: - get player outcomes
-//            outcomes.add(p.failed ? "Failed" : "Passed");
+            System.out.println();
+            Boolean res = quest.getCurrentStage().getStageResults().get(p.getPlayerId());
+            outcomes.add(res != null && res ? "Passed" : "Failed");
         });
 
         this.questView.getQuestCompleteView().getPlayers().setItems(players);
@@ -137,11 +141,53 @@ public class QuestController extends AbstractQuestController {
 
         // if this player succeeded, add shields and display that
         // if this player failed, display that
-        this.questView.getQuestCompleteView().getInfoText().setText(QuestCompleteView.SHIELDS_STRING + 3);
+        Boolean res = quest.getCurrentStage().getStageResults().get(player.getPlayerId());
+        if (res != null && res) {
+            this.questView.getQuestCompleteView().getInfoText().setText(QuestCompleteView.SHIELDS_STRING + quest.getStages().size());
+        } else {
+            this.questView.getQuestCompleteView().getInfoText().setText("You were defeated. No shields earned.");
+        }
 
         this.questView.getQuestCompleteView().getContinueButton().setOnAction(e -> {
             parent.cleanUpGui();
             callback.call();
+        });
+
+    }
+
+    public void sponsorQuestRewards(GameController parent, Quest quest, ArrayList<Card> cards, Callback<ArrayList<Card>> callback) {
+        updateQuest(quest);
+        this.questView.mode(QuestView.Mode.SPONSOR_CARDS);
+
+        ObservableList<CardView> cardsAwarded = FXCollections.observableArrayList();
+
+        cards.forEach(card -> {
+            CardView tmp = new CardView(card);
+            if (parent.getMyHandList().size() + cards.size() > 12) {
+                tmp.getButtonBox().setVisible(true);
+                tmp.getPlayButton().setVisible(false);
+                tmp.getDiscardButton().setOnAction(e -> {
+                    cardsAwarded.remove(tmp);
+                });
+            }
+            cardsAwarded.add(tmp);
+        });
+
+        this.questView.getQuestSponsorCardsView().getDeckView().setListViewItems(cardsAwarded);
+
+        this.questView.getQuestSponsorCardsView().getAcceptButton().setOnAction(e -> {
+            if (cardsAwarded.size() + parent.getMyHandList().size() > 12) {
+                AlertBox.alert("You cannot have more than 12 cards in your hand. You must choose "
+                        + ((cardsAwarded.size() + parent.getMyHandList().size()) - 12) + " cards to discard from your " +
+                        "reward.", Alert.AlertType.WARNING);
+            } else {
+                parent.cleanUpGui();
+                ArrayList<Card> cardsKept = new ArrayList<>();
+                cardsAwarded.forEach(card -> {
+                    cardsKept.add(card.getCard());
+                });
+                callback.call(cardsKept);
+            }
         });
 
     }
