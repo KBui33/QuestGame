@@ -29,4 +29,8 @@ public class RankCard extends Card{
             }
         }
     }
+
+    public Rank getRank() {
+        return rank;
+    }
 }

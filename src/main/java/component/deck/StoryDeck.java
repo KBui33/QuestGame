@@ -27,7 +27,7 @@ public class StoryDeck extends Deck{
                 JSONObject obj = (JSONObject) it.next();
                 String title = (String)  obj.get("title");
                 String image = (String) obj.get("image");
-                String foe = (String) obj.get("foes");
+                String foe = (String) obj.get("foe");
                 Long stages = (Long) obj.get("stages");
                 this.cards.add(new QuestCard(title, image, Math.toIntExact(stages), foe));
             }

@@ -20,7 +20,12 @@ public class FoeStage extends Stage{
 
     public Integer calculateBattlePoints(){
         int[] totalBp = {foe.getBp()[0]};
-        if(questCardFoe != null && questCardFoe.equals(foe.getTitle())){totalBp[0] = foe.getBp()[1];}
+        assert questCardFoe != null;
+        if(questCardFoe.equals(foe.getTitle())
+                || questCardFoe.equals("All")
+                || (questCardFoe.equals("All Saxons") && foe.getTitle().contains("Saxon"))){
+            totalBp[0] = foe.getBp()[1];
+        }
         weapons.forEach(w -> totalBp[0] += w.getBattlePoints());
         return totalBp[0];
     }

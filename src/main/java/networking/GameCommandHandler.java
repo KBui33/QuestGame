@@ -252,21 +252,7 @@ public class GameCommandHandler {
 
                 break;
             }
-            case EVENT_START: {
-                System.out.println("== Command handler say: An event started");
-
-                returnCommand.setCommand(Command.EVENT_START);
-                returnCommand.setPlayer(internalGameState.getPlayer(gameCommand.getPlayerId()));
-                returnCommand.setPlayerId(gameCommand.getPlayerId());
-
-                internalGameState.setGameStatus(GameStatus.RUNNING_EVENT);
-
-                startGame = true;
-
-                break;
-            }
         }
-
         if(shouldNotifyClients) server.notifyClients(returnCommand);
 
         if(startGame)  new Thread(new GameRunner(server, server.getGameState())).start();
