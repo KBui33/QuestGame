@@ -1,18 +1,21 @@
-package gui.controllers;
+package gui.controllers.quest;
 
 import component.card.Card;
 import component.card.QuestCard;
 import component.card.WeaponCard;
+import component.card.Card;
+import component.card.WeaponCard;
+import gui.controllers.GameController;
 import gui.other.AlertBox;
 import gui.partials.CardView;
+import gui.partials.quest.QuestCompleteView;
 import gui.partials.quest.QuestView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
-import model.Command;
-import model.GameCommand;
 import model.Quest;
-import model.Stage;
+import utils.Callback;
+import utils.CallbackEmpty;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,16 +25,14 @@ import java.util.HashSet;
  *
  * Control QuestView and handle interactions
  */
-public class QuestController {
+public class QuestController extends AbstractQuestController {
     private QuestView questView;
     private Quest quest;
-    private ObservableList<CardView> weaponCards;
-    private HashSet<String> weaponNames;
+    private boolean questStarted = false;
 
     public QuestController(Quest quest) {
         this.questView = new QuestView();
         updateQuest(quest);
-        this.quest = quest;
 
         questView.clearStage();
 
@@ -47,13 +48,12 @@ public class QuestController {
 
         // show results to player and then move to next quest player or after each player has chosen cards?
 
-        // LOTS OF DUPLICATE CODE WILL NEED MAJOR REFACTORING
     }
 
-    public void stageComplete(GameController parent, Quest quest, boolean passed) {
+    public void stageComplete(GameController parent, Quest quest, boolean passed, CallbackEmpty callback) {
         updateQuest(quest);
         questView.setStageCompleted(quest.getCurrentStage(), passed);
-        questView.mode(QuestView.SHOW_RESULTS);
+        questView.mode(QuestView.Mode.SHOW_RESULTS);
 
         parent.hideDecks();
 
@@ -61,17 +61,16 @@ public class QuestController {
             // Send continue command to server
 
             parent.cleanUpGui();
-            parent.playerStageContinue();
-
-
+            callback.call();
         });
 
 
     }
 
-    public void pickCards(GameController parent, Quest quest) {
+    public void pickCards(GameController parent, Quest quest, Callback<Object> callback) {
         updateQuest(quest);
-        this.questView.mode(QuestView.PICK_CARDS);
+        this.questStarted = true;
+        this.questView.mode(QuestView.Mode.PICK_CARDS);
 
         ObservableList<CardView> weapons = parent.getMyHandList().filtered(c -> c.getCard() instanceof WeaponCard);
         ObservableList<CardView> addedWeapons = FXCollections.observableArrayList();
@@ -117,34 +116,37 @@ public class QuestController {
             parent.cleanUpGui();
             questView.clearStage();
 
-            parent.playerStageCardsPicked(wl);
+            callback.call(wl);
         });
 
     }
 
-    public boolean canAddWeapon(Card card) {
-        if (card instanceof WeaponCard) {
-            return !weaponNames.contains(card.getTitle());
-        }
-        return false;
-    }
+    public void questComplete(GameController parent, Quest quest, CallbackEmpty callback) {
 
-    public CardView addWeapon(WeaponCard card) {
-        CardView tmp = new CardView(card);
-        tmp.getButtonBox().setVisible(true);
-        tmp.getPlayButton().setVisible(false);
-        tmp.getDiscardButton().setText("Remove");
-        tmp.setSize(200);
-        weaponCards.add(tmp);
-        weaponNames.add(tmp.getCard().getTitle());
+        updateQuest(quest);
 
+        ObservableList<String> players = FXCollections.observableArrayList();
+        ObservableList<String> outcomes = FXCollections.observableArrayList();
 
-        return tmp;
-    }
+        // get all players and when they failed or if they succeeded
+        quest.getCurrentQuestPlayers().forEach(p -> {
+            players.add("Player " + p.getPlayerId());
+            // TODO :: - get player outcomes
+//            outcomes.add(p.failed ? "Failed" : "Passed");
+        });
 
-    public void removeWeapon(CardView cardView) {
-        weaponCards.remove(cardView);
-        weaponNames.remove(cardView.getCard().getTitle());
+        this.questView.getQuestCompleteView().getPlayers().setItems(players);
+        this.questView.getQuestCompleteView().getOutcomes().setItems(outcomes);
+
+        // if this player succeeded, add shields and display that
+        // if this player failed, display that
+        this.questView.getQuestCompleteView().getInfoText().setText(QuestCompleteView.SHIELDS_STRING + 3);
+
+        this.questView.getQuestCompleteView().getContinueButton().setOnAction(e -> {
+            parent.cleanUpGui();
+            callback.call();
+        });
+
     }
 
     public QuestView getQuestView() {
@@ -156,5 +158,9 @@ public class QuestController {
         this.questView.getQuestCard().setCard(q.getQuestCard());
 
         this.questView.getStageText().setText(QuestView.STAGE_TEXT + q.getCurrentStageNumber());
+    }
+
+    public boolean hasQuestStarted() {
+        return questStarted;
     }
 }

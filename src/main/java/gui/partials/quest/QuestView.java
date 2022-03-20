@@ -10,6 +10,7 @@ import javafx.scene.text.Text;
 import model.Quest;
 import model.Stage;
 
+
 /**
  * @author James DiNovo
  *
@@ -17,19 +18,24 @@ import model.Stage;
  */
 public class QuestView extends BorderPane {
 
+    public enum Mode {
+        PICK_CARDS,
+        SHOW_RESULTS,
+        COMPLETE
+    }
+
     private CardView questCard;
     private Text stageText, headerText;
     private VBox infoBox;
     private StageCompleteView stageCompletedView;
     private StageCardSelectionView scsv;
-    public static final int PICK_CARDS = 1;
-    public static final int SHOW_RESULTS = 2;
+    private QuestCompleteView questCompleteView;
 
     public static final String STAGE_TEXT = "Stage: ";
 
     public void setStageCompleted(Stage s, boolean passed) {
         this.stageCompletedView.setStage(s, passed);
-        mode(SHOW_RESULTS);
+        mode(Mode.SHOW_RESULTS);
     }
 
     public StageCardSelectionView getStageCardSelectionView() {
@@ -64,17 +70,22 @@ public class QuestView extends BorderPane {
         // show stages in the middle
         stageCompletedView = new StageCompleteView();
         scsv = new StageCardSelectionView();
+        questCompleteView = new QuestCompleteView();
 
     }
 
 
-    public void mode(int c) {
+    public void mode(Mode c) {
         switch (c) {
             case PICK_CARDS:
                 this.setCenter(this.scsv);
                 break;
             case SHOW_RESULTS:
                 this.setCenter(this.stageCompletedView);
+                break;
+            case COMPLETE:
+                this.setCenter(this.questCompleteView);
+                this.stageText.setText("Quest Complete");
                 break;
             default:
                 clearStage();
@@ -99,5 +110,9 @@ public class QuestView extends BorderPane {
 
     public StageCardSelectionView getScsv() {
         return scsv;
+    }
+
+    public QuestCompleteView getQuestCompleteView() {
+        return questCompleteView;
     }
 }

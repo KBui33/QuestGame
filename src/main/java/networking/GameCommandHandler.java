@@ -218,6 +218,40 @@ public class GameCommandHandler {
 
                 break;
             }
+
+            case ACCEPT_SPONSOR_QUEST_CARDS: {
+                quest = internalGameState.getCurrentQuest();
+                Player sponsor = quest.getSponsor();
+                int playerId = gameCommand.getPlayerId();
+                ArrayList<Card> cards = gameCommand.getCards();
+                System.out.println("== Command handler says: Player " + playerId + " accepted quest sponsor cards");
+
+                sponsor.addCards(cards);
+
+                returnCommand.setCommand(Command.ACCEPTED_SPONSOR_QUEST_CARDS);
+                returnCommand.setPlayer(sponsor);
+                returnCommand.setPlayerId(sponsor.getPlayerId());
+
+                internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
+                shouldNotifyClients = false;
+
+                break;
+            }
+
+            case ACCEPT_QUEST_SHIELDS: {
+                int playerId = gameCommand.getPlayerId();
+                ArrayList<Card> cards = gameCommand.getCards();
+                System.out.println("== Command handler says: Player " + playerId + " accepted quest shields");
+
+                returnCommand.setCommand(Command.ACCEPTED_QUEST_SHIELDS);
+                returnCommand.setPlayer(player);
+                returnCommand.setPlayerId(playerId);
+
+                internalGameState.setGameStatus(GameStatus.RUNNING_QUEST);
+                shouldNotifyClients = false;
+
+                break;
+            }
             case EVENT_START: {
                 System.out.println("== Command handler say: An event started");
 

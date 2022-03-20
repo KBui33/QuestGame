@@ -1,6 +1,7 @@
-package gui.controllers;
+package gui.controllers.quest;
 
 import component.card.*;
+import gui.controllers.GameController;
 import gui.other.AlertBox;
 import gui.partials.CardView;
 import gui.partials.quest.QuestSetupView;
@@ -13,6 +14,7 @@ import javafx.scene.control.Alert;
 import model.FoeStage;
 import model.Quest;
 import model.Stage;
+import utils.Callback;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,16 +25,14 @@ import java.util.List;
  *
  * Controls QuestSetupView and StageSetupView to allow users to set up quests
  */
-public class QuestSetupController {
+public class QuestSetupController extends AbstractQuestController {
     private QuestSetupView questSetupView;
     private StageSetupView currentStage;
-    private ObservableList<CardView> weaponCards;
-    private HashSet<String> weaponNames;
     private ArrayList<Stage> stages;
     private GameController parent;
     private Quest quest;
 
-    public QuestSetupController(GameController parent, QuestCard questCard) {
+    public QuestSetupController(GameController parent, QuestCard questCard, Callback<Quest> callback) {
         this.parent = parent;
         this.quest = new Quest(questCard);
         this.questSetupView = new QuestSetupView(questCard);
@@ -112,7 +112,8 @@ public class QuestSetupController {
 
             if (quest.currentStageCount() == questCard.getStages()) {
                 // quest set up complete
-                parent.questSetupComplete(quest);
+//                parent.questSetupComplete(quest);
+                callback.call(quest);
                 parent.getView().getMainPane().getChildren().clear();
                 parent.cleanUpGui();
             } else {
@@ -126,14 +127,6 @@ public class QuestSetupController {
             }
 
         });
-    }
-
-
-    public boolean canAddWeapon(Card card) {
-        if (card instanceof WeaponCard) {
-            return !weaponNames.contains(card.getTitle());
-        }
-        return false;
     }
 
     public QuestSetupView getView() {
@@ -155,24 +148,6 @@ public class QuestSetupController {
         questSetupView.getNextStageButton().setVisible(false);
         questSetupView.clearStage();
 
-    }
-
-    public CardView addWeapon(WeaponCard card) {
-        CardView tmp = new CardView(card);
-        tmp.getButtonBox().setVisible(true);
-        tmp.getPlayButton().setVisible(false);
-        tmp.getDiscardButton().setText("Remove");
-        tmp.setSize(200);
-        weaponCards.add(tmp);
-        weaponNames.add(tmp.getCard().getTitle());
-
-
-        return tmp;
-    }
-
-    public void removeWeapon(CardView cardView) {
-        weaponCards.remove(cardView);
-        weaponNames.remove(cardView.getCard().getTitle());
     }
 
     private void setStageView(StageSetupView ssv) {

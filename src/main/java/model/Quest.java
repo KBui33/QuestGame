@@ -16,26 +16,25 @@ public class Quest implements Serializable {
 
     private QuestCard questCard; //Current sponsored quest
     private ArrayList<Stage> stages; // Total amount of stages
-    private ArrayList<QuestPlayer> questPlayers; //Players that participate in the quest
+    private ArrayList<QuestPlayer> currentQuestPlayers; // Players that are still participating in quest
+    private ArrayList<QuestPlayer> questPlayers; // All players that joined quest
     private Player sponsor;
     private int currentStageIndex = 0;
 
     public Quest() {
         this.stages = new ArrayList<>();
         this.questPlayers = new ArrayList<>();
+        this.currentQuestPlayers = new ArrayList<>();
     }
 
     public Quest(QuestCard quest) {
-        this.stages = new ArrayList<>();
-        this.questPlayers = new ArrayList<>();
-        this.questCard = quest;
+       this();
+       this.questCard = quest;
     }
 
     public Quest(QuestCard quest, Player sponsor) {
-        this.stages = new ArrayList<>();
-        this.questPlayers = new ArrayList<>();
+        this(quest);
         this.sponsor = sponsor;
-        this.questCard = quest;
     }
 
 
@@ -60,6 +59,7 @@ public class Quest implements Serializable {
     }
 
     public void startQuest() {
+        this.currentQuestPlayers = new ArrayList<>(questPlayers);
     }
 
     public QuestCard getQuestCard() {
@@ -85,6 +85,10 @@ public class Quest implements Serializable {
 
     public ArrayList<Stage> getStages() {
         return stages;
+    }
+
+    public ArrayList<QuestPlayer> getCurrentQuestPlayers() {
+        return currentQuestPlayers;
     }
 
     public ArrayList<QuestPlayer> getQuestPlayers() {
@@ -120,7 +124,7 @@ public class Quest implements Serializable {
         if (stage instanceof FoeStage) {
             int stageBattlePoints = ((FoeStage) stage).calculateBattlePoints();
             System.out.println("== Stage battle points: " + stageBattlePoints);
-            for (QuestPlayer questPlayer : questPlayers) {
+            for (QuestPlayer questPlayer : currentQuestPlayers) {
                 System.out.println("== Player " + questPlayer.getPlayerId() + " battle points: " + questPlayer.calculateBattlePoints());
                 if (questPlayer.calculateBattlePoints() >= stageBattlePoints) {
                     stageResults.put(Integer.toString(questPlayer.getPlayerId()), "won");
@@ -132,7 +136,7 @@ public class Quest implements Serializable {
         }
 
         for (QuestPlayer questPlayer : stageLosers) {
-            questPlayers.remove(questPlayer);
+            currentQuestPlayers.remove(questPlayer);
         }
 
         stage.setStageResults(stageResults);
@@ -188,7 +192,7 @@ public class Quest implements Serializable {
      * Winners receive as many shields as there are stages in the quest
      */
     public void distributeShieldsToWinners() {
-        for(QuestPlayer questPlayer: questPlayers) {
+        for(QuestPlayer questPlayer: currentQuestPlayers) {
             questPlayer.incrementShields(stages.size());
         }
     }
