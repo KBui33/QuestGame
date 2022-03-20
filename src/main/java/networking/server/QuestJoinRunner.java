@@ -1,6 +1,9 @@
 package networking.server;
 
+import game.components.card.Card;
 import model.*;
+
+import java.util.ArrayList;
 
 public class QuestJoinRunner extends Runner {
 
@@ -24,6 +27,7 @@ public class QuestJoinRunner extends Runner {
 
             if(playerId == quest.getSponsor().getPlayerId()) continue; // Do not prompt quest sponsor
 
+            quest.setCurrentTurnPlayer(player);
             gameState.setGameStatus(GameStatus.PROMPTING_QUEST_PARTICIPANT);
             GameCommand playerShouldJoinQuestCommand = new GameCommand(Command.SHOULD_JOIN_QUEST);
             playerShouldJoinQuestCommand.setQuest(quest);
@@ -48,7 +52,18 @@ public class QuestJoinRunner extends Runner {
             System.out.println("== Quest join runner says: starting quest with " + numParticipants + " participants");
             new Thread(new QuestRunner(server, quest)).start();
         } else { // ...otherwise continue running
-            System.out.println("== Quest join runner says: No participants to join quest. Exiting");
+            // Return cards to sponsor
+            Player sponsor = quest.getSponsor();
+            ArrayList<Card> questCardsUsed = quest.getAllQuestCards(false);
+            sponsor.addCards(questCardsUsed);
+
+            GameCommand noPlayerJoinedQuestCommand = new GameCommand(Command.NO_PLAYER_JOINED_QUEST);
+            noPlayerJoinedQuestCommand.setPlayerId(sponsor.getPlayerId());
+            noPlayerJoinedQuestCommand.setPlayer(sponsor);
+            noPlayerJoinedQuestCommand.setQuest(quest);
+            noPlayerJoinedQuestCommand.setCards(questCardsUsed);
+            server.notifyClientByPlayerId(sponsor.getPlayerId(), noPlayerJoinedQuestCommand);
+            System.out.println("== Quest join runner says: No participants to join quest. Exiting " + questCardsUsed.size());
             gameState.setGameStatus(GameStatus.RUNNING);
         }
     }

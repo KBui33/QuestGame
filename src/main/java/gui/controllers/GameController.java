@@ -84,6 +84,11 @@ public class GameController {
                             questJoin(questCard, quest);
                             disableView(false);
                         });
+                    }  else if (command.equals(Command.NO_PLAYER_JOINED_QUEST)) { // Handle if no player joins the quest
+
+                        ArrayList<Card> questCardsUsed = receivedCommand.getCards();
+                        player = receivedCommand.getPlayer(); // Update player
+                        System.out.println("== No player joined my quest " + questCardsUsed.size());
                     } else if (command.equals(Command.PLAYER_TAKE_STAGE_CARD)) { // Handle accepting/discarding quest stage card
                         System.out.println("== It's my turn to accept/discard stage card");
                         Card questStageAdventureCard = receivedCommand.getCard();
