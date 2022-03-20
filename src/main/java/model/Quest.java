@@ -6,7 +6,10 @@ import component.card.QuestCard;
 import component.card.WeaponCard;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Quest implements Serializable {
@@ -54,6 +57,14 @@ public class Quest implements Serializable {
 
     public int currentStageCount() {
         return this.stages.size();
+    }
+
+    public Player getCurrentTurnPlayer() {
+        return currentTurnPlayer;
+    }
+
+    public void setCurrentTurnPlayer(Player currentTurnPlayer) {
+        this.currentTurnPlayer = currentTurnPlayer;
     }
 
     public void startQuest() {
@@ -219,5 +230,27 @@ public class Quest implements Serializable {
         for (QuestPlayer questPlayer : currentQuestPlayers) {
             questPlayer.incrementShields(stages.size());
         }
+    }
+
+    public ArrayList<Card> getAllQuestCards(boolean includeQuestCard) {
+        ArrayList<Card> stageCards = getAllStageCards();
+        if (includeQuestCard) stageCards.add(questCard);
+        return stageCards;
+    }
+
+    public ArrayList<Card> getAllStageCards() {
+        ArrayList<Card> stageCards = new ArrayList<>();
+        for (Stage stage : stages) {
+            stageCards.add(stage.getStageCard());
+
+            if (stage instanceof FoeStage) {
+                stage = (FoeStage) stage;
+                for (WeaponCard weaponCard : ((FoeStage) stage).getWeapons()) {
+                    stageCards.add(weaponCard);
+                }
+            }
+        }
+
+        return stageCards;
     }
 }

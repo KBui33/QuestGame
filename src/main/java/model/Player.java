@@ -20,7 +20,7 @@ public class Player implements Serializable {
     public Player() {
         cards = new ArrayList<Card>();
         rankCard = new RankCard("", "", Rank.SQUIRE);
-        shields = rankCard.getShields();
+        shields = 0;
     }
 
     public Player(int playerId) {
@@ -29,21 +29,23 @@ public class Player implements Serializable {
     }
 
     public void addCard(Card card) {
-        cards.add(card);
+        this.cards.add(card);
     }
 
-    public void addCards(ArrayList<Card> cards) { cards.addAll(cards); }
+    public void addCards(ArrayList<Card> cards) {
+        this.cards.addAll(cards);
+    }
 
     public Card discardCard(int cardIndex) {
-        return cards.remove(cardIndex);
+        return this.cards.remove(cardIndex);
     }
 
     public boolean discardCard(Card card) {
-        return cards.remove(card);
+        return this.cards.remove(card);
     }
 
     public boolean discardCards(ArrayList<Card> cards) {
-        return cards.removeAll(cards);
+        return this.cards.removeAll(cards);
     }
 
     public int getPlayerId() {
@@ -72,10 +74,49 @@ public class Player implements Serializable {
 
     public void setShields(int shields) {
         this.shields = shields;
+        this.incrementRank();
     }
 
     public void incrementShields(int inc) {
         shields += inc;
+        this.incrementRank();
+    }
+
+    public void incrementRank() {
+        Rank currentRank = rankCard.getRank();
+        boolean shouldIncrementRank = false;
+        switch (currentRank) {
+            case SQUIRE: {
+                if(this.shields >= 5) {
+                    shouldIncrementRank = true;
+                    this.shields -= 5;
+                }
+                break;
+            } case KNIGHT: {
+                if(this.shields >= 7) {
+                    shouldIncrementRank = true;
+                    this.shields -= 7;
+                }
+                break;
+            } case CHAMPION_KNIGHT: {
+                if(this.shields >= 10) {
+                    shouldIncrementRank = true;
+                    this.shields -= 10;
+                }
+                break;
+            }
+        }
+
+        if(shouldIncrementRank) this.rankCard.setRank(RankCard.getNextRank(currentRank));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (o == this) return true;
+        if (!(o instanceof Player)) return false;
+        Player p = (Player) o;
+        return p.playerId == this.playerId;
     }
 
     @Override

@@ -35,6 +35,7 @@ public class QuestRunner extends Runner {
                 // Deal adventure cards to participants
                 System.out.println("== Quest runner says: Dealing an adventure card to each participant");
                 for (QuestPlayer questPlayer : quest.getCurrentQuestPlayers()) {
+                    quest.setCurrentTurnPlayer(questPlayer.getPlayer());
                     int playerId = questPlayer.getPlayerId();
                     System.out.println("== Game runner says: Sending quest stage card to player " + playerId);
                     gameState.setGameStatus(GameStatus.TAKING_QUEST_STAGE_CARD);
@@ -51,6 +52,7 @@ public class QuestRunner extends Runner {
                 }
 
                 for (QuestPlayer questPlayer : quest.getCurrentQuestPlayers()) {
+                    quest.setCurrentTurnPlayer(questPlayer.getPlayer());
                     int playerId = questPlayer.getPlayerId();
                     System.out.println("== Game runner says: Sending take quest turn command to player " + playerId);
                     gameState.setGameStatus(GameStatus.TAKING_QUEST_TURN);
@@ -73,6 +75,7 @@ public class QuestRunner extends Runner {
 
                 // Send notification to quest losers
                 for (QuestPlayer stageLoser : stageLosers) {
+                    quest.setCurrentTurnPlayer(stageLoser.getPlayer());
                     int playerId = stageLoser.getPlayerId();
                     System.out.println("== Game runner says: Sending end quest turn to loser " + playerId);
                     gameState.setGameStatus(GameStatus.ENDING_QUEST_TURN);
@@ -91,6 +94,7 @@ public class QuestRunner extends Runner {
 
                 // Send notification to quest winners
                 for (QuestPlayer stageWinner : stageWinners) {
+                    quest.setCurrentTurnPlayer(stageWinner.getPlayer());
                     int playerId = stageWinner.getPlayerId();
                     System.out.println("== Game runner says: Sending end quest turn to winner " + playerId);
                     gameState.setGameStatus(GameStatus.ENDING_QUEST_TURN);
@@ -133,6 +137,7 @@ public class QuestRunner extends Runner {
                 for (int i = 0; i < sponsorCardsNum; i++) sponsorQuestCards.add(gameState.drawAdventureCard());
 
                 Player questSponsor = quest.getSponsor();
+                quest.setCurrentTurnPlayer(questSponsor);
                 int playerId = questSponsor.getPlayerId();
                 System.out.println("== Game runner says: Sending quest cards to sponsor " + playerId);
                 gameState.setGameStatus(GameStatus.TAKING_QUEST_SPONSOR_CARDS);
@@ -150,8 +155,12 @@ public class QuestRunner extends Runner {
                 }
             }
 
+            // Distribute shields to winners
+            quest.distributeShieldsToWinners();
+
             // Send end quest command to all participants
             for (QuestPlayer questPlayer : quest.getQuestPlayers()) {
+                quest.setCurrentTurnPlayer(questPlayer.getPlayer());
                 Player player = questPlayer.getPlayer();
                 int playerId = player.getPlayerId();
                 System.out.println("== Game runner says: Sending end quest to player " + playerId);
