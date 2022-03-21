@@ -1,6 +1,6 @@
 package model;
 
-import game.components.card.Card;
+import component.card.Card;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,7 +19,19 @@ public class ExternalGameState implements BaseGameState, Serializable {
     }
 
     @Override
-    public List<Card> getDiscardedCards() {return internalGameState.getDiscardedCards();}
+    public List<Card> getDiscardedCards() {
+        return internalGameState.getDiscardedCards();
+    }
+
+    @Override
+    public ArrayList<Card> getDiscardedAdventureCards() {
+        return internalGameState.getDiscardedAdventureCards();
+    }
+
+    @Override
+    public ArrayList<Card> getDiscardedStoryCards() {
+        return internalGameState.getDiscardedStoryCards();
+    }
 
     @Override
     public int getNumPlayers() {
@@ -53,9 +65,7 @@ public class ExternalGameState implements BaseGameState, Serializable {
 
     @Override
     public String toString() {
-        return "== External Game State ==\n" +
-                "\tNum Players: " + internalGameState.getNumPlayers() + "\n" +
-                "\tMax players: " + InternalGameState.MAX_PLAYERS;
+        return "== External Game State ==\n" + "\tNum Players: " + internalGameState.getNumPlayers() + "\n" + "\tMax players: " + InternalGameState.MAX_PLAYERS;
     }
 
 

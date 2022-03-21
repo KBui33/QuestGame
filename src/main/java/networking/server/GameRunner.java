@@ -1,7 +1,7 @@
 package networking.server;
 
-import game.components.card.Card;
-import game.components.card.QuestCard;
+import component.card.*;
+import component.card.QuestCard;
 import model.*;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class GameRunner extends Runner {
 
 
         try {
-            Thread.sleep(5000);
+            Thread.sleep(2000);
 
             ArrayList<Player> players = gameState.getPlayers();
             gameState.setGameStatus(GameStatus.RUNNING);
@@ -46,7 +46,13 @@ public class GameRunner extends Runner {
 
                     // Start quest sponsor thread if card is a quest card
                     if(currentStoryCard instanceof QuestCard) {
+                        System.out.println("== Game runner says: Quest card played");
                         new Thread(new QuestSponsorRunner(server)).start();
+                       // Start event thread if card is an event card
+                    } else if (currentStoryCard instanceof EventCard){
+                        System.out.println("== Game runner says: Event card played");
+                        continue;
+//                        new Thread(new EventRunner(server, gameState.getCurrentEvent())).start();
                     } else {
                         playerTurnCommand.setCard(currentStoryCard); // Deal story card to current player
                         server.notifyClients(playerTurnCommand);
@@ -58,13 +64,17 @@ public class GameRunner extends Runner {
                         Thread.sleep(1000);
                     }
 
+                    // Discard story card
+                    System.out.println("== Game runner says: Discarding story card");
+                    gameState.discardStoryCard(currentStoryCard);
+                    gameState.setCurrentQuest(null);
+                    gameState.setCurrentStoryCard(null);
+
                     // Notify clients
                     GameCommand endTurnCommand = new GameCommand(Command.TOOK_TURN);
+
                     endTurnCommand.setPlayerId(playerId);
-
                     server.notifyClients(endTurnCommand);
-
-                    Thread.sleep(2000);
                 }
 
                 System.out.println("== All players have taken a turn");

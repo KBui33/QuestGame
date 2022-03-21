@@ -1,6 +1,6 @@
 package model;
 
-import game.components.card.Card;
+import component.card.Card;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +15,10 @@ public interface BaseGameState {
     public Player getPlayer(int playerId);
 
     public List<Card> getDiscardedCards();
+
+    public ArrayList<Card> getDiscardedAdventureCards();
+
+    public ArrayList<Card> getDiscardedStoryCards();
 
     public GameStatus getGameStatus();
 

@@ -13,6 +13,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,10 +45,14 @@ public class Server implements Runnable {
     private InternalGameState internalGameState;
     private ExternalGameState externalGameState;
 
+    private HashMap<Integer, Integer> clientPlayerIds;
+
     Server() throws IOException {
         // Initialize game state
         internalGameState = new InternalGameState();
         externalGameState = new ExternalGameState(internalGameState);
+
+        clientPlayerIds = new HashMap<>();
 
         _serverBroadcastSocket = new ServerSocket(SERVER_BROADCAST_PORT);
         _serverGameStateUpdateSocket = new ServerSocket(SERVER_GAME_STATE_UPDATE_PORT);
@@ -71,7 +76,7 @@ public class Server implements Runnable {
     }
 
     public static Server getInstance() throws IOException {
-        if(instance == null) instance = new Server();
+        if (instance == null) instance = new Server();
         return instance;
     }
 
@@ -83,20 +88,30 @@ public class Server implements Runnable {
         return externalGameState;
     }
 
-    public int getNumClients() {return lastClientIndex;}
+    public int getNumClients() {
+        return lastClientIndex;
+    }
+
+    public int getClientPlayerId(int clientIndex) {
+        return clientPlayerIds.get(clientIndex);
+    }
+
+    public void setClientPlayerId(int clientIndex, int playerId) {
+        clientPlayerIds.put(clientIndex, playerId);
+    }
 
     @Override
     public void run() {
         try {
-            while(true) {
+            while (true) {
                 _selector.select();
                 Iterator it = _selector.selectedKeys().iterator();
 
-                while(it.hasNext()) {
+                while (it.hasNext()) {
                     SelectionKey sk = (SelectionKey) it.next();
                     it.remove();
                     Runnable r = (Runnable) sk.attachment();
-                    if(r != null) r.run();
+                    if (r != null) r.run();
                 }
             }
         } catch (IOException e) {
@@ -110,25 +125,35 @@ public class Server implements Runnable {
         @Override
         public void run() {
             try {
-                    if (lastClientIndex >= MAX_CLIENTS) {
-                        System.out.println("== Server says:  Client limit reached");
-                        return;
-                    }
+                if (lastClientIndex >= MAX_CLIENTS) {
+                    System.out.println("== Server says:  Client limit reached");
+                    return;
+                }
 
-                    if (internalGameState.getGameStatus().equals(GameStatus.STARTED)) {
-                        System.out.println("== Server says:  Game has already started. No longer accepting players");
-                        return;
-                    }
+                if (internalGameState.getGameStatus().equals(GameStatus.STARTED)) {
+                    System.out.println("== Server says:  Game has already started. No longer accepting players");
+                    return;
+                }
 
-                    SocketChannel socketChannel = _serverSocketChannel.accept();
-                    Socket broadcastSocket = _serverBroadcastSocket.accept();
-                    registerClientForBroadcasts(broadcastSocket);
-                    Socket gameStateUpdateSocket = _serverGameStateUpdateSocket.accept();
-                    registerClientForGameStateUpdates(gameStateUpdateSocket);
-                    if (socketChannel != null) new Handler(Server.this, _selector, socketChannel);
-                    lastClientIndex++;
-                    notifyClients(new GameCommand(Command.JOINED));
-                    System.out.println("== Server Says: New client connected");
+                SocketChannel socketChannel = _serverSocketChannel.accept();
+                Socket broadcastSocket = _serverBroadcastSocket.accept();
+                registerClientForBroadcasts(broadcastSocket);
+                Socket gameStateUpdateSocket = _serverGameStateUpdateSocket.accept();
+                registerClientForGameStateUpdates(gameStateUpdateSocket);
+
+                if (socketChannel != null) new Handler(Server.this, _selector, socketChannel);
+
+                clientPlayerIds.put(lastClientIndex, 0);
+                GameCommand joinedCommand = new GameCommand(Command.JOINED);
+                joinedCommand.setClientIndex(lastClientIndex);
+
+                notifyClient(lastClientIndex, joinedCommand);
+
+                lastClientIndex++;
+                notifyClients(new GameCommand(Command.PLAYER_JOINED));
+
+                System.out.println("== Server Says: New client connected");
+
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
@@ -143,12 +168,12 @@ public class Server implements Runnable {
         return _gameStateUpdateOutputStreams;
     }
 
-    public void registerClientForBroadcasts(Socket broadcastSocket)  throws IOException{
+    public void registerClientForBroadcasts(Socket broadcastSocket) throws IOException {
         _broadcastClients.add(lastClientIndex, broadcastSocket);
         _broadcastClientOutputStreams.add(lastClientIndex, new ObjectOutputStream(broadcastSocket.getOutputStream()));
     }
 
-    public void registerClientForGameStateUpdates(Socket gameStateUpdateSocket)  throws IOException{
+    public void registerClientForGameStateUpdates(Socket gameStateUpdateSocket) throws IOException {
         _gameStateUpdateClients.add(lastClientIndex, gameStateUpdateSocket);
         _gameStateUpdateOutputStreams.add(lastClientIndex, new ObjectOutputStream(gameStateUpdateSocket.getOutputStream()));
     }
@@ -159,7 +184,7 @@ public class Server implements Runnable {
         _broadcastClients.remove(index);
     }
 
-    public synchronized  void notifyClient(int clientIndex, GameCommand command) {
+    public synchronized void notifyClient(int clientIndex, GameCommand command) {
         try {
             ObjectOutputStream oos = _broadcastClientOutputStreams.get(clientIndex);
             oos.writeObject(command);
@@ -167,6 +192,19 @@ public class Server implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public synchronized void notifyClientByPlayerId(int playerId, GameCommand command) {
+        int clientIndex = -1;
+
+        for (HashMap.Entry entry : clientPlayerIds.entrySet()) {
+            if((int) entry.getValue() == playerId) {
+                clientIndex = (int)entry.getKey();
+                break;
+            }
+        }
+
+        if(clientIndex >= 0) notifyClient(clientIndex, command);
     }
 
     public synchronized void notifyClients(GameCommand command) {
@@ -197,7 +235,7 @@ public class Server implements Runnable {
         try {
             new Thread(Server.getInstance()).start();
             System.out.println("== Server started on port 5000");
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

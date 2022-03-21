@@ -1,5 +1,6 @@
 package networking.client;
 
+import model.Command;
 import model.ExternalGameState;
 import model.GameCommand;
 
@@ -12,8 +13,8 @@ import java.util.Scanner;
 
 public class Client  {
     private final int PORT = 80;
-    private static final int READ_BUFFER_SIZE = 2048;
-    private static final int WRITE_BUFFER_SIZE = 2048;
+    private static final int READ_BUFFER_SIZE = 4096;
+    private static final int WRITE_BUFFER_SIZE = 4096;
 
     // Various game commands
     public static enum ClientEvent {
@@ -35,7 +36,8 @@ public class Client  {
     private ByteBuffer _readBuffer = ByteBuffer.allocate(READ_BUFFER_SIZE);
     private ByteBuffer _writeBuffer = ByteBuffer.allocate(WRITE_BUFFER_SIZE);
 
-    private int playerId;
+    private int playerId = -1;
+    private int clientIndex = -1;
 
     public ClientEventManager clientEvents;
 
@@ -82,11 +84,19 @@ public class Client  {
         return playerId;
     }
 
+    public void setClientIndex(int clientIndex) {
+        this.clientIndex = clientIndex;
+    }
+
+    public int getClientIndex() {
+        return clientIndex;
+    }
+
     public String getServerHost() {
         return serverHost;
     }
 
-    public GameCommand sendCommand(GameCommand command) {
+    public synchronized GameCommand sendCommand(GameCommand command) {
         GameCommand receivedCommand = null;
         try {
             byte[] outMessage = GameCommand.toBytesArray(command);
@@ -115,6 +125,10 @@ public class Client  {
             while (true) {
                 try {
                     GameCommand command = (GameCommand) _subscribeInputStream.readObject();
+                    if(command.getCommand().equals(Command.JOINED))  {
+                        clientIndex = command.getClientIndex();
+                        System.out.println("== Client index: " + clientIndex);
+                    }
                     clientEvents.notify(ClientEvent.GAME_COMMAND_RECEIVED, command);
                     System.out.println("== Subscription thread: " + command);
                 } catch (IOException | ClassNotFoundException e) {
