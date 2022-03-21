@@ -139,9 +139,13 @@ public class GameController {
                         view.getHud().getCurrentStateText().setText("Quest Stage: " + currentStage.getStageCard().getTitle());
 
                         // Should show button to continue
-                        Platform.runLater(() -> questController.stageComplete(quest, true, () -> {
-                            playerStageContinue();
-                        }));
+                        Platform.runLater(() -> {
+                            view.getMainPane().clear();
+                            view.getMainPane().add(questController.getQuestView());
+                            questController.stageComplete(quest, true, () -> {
+                                playerStageContinue();
+                            });
+                        });
 
                     } else if (command.equals(Command.QUEST_STAGE_LOST)) { // Handle end quest stage turn when stage lost -> sit out of quest
                         System.out.println("== I just lost this stage. Sitting out...");
@@ -150,9 +154,13 @@ public class GameController {
                         view.getHud().getCurrentStateText().setText("Quest Stage: " + currentStage.getStageCard().getTitle());
 
                         // Should show sit out of quest button
-                        Platform.runLater(() -> questController.stageComplete(quest, false, () -> {
-                            playerStageContinue();
-                        }));
+                        Platform.runLater(() -> {
+                            view.getMainPane().clear();
+                            view.getMainPane().add(questController.getQuestView());
+                            questController.stageComplete(quest, false, () -> {
+                                playerStageContinue();
+                            });
+                        });
                     } else if (command.equals(Command.PLAYER_TAKE_SPONSOR_QUEST_CARDS)) { // Accept quest cards for sponsor
                         System.out.println("== As sponsor, I accept quest cards");
                         Quest quest = receivedCommand.getQuest();
@@ -179,6 +187,8 @@ public class GameController {
                         Quest quest = receivedCommand.getQuest();
 
                         Platform.runLater(() -> {
+                            view.getMainPane().clear();
+                            view.getMainPane().add(questController.getQuestView());
                             questController.questComplete(quest, player, () -> {
                                 GameCommand endQuestCommand = defaultServerCommand(new GameCommand(Command.END_QUEST));
                                 GameCommand endedQuestCommand = client.sendCommand(endQuestCommand);
@@ -349,6 +359,7 @@ public class GameController {
         endQuestTurnCommand.setPlayer(player);
         GameCommand endedQuestTurnCommand = client.sendCommand(endQuestTurnCommand);
         if (endedQuestTurnCommand.getPlayer() != null) player = endedQuestTurnCommand.getPlayer();
+        waitTurn();
     }
 
 

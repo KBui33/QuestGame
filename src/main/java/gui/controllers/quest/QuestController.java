@@ -62,6 +62,7 @@ public class QuestController extends AbstractQuestController {
             // Send continue command to server
 
             parent.cleanUpGui();
+            parent.getView().getMainPane().clear();
             callback.call();
         });
 
