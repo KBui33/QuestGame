@@ -1,4 +1,4 @@
-package game.components.card;
+package component.card;
 
 public class WeaponCard extends Card{
     private Integer battlePoints;

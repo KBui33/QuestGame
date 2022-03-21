@@ -1,8 +1,8 @@
 package model;
 
-import game.components.card.Card;
-import game.components.card.Rank;
-import game.components.card.RankCard;
+import component.card.Card;
+import component.card.Rank;
+import component.card.RankCard;
 
 import java.io.Serializable;
 import java.util.ArrayList;

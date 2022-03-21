@@ -1,6 +1,6 @@
 package gui.partials;
 
-import game.components.card.Card;
+import component.card.Card;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;

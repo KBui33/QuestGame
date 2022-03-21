@@ -1,6 +1,6 @@
 package gui.controllers;
 
-import game.components.card.*;
+import component.card.*;
 import gui.controllers.quest.QuestController;
 import gui.controllers.quest.QuestSetupController;
 import gui.other.AlertBox;
@@ -249,12 +249,13 @@ public class GameController {
             addCardToHand(myHand, card);
         }
 
-        view.getHud().getShieldsView().setShields(player.getShields());
-
         // hide endturn button for now
         view.getHud().getEndTurnButton().setVisible(false);
 
         waitTurn();
+
+        // a lot of this is just for laying out gui will be removed later
+        view.getHud().getShieldsView().setShields(1);
 
 
         // set action for draw card button
@@ -364,12 +365,8 @@ public class GameController {
 
 
     private void waitTurn() {
-        waitTurn("Wait for your turn");
-    }
-
-    private void waitTurn(String message) {
         disableView(true);
-        view.getHud().getCurrentStateText().setText(message);
+        view.getHud().getCurrentStateText().setText("Wait for your turn");
     }
 
     private void takeTurn() {
@@ -566,7 +563,7 @@ public class GameController {
             questSetupCompleteCommand.setQuest(quest);
             GameCommand questSetupCompletedCommand = client.sendCommand(questSetupCompleteCommand);
             player = questSetupCompletedCommand.getPlayer();
-            waitTurn("Wait for players to complete your quest");
+            waitTurn();
         });
         view.getMainPane().add(qsc.getView(), Pos.CENTER, false);
     }

@@ -1,10 +1,8 @@
 package model;
 
-import game.components.card.Card;
-import game.components.card.FoeCard;
-import game.components.card.WeaponCard;
+import component.card.FoeCard;
+import component.card.WeaponCard;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class FoeStage extends Stage{
@@ -35,7 +33,12 @@ public class FoeStage extends Stage{
 
     public Integer calculateBattlePoints(){
         int[] totalBp = {foe.getBp()[0]};
-        if(questCardFoe != null && questCardFoe.equals(foe.getTitle())){totalBp[0] = foe.getBp()[1];}
+        assert questCardFoe != null;
+        if(questCardFoe.equals(foe.getTitle())
+                || questCardFoe.equals("All")
+                || (questCardFoe.equals("All Saxons") && foe.getTitle().contains("Saxon"))){
+            totalBp[0] = foe.getBp()[1];
+        }
         weapons.forEach(w -> totalBp[0] += w.getBattlePoints());
         return totalBp[0];
     }
@@ -43,5 +46,7 @@ public class FoeStage extends Stage{
     public List<WeaponCard> getWeapons() {
         return weapons;
     }
+
+    public FoeCard getFoe(){return foe;}
 
 }

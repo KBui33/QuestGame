@@ -1,6 +1,6 @@
 package networking;
 
-import game.components.card.Card;
+import component.card.Card;
 import model.*;
 import networking.server.GameRunner;
 import networking.server.Server;
@@ -26,6 +26,7 @@ public class GameCommandHandler {
         boolean shouldNotifyClients = true;
 
         Quest quest = gameCommand.getQuest();
+        Event event = null;
         boolean startQuest = false;
 
         // Check if it's the player's turn TODO :: Add check for player turns

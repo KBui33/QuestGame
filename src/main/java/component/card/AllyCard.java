@@ -1,4 +1,4 @@
-package game.components.card;
+package component.card;
 
 public class AllyCard extends Card{
     private String extra;

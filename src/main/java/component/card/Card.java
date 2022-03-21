@@ -1,4 +1,4 @@
-package game.components.card;
+package component.card;
 
 import java.io.Serializable;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

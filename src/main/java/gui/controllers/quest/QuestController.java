@@ -1,7 +1,10 @@
 package gui.controllers.quest;
 
-import game.components.card.Card;
-import game.components.card.WeaponCard;
+import component.card.Card;
+import component.card.QuestCard;
+import component.card.WeaponCard;
+import component.card.Card;
+import component.card.WeaponCard;
 import gui.controllers.GameController;
 import gui.other.AlertBox;
 import gui.partials.CardView;

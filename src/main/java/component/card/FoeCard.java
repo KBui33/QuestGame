@@ -1,4 +1,4 @@
-package game.components.card;
+package component.card;
 
 import java.util.Arrays;
 

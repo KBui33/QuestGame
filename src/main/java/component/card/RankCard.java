@@ -1,4 +1,4 @@
-package game.components.card;
+package component.card;
 
 public class RankCard extends Card{
 
@@ -42,13 +42,17 @@ public class RankCard extends Card{
         switch (currentRank) {
             case SQUIRE: {
                 return Rank.KNIGHT;
-            } case KNIGHT: {
+            }
+            case KNIGHT: {
                 return Rank.CHAMPION_KNIGHT;
-            } case CHAMPION_KNIGHT: {
+            }
+            case CHAMPION_KNIGHT: {
                 return Rank.ROUND_TABLE_KNIGHT;
-            } default: {
+            }
+            default: {
                 return currentRank;
             }
         }
     }
+
 }
