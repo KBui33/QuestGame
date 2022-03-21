@@ -1,9 +1,9 @@
 package model;
 
-import game.components.card.Card;
-import game.components.deck.AdventureDeck;
-import game.components.deck.Deck;
-import game.components.deck.StoryDeck;
+import component.card.Card;
+import component.deck.AdventureDeck;
+import component.deck.Deck;
+import component.deck.StoryDeck;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,6 +19,7 @@ public class InternalGameState implements BaseGameState, Serializable {
     private GameStatus gameStatus;
     private Card currentStoryCard;
     private Quest currentQuest;
+    private Event currentEvent;
     private Player currentTurnPlayer;
 
     public InternalGameState() {
@@ -86,6 +87,14 @@ public class InternalGameState implements BaseGameState, Serializable {
         return discardPile;
     }
 
+    public ArrayList<Card> getDiscardedAdventureCards() {
+        return (ArrayList<Card>) adventureDeck.getDiscarded();
+    }
+
+    public ArrayList<Card> getDiscardedStoryCards() {
+        return (ArrayList<Card>) storyDeck.getDiscarded();
+    }
+
     public void discardAdventureCard(Card card) {
         adventureDeck.discard(card);
     }
@@ -128,6 +137,14 @@ public class InternalGameState implements BaseGameState, Serializable {
 
     public void setCurrentQuest(Quest currentQuest) {
         this.currentQuest = currentQuest;
+    }
+
+    public Event getCurrentEvent() {
+        return currentEvent;
+    }
+
+    public void setCurrentEvent(Event currentEvent) {
+        this.currentEvent = currentEvent;
     }
 
     @Override

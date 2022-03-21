@@ -1,13 +1,14 @@
 package model;
 
-import game.components.card.Card;
+import component.card.Card;
 
 import java.io.*;
 import java.util.ArrayList;
 
 public class GameCommand implements Serializable {
     // Various game commands
-    private int playerId = 0;
+    private int playerId = -1;
+    private int clientIndex = -1;
     private int readyPlayers = 0;
     private int joinedPlayers = 0;
     private Command command;
@@ -15,6 +16,7 @@ public class GameCommand implements Serializable {
     private Card card;
     private ArrayList<Card> cards;
     private Quest quest;
+    private Event event;
 
     public GameCommand() {
     }
@@ -52,6 +54,14 @@ public class GameCommand implements Serializable {
 
     public int getPlayerId() {
         return playerId;
+    }
+
+    public void setClientIndex(int clientIndex) {
+        this.clientIndex = clientIndex;
+    }
+
+    public int getClientIndex() {
+        return clientIndex;
     }
 
     public void setReadyPlayers(int readyPlayers) {
@@ -102,10 +112,19 @@ public class GameCommand implements Serializable {
         this.quest = quest;
     }
 
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
     @Override
     public String toString() {
         String strCmd = "GameCommand{";
         if(playerId > 0) strCmd += "playerId=" + playerId + ", ";
+        strCmd += "clientIndex=" + clientIndex + ", ";
         strCmd += "command=" + command + ", ";
         strCmd += "readyPlayers=" + readyPlayers + ", ";
         strCmd += "joinedPlayers=" + joinedPlayers;

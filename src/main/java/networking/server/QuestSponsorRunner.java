@@ -27,14 +27,14 @@ public class QuestSponsorRunner extends Runner {
             // Determine prompt order
             int[] promptOrder = computePromptOrder();
 
-                // Iterate over clients to find sponsor
+            // Iterate over clients to find sponsor
             for(int playerId: promptOrder) {
                 gameState.setGameStatus(GameStatus.PROMPTING_QUEST_SPONSOR);
                 GameCommand playerShouldSponsorQuestCommand = new GameCommand(Command.SHOULD_SPONSOR_QUEST);
                 playerShouldSponsorQuestCommand.setCard(gameState.getCurrentStoryCard());
                 playerShouldSponsorQuestCommand.setPlayerId(playerId);
 
-                server.notifyClient(playerId - 1, playerShouldSponsorQuestCommand);
+                server.notifyClientByPlayerId(playerId, playerShouldSponsorQuestCommand);
                 System.out.println("== Quest Sponsor runner says: should sponsor command sent");
                 // Wait for player to make decision
                 while (gameState.getGameStatus().equals(GameStatus.PROMPTING_QUEST_SPONSOR)) {
@@ -42,7 +42,7 @@ public class QuestSponsorRunner extends Runner {
                 }
 
                 // If sponsor agreed, exit
-                if(gameState.getGameStatus().equals(GameStatus.IN_QUEST)) {
+                if(gameState.getGameStatus().equals(GameStatus.FINDING_QUEST_PARTICIPANTS)) {
                     System.out.println("== Quest Sponsor runner says: Found quest sponsor");
                     foundSponsor = true;
                     break;
@@ -50,8 +50,11 @@ public class QuestSponsorRunner extends Runner {
             }
 
             shouldStopRunner();
-            if(!foundSponsor) {
-                System.out.println("== Quest Sponsor runner says: No sponsor found");
+            if(foundSponsor) { // If sponsor found, start quest join runner to get participants
+                System.out.println("== Quest sponsor runner says: starting quest join runner to prompt participants");
+                new Thread(new QuestJoinRunner(server, gameState.getCurrentQuest())).start();
+            } else {
+                System.out.println("== Quest Sponsor runner says: No sponsor found. Exiting...");
                 gameState.setGameStatus(GameStatus.RUNNING);
             }
         } catch (InterruptedException e) {
