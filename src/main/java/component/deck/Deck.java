@@ -44,4 +44,9 @@ public abstract class Deck implements Serializable {
         return List.copyOf(discarded);
     }
 
+    public void clear() {
+        this.cards.clear();
+        this.discarded.clear();
+    }
+
 }

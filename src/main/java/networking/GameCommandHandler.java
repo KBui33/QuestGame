@@ -282,6 +282,17 @@ public class GameCommandHandler {
 
                 break;
             }
+
+            case COMPLETE_GAME: {
+                playerId = gameCommand.getPlayerId();
+                System.out.println("== Command handler says: Player " + playerId + " completed game");
+
+                returnCommand.setCommand(Command.COMPLETED_GAME);
+                returnCommand.setPlayer(player);
+                returnCommand.setPlayerId(playerId);
+
+                break;
+            }
         }
 
         if (shouldNotifyClients) {

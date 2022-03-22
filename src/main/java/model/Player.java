@@ -68,6 +68,8 @@ public class Player implements Serializable {
         return rankCard;
     }
 
+    public Rank getRank() { return rankCard.getRank(); }
+
     public int getShields() {
         return shields;
     }

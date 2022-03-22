@@ -167,7 +167,6 @@ public class GameController {
                         ArrayList<Card> cards = receivedCommand.getCards();
                         view.getHud().getCurrentStateText().setText("Quest Complete");
 
-                        // TODO :: Display quest sponsor cards to sponsor and add accept button
                         Platform.runLater(() -> {
                             view.getMainPane().clear();
                             view.getMainPane().add(questController.getQuestView());
@@ -197,6 +196,10 @@ public class GameController {
                                 waitTurn();
                             });
                         });
+                    } else if (command.equals(Command.GAME_COMPLETE)) { // Complete game
+                        System.out.println("== The game is now complete");
+
+                        // TODO::Add complete game button
                     }
                 }
             });

@@ -15,6 +15,7 @@ public class GameCommand implements Serializable {
     private Player player;
     private Card card;
     private ArrayList<Card> cards;
+    private ArrayList<Player> players;
     private Quest quest;
     private Event event;
 
@@ -102,6 +103,14 @@ public class GameCommand implements Serializable {
 
     public ArrayList<Card> getCards() {
         return cards;
+    }
+
+    public void setPlayers(ArrayList<Player> players) {
+        this.players = players;
+    }
+
+    public ArrayList<Player> getPlayers() {
+        return players;
     }
 
     public Quest getQuest() {

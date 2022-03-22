@@ -14,5 +14,5 @@ public abstract class Runner implements Runnable {
 
     protected abstract void loop();
 
-    protected abstract void waitForResponses();
+    protected void waitForResponses() {};
 }
