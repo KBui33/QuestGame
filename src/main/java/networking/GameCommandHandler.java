@@ -283,7 +283,10 @@ public class GameCommandHandler {
             }
         }
 
-        if (shouldNotifyClients) server.notifyClients(returnCommand);
+        if (shouldNotifyClients) {
+            server.incrementNumAccepted();
+            server.notifyClients(returnCommand);
+        };
 
         if (startGame) new Thread(new GameRunner(server, server.getGameState())).start();
 

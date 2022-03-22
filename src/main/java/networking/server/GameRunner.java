@@ -79,4 +79,9 @@ public class GameRunner extends Runner {
 
         this.shouldStopRunner();
     }
+
+    @Override
+    protected void waitForResponses() {
+
+    }
 }

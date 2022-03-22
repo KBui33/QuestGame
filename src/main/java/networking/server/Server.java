@@ -47,6 +47,8 @@ public class Server implements Runnable {
 
     private HashMap<Integer, Integer> clientPlayerIds;
 
+    private int numAccepted = 0; // Keep track of number of clients who responded to a given command
+
     Server() throws IOException {
         // Initialize game state
         internalGameState = new InternalGameState();
@@ -98,6 +100,22 @@ public class Server implements Runnable {
 
     public void setClientPlayerId(int clientIndex, int playerId) {
         clientPlayerIds.put(clientIndex, playerId);
+    }
+
+    public int getNumAccepted() {
+        return numAccepted;
+    }
+
+    public void setNumAccepted(int numAccepted) {
+        this.numAccepted = numAccepted;
+    }
+
+    public int incrementNumAccepted() {
+        return ++numAccepted;
+    }
+
+    public void resetNumAccepted() {
+        setNumAccepted(0);
     }
 
     @Override
