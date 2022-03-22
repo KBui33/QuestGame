@@ -1,6 +1,6 @@
 package gui.partials.quest;
 
-import game.components.card.Card;
+import component.card.Card;
 import gui.partials.CardView;
 import gui.partials.quest.StageSetupView;
 import javafx.geometry.Insets;

@@ -1,6 +1,7 @@
-package game.components.deck;
+package component.deck;
 
-import game.components.card.QuestCard;
+import component.card.EventCard;
+import component.card.QuestCard;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -26,9 +27,20 @@ public class StoryDeck extends Deck{
                 JSONObject obj = (JSONObject) it.next();
                 String title = (String)  obj.get("title");
                 String image = (String) obj.get("image");
-                String foe = (String) obj.get("foes");
+                String foe = (String) obj.get("foe");
                 Long stages = (Long) obj.get("stages");
                 this.cards.add(new QuestCard(title, image, Math.toIntExact(stages), foe));
+            }
+
+            it = events.iterator();
+            while(it.hasNext()){
+                JSONObject obj = it.next();
+                String title = (String) obj.get("title");
+                String image = (String)  obj.get("image");
+                Long freq = (Long) obj.get("frequency");
+                for(int i = 0 ; i < freq; i++ ){
+                    this.cards.add(new EventCard(title, image));
+                }
             }
         } catch(ParseException | IOException e) {
             e.printStackTrace();

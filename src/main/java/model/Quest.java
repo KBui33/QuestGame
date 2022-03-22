@@ -1,15 +1,12 @@
 package model;
 
-import game.components.card.Card;
-import game.components.card.FoeCard;
-import game.components.card.QuestCard;
-import game.components.card.WeaponCard;
+import component.card.Card;
+import component.card.FoeCard;
+import component.card.QuestCard;
+import component.card.WeaponCard;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Quest implements Serializable {
@@ -206,11 +203,17 @@ public class Quest implements Serializable {
         battlePoints += ((FoeStage) stage).getWeaponsBattlePoints();
         int[] foeBP = ((FoeStage) stage).getFoeBattlePoints();
 
+        String currentFoe = questCard.getFoe() == null ? "none" : questCard.getFoe().toLowerCase();
+        String stageFoe = stage.getStageCard().getTitle().toLowerCase();
+
         // Add higher/lower foe battle points based on foe name and quest title
-        if (foeBP.length > 1) {
-            if (questCard.getTitle().toLowerCase().contains(stage.getStageCard().getTitle().toLowerCase()))
-                battlePoints += Integer.max(foeBP[0], foeBP[1]);
-            else battlePoints += Integer.min(foeBP[0], foeBP[1]);
+        // or if the foe is all
+        if(foeBP.length == 2 && (currentFoe.equals(stageFoe)
+                || currentFoe.equals("all"))
+                || (stageFoe.contains("saxon") && currentFoe.equals("all saxons"))){
+            battlePoints += Integer.max(foeBP[0], foeBP[1]);
+        }else{
+            battlePoints += foeBP[0];
         }
 
         return battlePoints;

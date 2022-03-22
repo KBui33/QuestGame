@@ -1,8 +1,7 @@
-package game.components.deck;
+package component.deck;
 
-import game.components.card.FoeCard;
-import game.components.card.QuestCard;
-import game.components.card.WeaponCard;
+import component.card.FoeCard;
+import component.card.WeaponCard;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -10,7 +9,6 @@ import org.json.simple.parser.ParseException;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 public class AdventureDeck extends Deck{

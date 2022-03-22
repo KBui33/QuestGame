@@ -1,4 +1,4 @@
-package game.components.card;
+package component.card;
 
 public enum Rank {
     SQUIRE,

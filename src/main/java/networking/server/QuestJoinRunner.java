@@ -1,6 +1,6 @@
 package networking.server;
 
-import game.components.card.Card;
+import component.card.Card;
 import model.*;
 
 import java.util.ArrayList;

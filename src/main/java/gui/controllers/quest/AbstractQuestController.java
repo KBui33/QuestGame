@@ -1,7 +1,9 @@
 package gui.controllers.quest;
 
-import game.components.card.Card;
-import game.components.card.WeaponCard;
+import component.card.Card;
+import component.card.WeaponCard;
+import component.card.Card;
+import component.card.WeaponCard;
 import gui.partials.CardView;
 import javafx.collections.ObservableList;
 
@@ -21,6 +23,14 @@ public abstract class AbstractQuestController {
         weaponCards.add(tmp);
         weaponNames.add(tmp.getCard().getTitle());
 
+
+        return tmp;
+    }
+
+    public CardView addWeapon(WeaponCard card, boolean removable) {
+        CardView tmp = addWeapon(card);
+
+        tmp.getButtonBox().setVisible(removable);
 
         return tmp;
     }

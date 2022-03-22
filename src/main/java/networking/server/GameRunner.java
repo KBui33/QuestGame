@@ -1,7 +1,7 @@
 package networking.server;
 
-import game.components.card.Card;
-import game.components.card.QuestCard;
+import component.card.*;
+import component.card.QuestCard;
 import model.*;
 
 import java.util.ArrayList;
@@ -45,8 +45,14 @@ public class GameRunner extends Runner {
                     gameState.setCurrentStoryCard(currentStoryCard);
 
                     // Start quest sponsor thread if card is a quest card
-                    if (currentStoryCard instanceof QuestCard) {
+                    if(currentStoryCard instanceof QuestCard) {
+                        System.out.println("== Game runner says: Quest card played");
                         new Thread(new QuestSponsorRunner(server)).start();
+                       // Start event thread if card is an event card
+                    } else if (currentStoryCard instanceof EventCard){
+                        System.out.println("== Game runner says: Event card played");
+                        continue;
+//                        new Thread(new EventRunner(server, gameState.getCurrentEvent())).start();
                     } else {
                         playerTurnCommand.setCard(currentStoryCard); // Deal story card to current player
                         server.notifyClients(playerTurnCommand);

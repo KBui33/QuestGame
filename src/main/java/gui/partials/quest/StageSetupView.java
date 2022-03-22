@@ -1,7 +1,7 @@
 package gui.partials.quest;
 
-import game.components.card.Card;
-import game.components.card.FoeCard;
+import component.card.Card;
+import component.card.FoeCard;
 import gui.partials.CardView;
 import gui.partials.DeckView;
 import javafx.geometry.Pos;
