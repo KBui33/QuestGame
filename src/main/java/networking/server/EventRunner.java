@@ -21,6 +21,8 @@ public class EventRunner extends Runner{
         System.out.println("== Event runner says: initializing event");
         System.out.println("== Event runner says: event card " + event.getEvent().getTitle() + " in play");
 
+        GameCommand runningGameCommand = new GameCommand();
+
         try{
             // Figure out which event is being played
             switch(event.getEvent().getTitle()){
@@ -29,7 +31,8 @@ public class EventRunner extends Runner{
                     break;
                 }
                 case "Queen's Favor": {
-                    //
+                    // Send two 2 cards to player
+                    //runningGameCommand.setCommand();
 
                     break;
                 }

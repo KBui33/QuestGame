@@ -12,6 +12,7 @@ public class GameCommand implements Serializable {
     private int readyPlayers = 0;
     private int joinedPlayers = 0;
     private Command command;
+    private EventCommand eventCommand;
     private Player player;
     private Card card;
     private ArrayList<Card> cards;
@@ -23,6 +24,10 @@ public class GameCommand implements Serializable {
 
     public GameCommand(Command command) {
         this.command = command;
+    }
+
+    public GameCommand(EventCommand eventCommand){
+        this.eventCommand = eventCommand;
     }
 
     public GameCommand(int playerId, Command command) {
@@ -46,6 +51,14 @@ public class GameCommand implements Serializable {
 
     public Command getCommand() {
         return command;
+    }
+
+    public EventCommand getEventCommand() {
+        return eventCommand;
+    }
+
+    public void setEventCommand(EventCommand eventCommand) {
+        this.eventCommand = eventCommand;
     }
 
     public void setPlayerId(int playerId) {
