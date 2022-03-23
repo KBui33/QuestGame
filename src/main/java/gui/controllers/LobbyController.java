@@ -75,7 +75,7 @@ public class LobbyController {
                     GameCommand readyCommand = new GameCommand(Command.READY);
                     readyCommand.setClientIndex(client.getClientIndex());
                     GameCommand isReadyCommand =  client.sendCommand(readyCommand);
-                    client.setPlayerId(isReadyCommand.getPlayerId()); // Set id of player/client
+                    client.setPlayerId(isReadyCommand.getPlayer().getPlayerId()); // Set id of player/client
 
                     view.getReadyButton().getStyleClass().remove("success");
                     view.getReadyButton().getStyleClass().add("caution");
