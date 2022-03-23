@@ -19,52 +19,42 @@ public class EventRunner extends Runner{
         gameState.setGameStatus(GameStatus.RUNNING_EVENT);
         server.notifyClients(new GameCommand(Command.EVENT_STARTED));
         System.out.println("== Event runner says: initializing event");
+        System.out.println("== Event runner says: event card " + event.getEvent().getTitle() + " in play");
 
         try{
             // Figure out which event is being played
             switch(event.getEvent().getTitle()){
                 case "King's Recognition":{
-                    // Can't do this rn
+                    // Can't do this rn (do not have something to keep track this card rn)
                     break;
                 }
                 case "Queen's Favor": {
-                    // If squire then add 2 cards to their hand
-                    gameState.getPlayers().forEach(
-                            player -> {
-                                if(player.getRankCard().getRank() == Rank.SQUIRE){
-                                    // add 2 cards to their hand
-                                }
-                            });
+                    //
+
                     break;
                 }
                 case "Court Called to Camelot": {
-                    // Can't do this rn
+                    // Can't do this rn (ally cards not applied yet)
                     break;
                 }
                 case "Pox": {
-                    // Remove 1 shield for every player beside the drawing player
-                    gameState.getPlayers().forEach(
-                            player -> {
-                                if(gameState.getCurrentTurnPlayer().getPlayerId() != player.getPlayerId()) {
-                                    if(player.getShields() > 0) player.setShields(player.getShields() - 1);
-                                }
-                            });
+                    //
                     break;
                 }
                 case "Plague": {
-                    Player drawer = gameState.getCurrentTurnPlayer();
-                    if(drawer.getShields() > 0){
-                        drawer.setShields(drawer.getShields() - 2);
-                    }
+                    //
                     break;
                 }
                 case "Chivalrous Deed": {
+                    //
                     break;
                 }
                 case "Prosperity Throughout the Realm": {
+                    //
                     break;
                 }
                 case "King's Call to Arms": {
+                    //
                     break;
                 }
             }

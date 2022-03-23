@@ -281,6 +281,17 @@ public class GameCommandHandler {
 
                 break;
             }
+
+            case END_EVENT: {
+                playerId = gameCommand.getPlayerId();
+                System.out.println("== Command handler says: Player " + playerId +" ended event");
+
+                returnCommand.setCommand(Command.ENDED_EVENT);
+                returnCommand.setPlayer(player);
+                returnCommand.setPlayerId(playerId);
+
+                internalGameState.setGameStatus(GameStatus.ENDING_QUEST);
+            }
         }
 
         if (shouldNotifyClients) server.notifyClients(returnCommand);
