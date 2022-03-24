@@ -14,9 +14,6 @@ public class Player implements Serializable {
     private RankCard rankCard;
     private int shields;
 
-    // -- TODO:: Add cards array list
-    // -- TODO:: Add weapons array list
-
     public Player() {
         cards = new ArrayList<Card>();
         rankCard = new RankCard("", "", Rank.SQUIRE);

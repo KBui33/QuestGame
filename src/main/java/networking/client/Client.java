@@ -62,7 +62,7 @@ public class Client  {
     }
 
     public Client() throws IOException {
-        this("192.168.122.1");
+        this("192.168.0.18");
     }
 
     public static Client initialize(String serverHost) throws IOException {

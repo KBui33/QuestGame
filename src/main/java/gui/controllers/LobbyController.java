@@ -96,6 +96,7 @@ public class LobbyController {
             ClientApplication.window.setScene(new ConnectScene());
             // should send disconnect notification to server and remove player from game
             // TODO::Unsubscribe from all events
+            unsubscribeEvents();
         });
     }
 
