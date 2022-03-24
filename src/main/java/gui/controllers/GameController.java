@@ -112,8 +112,6 @@ public class GameController {
                                 e.printStackTrace();
                             }
 
-                            view.getMainPane().clear();
-                            view.getMainPane().add(questController.getQuestView());
                             questController.pickCards(quest, (wl) -> {
                                 // once player has picked cards
                                 disableView(true);
@@ -134,8 +132,6 @@ public class GameController {
 
                         // Should show button to continue
                         Platform.runLater(() -> {
-                            view.getMainPane().clear();
-                            view.getMainPane().add(questController.getQuestView());
                             questController.stageComplete(quest, true, () -> {
                                 playerStageContinue();
                             });
@@ -149,8 +145,6 @@ public class GameController {
 
                         // Should show sit out of quest button
                         Platform.runLater(() -> {
-                            view.getMainPane().clear();
-                            view.getMainPane().add(questController.getQuestView());
                             questController.stageComplete(quest, false, () -> {
                                 playerStageContinue();
                             });
@@ -162,8 +156,6 @@ public class GameController {
                         view.getHud().getCurrentStateText().setText("Quest Complete");
 
                         Platform.runLater(() -> {
-                            view.getMainPane().clear();
-                            view.getMainPane().add(questController.getQuestView());
                             System.out.println("Received cards: " + cards.size());
                             questController.sponsorQuestRewards(quest, cards, (keptCards) -> {
                                 GameCommand acceptSponsorQuestCardsCommand = defaultServerCommand(new GameCommand(Command.ACCEPT_SPONSOR_QUEST_CARDS));
@@ -179,8 +171,6 @@ public class GameController {
                         Quest quest = receivedCommand.getQuest();
 
                         Platform.runLater(() -> {
-                            view.getMainPane().clear();
-                            view.getMainPane().add(questController.getQuestView());
                             questController.questComplete(quest, player, () -> {
                                 GameCommand endQuestCommand = defaultServerCommand(new GameCommand(Command.END_QUEST));
                                 GameCommand endedQuestCommand = client.sendCommand(endQuestCommand);
@@ -319,24 +309,6 @@ public class GameController {
         return view;
     }
 
-    public void cleanUpGui() {
-        // clear quest setup
-        // getView().getMainPane().getChildren().clear();
-
-        // reset view
-//        getView().getHud().getEndTurnButton().setVisible(true);
-
-        // fix list view - need better fix at some point
-        ObservableList<CardView> tmp = FXCollections.observableArrayList();
-
-        getMyHandList().forEach(c -> {
-            CardView n = new CardView(c.getCard());
-            setCardViewButtonActions(n);
-            tmp.add(n);
-        });
-        setMyHandList(tmp);
-        getView().getHud().getMyHand().setListViewItems(getMyHandList());
-    }
 
     public void playerStageContinue() {
         // send quest turn complete command to server
@@ -570,12 +542,14 @@ public class GameController {
 
     private void updatePlayer(Player p) {
         this.player = p;
-        view.getHud().getShieldsView().setShields(player.getShields());
-        myHand.clear();
-        // Add player cards to gui cards
-        for (Card card : player.getCards()) {
-            addCardToHand(myHand, card);
-        }
+        Platform.runLater(() -> {
+            view.getHud().getShieldsView().setShields(player.getShields());
+            myHand.clear();
+            // Add player cards to gui cards
+            for (Card card : player.getCards()) {
+                addCardToHand(myHand, card);
+            }
+        });
     }
 
     public void gameOver() {
