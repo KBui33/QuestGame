@@ -234,7 +234,7 @@ public class Server implements Runnable {
 
         try {
             new Thread(Server.getInstance()).start();
-            System.out.println("== Server started on port 5000");
+            System.out.println("== Server started on port " + SERVER_PORT);
         } catch (IOException e) {
             e.printStackTrace();
         }

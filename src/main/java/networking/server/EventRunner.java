@@ -1,7 +1,12 @@
 package networking.server;
 
+import component.card.Card;
 import component.card.Rank;
 import model.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class EventRunner extends Runner{
     private Server server;
@@ -32,7 +37,11 @@ public class EventRunner extends Runner{
                 }
                 case "Queen's Favor": {
                     // Send two 2 cards to player
-                    //runningGameCommand.setCommand();
+
+                    List<Card> adventureCards = Arrays.asList(gameState.drawAdventureCard(), gameState.drawAdventureCard());
+                    runningGameCommand.setEventCommand(EventCommand.RUNNING_QUEEN);
+                    runningGameCommand.setEvent(event);
+                    runningGameCommand.setCards((ArrayList<Card>) adventureCards);
 
                     break;
                 }
@@ -60,7 +69,13 @@ public class EventRunner extends Runner{
                     //
                     break;
                 }
+
             }
+
+            System.out.println("== Event runner says: Ending event");
+            server.notifyClients(new GameCommand(Command.EVENT_COMPLETED));
+
+            gameState.setGameStatus(GameStatus.RUNNING);
         }catch(Exception e){
             e.printStackTrace();
             shouldStopRunner();
