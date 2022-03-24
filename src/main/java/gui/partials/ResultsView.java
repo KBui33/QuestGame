@@ -16,18 +16,18 @@ public class ResultsView extends VBox {
         this.setSpacing(5);
     }
 
-    public ResultsView(ArrayList<String> column1, ArrayList<String> column2) {
+    public ResultsView(ArrayList<String> column1) {
         this();
-        generate(column1, column2);
+        generate(column1);
     }
 
-    public void setItems(ArrayList<String> column1, ArrayList<String> column2) {
+    public void setItems(ArrayList<String> column1) {
 
     }
 
-    private void generate(ArrayList<String> column1, ArrayList<String> column2) {
+    private void generate(ArrayList<String> column1) {
         this.getChildren().clear();
-        for (int i = 0; i < Math.max(column1.size(), column2.size()); i++) {
+        for (int i = 0; i < column1.size(); i++) {
             HBox row = new HBox();
             row.setAlignment(Pos.CENTER);
             row.setSpacing(5);
@@ -39,9 +39,6 @@ public class ResultsView extends VBox {
 
             if (i < column1.size()) {
                 text1.setText(column1.get(i));
-            }
-            if (i < column2.size()) {
-                text2.setText(column2.get(i));
             }
             this.getChildren().add(row);
         }

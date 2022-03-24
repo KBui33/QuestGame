@@ -22,6 +22,7 @@ import networking.client.ClientEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 
 /**
  * @author James DiNovo
@@ -37,6 +38,8 @@ public class GameController {
     private GamePane view;
     private QuestController questController;
     private final GameController gc;
+
+    private final ArrayList<Callable> eventSubscriptions = new ArrayList<>();
 
     public GameController(GamePane view) {
         myHand = FXCollections.observableArrayList();
@@ -55,9 +58,10 @@ public class GameController {
             if(returnedAttachedPlayerCommand.getPlayer() != null) updatePlayer(returnedAttachedPlayerCommand.getPlayer());
 
             // Subscribe to command updates
-            client.clientEvents.subscribe(Client.ClientEvent.GAME_COMMAND_RECEIVED, new ClientEventListener() {
+            Callable<Void> unsubscribeCommandReceived = client.clientEvents.subscribe(Client.ClientEvent.GAME_COMMAND_RECEIVED, new ClientEventListener() {
                 @Override
                 public void update(Client.ClientEvent eventType, Object o) {
+
                     Command receivedCommand = (Command) o;
 
                     switch (receivedCommand.getCommandType()) {
@@ -77,8 +81,10 @@ public class GameController {
                 }
             });
 
+            eventSubscriptions.add(unsubscribeCommandReceived);
+
             // Subscribe to game state updates
-            client.clientEvents.subscribe(Client.ClientEvent.EXTERNAL_GAME_STATE_UPDATED, new ClientEventListener() {
+            Callable<Void> unsubscribeGameStateUpdate = client.clientEvents.subscribe(Client.ClientEvent.EXTERNAL_GAME_STATE_UPDATED, new ClientEventListener() {
                 @Override
                 public void update(Client.ClientEvent eventType, Object o) {
                     ExternalGameState externalGameState = (ExternalGameState) o;
@@ -107,6 +113,7 @@ public class GameController {
                 }
             });
 
+            eventSubscriptions.add(unsubscribeGameStateUpdate);
         } catch (IOException err) {
             err.printStackTrace();
         }
@@ -443,12 +450,6 @@ public class GameController {
         });
     }
 
-    public void gameOver() {
-        // show end game screen
-
-        // once players hit continue they can either be returned to connect screen or lobby (not sure yet)
-    }
-
     /**
      * Default boiler plate for server commands
      *
@@ -475,7 +476,7 @@ public class GameController {
             System.out.println("== It's my turn. Player: " + command.getPlayerId());
             view.getHud().getCurrentStateText().setText("Take your turn!");
             disableView(false);
-        } else if (command.equals(GameCommandName.GAME_COMPLETE)) { // Complete game
+        } else if (commandName.equals(GameCommandName.GAME_COMPLETE)) { // Complete game
             System.out.println("== The game is now complete");
 
             Platform.runLater(() -> {
@@ -486,9 +487,11 @@ public class GameController {
                 view.getMainPane().clear();
                 view.getMainPane().add(endGameView);
                 endGameView.getContinueButton().setOnAction(e -> {
-                    // TODO :: - Send whatever server commands
+                    GameCommand completeGameCommand = (GameCommand) defaultServerCommand(new GameCommand(GameCommandName.COMPLETE_GAME));
+                    GameCommand completedFameCommand = (GameCommand) client.sendCommand(completeGameCommand);
 
                     // send user back to lobby
+                    unsubscribeEvents();
                     ClientApplication.window.setScene(new LobbyScene());
                 });
             });
@@ -521,7 +524,7 @@ public class GameController {
         } else if (commandName.equals(QuestCommandName.NO_PLAYER_JOINED_QUEST)) { // Handle if no player joins the quest
 
             ArrayList<Card> questCardsUsed = command.getCards();
-            player = command.getPlayer(); // Update player
+            updatePlayer(command.getPlayer()); // Update player
             System.out.println("== No player joined my quest " + questCardsUsed.size());
         }  else if (commandName.equals(QuestCommandName.PLAYER_TAKE_STAGE_CARD)) { // Handle accepting/discarding quest stage card
             System.out.println("== It's my turn to accept/discard stage card");
@@ -558,7 +561,7 @@ public class GameController {
                     QuestCommand takeQuestTurnCommand = (QuestCommand) defaultServerCommand(new QuestCommand(QuestCommandName.TAKE_QUEST_TURN));
                     takeQuestTurnCommand.setCards(wl);
                     QuestCommand tookQuestTurnCommand = (QuestCommand) client.sendCommand(takeQuestTurnCommand);
-                    if(tookQuestTurnCommand.getPlayer() != null) player = tookQuestTurnCommand.getPlayer();
+                    if(tookQuestTurnCommand.getPlayer() != null) updatePlayer(tookQuestTurnCommand.getPlayer());
                     waitTurn();
                 });
                 disableView(false);
@@ -606,7 +609,7 @@ public class GameController {
                     QuestCommand acceptSponsorQuestCardsCommand = (QuestCommand) defaultServerCommand(new QuestCommand(QuestCommandName.ACCEPT_SPONSOR_QUEST_CARDS));
                     acceptSponsorQuestCardsCommand.setCards(keptCards);
                     QuestCommand acceptedSponsorQuestCardsCommand = (QuestCommand) client.sendCommand(acceptSponsorQuestCardsCommand);
-                    if (acceptedSponsorQuestCardsCommand.getPlayer() != null) player = acceptedSponsorQuestCardsCommand.getPlayer();
+                    if (acceptedSponsorQuestCardsCommand.getPlayer() != null) updatePlayer(acceptedSponsorQuestCardsCommand.getPlayer());
                     waitTurn();
                 });
             });
@@ -621,7 +624,7 @@ public class GameController {
                 questController.questComplete(quest, player, () -> {
                     QuestCommand endQuestCommand = (QuestCommand) defaultServerCommand(new QuestCommand(QuestCommandName.END_QUEST));
                     QuestCommand endedQuestCommand = (QuestCommand) client.sendCommand(endQuestCommand);
-                    if (endedQuestCommand.getPlayer() != null) player = endedQuestCommand.getPlayer();
+                    if (endedQuestCommand.getPlayer() != null) updatePlayer(endedQuestCommand.getPlayer());
                     waitTurn();
                 });
             });
@@ -631,5 +634,18 @@ public class GameController {
     public void handleEventCommands(EventCommand command) {
         System.out.println("== Game Controller command update says: " + command);
 
+    }
+
+    /**
+     * Unsubscribe from all events
+     */
+    public void unsubscribeEvents() {
+        try {
+            for (Callable eventSubscription : eventSubscriptions) {
+                eventSubscription.call();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
