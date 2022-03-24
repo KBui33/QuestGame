@@ -49,7 +49,7 @@ public class GameController {
             // Fetch corresponding player
             GameCommand getAttachedPlayerCommand = defaultServerCommand(new GameCommand(GameCommandName.GET_ATTACHED_PLAYER));
             GameCommand returnedAttachedPlayerCommand = (GameCommand) client.sendCommand(getAttachedPlayerCommand);
-            if(returnedAttachedPlayerCommand.getPlayer() != null) player = returnedAttachedPlayerCommand.getPlayer();
+            if(returnedAttachedPlayerCommand.getPlayer() != null) updatePlayer(returnedAttachedPlayerCommand.getPlayer());
 
             // Subscribe to command updates
             client.clientEvents.subscribe(Client.ClientEvent.GAME_COMMAND_RECEIVED, new ClientEventListener() {
@@ -117,18 +117,12 @@ public class GameController {
         view.getHud().getMyHand().setListViewItems(myHand);
         view.getHud().getDiscardedCards().setListViewItems(discarded);
 
-        // Add player cards to gui cards
-        for (Card card : player.getCards()) {
-            addCardToHand(myHand, card);
-        }
-
         // hide endturn button for now
         view.getHud().getEndTurnButton().setVisible(false);
 
         waitTurn();
 
-        // a lot of this is just for laying out gui will be removed later
-        view.getHud().getShieldsView().setShields(1);
+        updatePlayer(player);
 
 
         // set action for draw card button
@@ -158,7 +152,7 @@ public class GameController {
             // Send end turn command
             GameCommand endTurnCommand =  defaultServerCommand(new GameCommand(GameCommandName.END_TURN));
             GameCommand endedTurnCommand = (GameCommand) client.sendCommand(endTurnCommand);
-            if(endedTurnCommand.getPlayer() != null) player = endedTurnCommand.getPlayer();
+            if(endedTurnCommand.getPlayer() != null) updatePlayer(endedTurnCommand.getPlayer());
             waitTurn();
         });
 
@@ -226,7 +220,7 @@ public class GameController {
         // send quest turn complete command to server
         QuestCommand endQuestTurnCommand = (QuestCommand) defaultServerCommand(new QuestCommand(QuestCommandName.END_QUEST_TURN));
         QuestCommand endedQuestTurnCommand = (QuestCommand) client.sendCommand(endQuestTurnCommand);
-        if (endedQuestTurnCommand.getPlayer() != null) player = endedQuestTurnCommand.getPlayer();
+        if (endedQuestTurnCommand.getPlayer() != null) updatePlayer(endedQuestTurnCommand.getPlayer());
         waitTurn();
     }
 
@@ -275,7 +269,7 @@ public class GameController {
             QuestCommand acceptQuestStageCardCommand = (QuestCommand) defaultServerCommand(new QuestCommand(QuestCommandName.ACCEPT_QUEST_STAGE_CARD));
             acceptQuestStageCardCommand.setCard(card);
             QuestCommand acceptedQuestStageCardCommand = (QuestCommand) client.sendCommand(acceptQuestStageCardCommand);
-            if (acceptedQuestStageCardCommand.getPlayer() != null) player = acceptedQuestStageCardCommand.getPlayer();
+            if (acceptedQuestStageCardCommand.getPlayer() != null) updatePlayer(acceptedQuestStageCardCommand.getPlayer());
             view.getMainPane().remove(drawnCard);
         }, e -> {
             discardCard(drawnCard);
@@ -284,7 +278,7 @@ public class GameController {
             QuestCommand discardQuestStageCardCommand = (QuestCommand) defaultServerCommand(new QuestCommand(QuestCommandName.DISCARD_QUEST_STAGE_CARD));
             discardQuestStageCardCommand.setCard(card);
             QuestCommand discardedQuestStageCardCommand = (QuestCommand) client.sendCommand(discardQuestStageCardCommand);
-            if (discardedQuestStageCardCommand.getPlayer() != null) player = discardedQuestStageCardCommand.getPlayer();
+            if (discardedQuestStageCardCommand.getPlayer() != null) updatePlayer(discardedQuestStageCardCommand.getPlayer());
 
             view.getMainPane().remove(drawnCard);
         });
@@ -299,7 +293,7 @@ public class GameController {
             // Send will join command to server
             QuestCommand willJoinQuestCommand = (QuestCommand) defaultServerCommand(new QuestCommand(QuestCommandName.WILL_JOIN_QUEST));
             QuestCommand joinedQuestCommand = (QuestCommand) client.sendCommand(willJoinQuestCommand);
-            if (joinedQuestCommand.getPlayer() != null) player = joinedQuestCommand.getPlayer();
+            if (joinedQuestCommand.getPlayer() != null) updatePlayer(joinedQuestCommand.getPlayer());
 
             view.getMainPane().remove(drawnCard);
 
@@ -311,7 +305,7 @@ public class GameController {
             // Send will not join command to server
             QuestCommand willNotJoinQuestCommand = (QuestCommand) defaultServerCommand(new QuestCommand(QuestCommandName.WILL_NOT_JOIN_QUEST));
             QuestCommand didNotJoinQuestCommand = (QuestCommand) client.sendCommand(willNotJoinQuestCommand);
-            if (didNotJoinQuestCommand.getPlayer() != null) player = didNotJoinQuestCommand.getPlayer();
+            if (didNotJoinQuestCommand.getPlayer() != null) updatePlayer(didNotJoinQuestCommand.getPlayer());
 
             view.getMainPane().remove(drawnCard);
             waitTurn();
@@ -329,7 +323,7 @@ public class GameController {
                     // send decline to server
                     QuestCommand declineSponsorQuestCommand = (QuestCommand) defaultServerCommand(new QuestCommand(QuestCommandName.WILL_NOT_SPONSOR_QUEST));
                     QuestCommand declinedSponsorQuestCommand = (QuestCommand) client.sendCommand(declineSponsorQuestCommand);
-                    if(declinedSponsorQuestCommand.getPlayer() != null) player = declinedSponsorQuestCommand.getPlayer();
+                    if(declinedSponsorQuestCommand.getPlayer() != null) updatePlayer(declinedSponsorQuestCommand.getPlayer());
 
                     drawnCard.getDiscardButton().fire();
                 });
@@ -341,7 +335,7 @@ public class GameController {
             // send decline to server
             QuestCommand declineSponsorQuestCommand = (QuestCommand) defaultServerCommand(new QuestCommand(QuestCommandName.WILL_NOT_SPONSOR_QUEST));
             QuestCommand declinedSponsorQuestCommand = (QuestCommand) client.sendCommand(declineSponsorQuestCommand);
-            if(declinedSponsorQuestCommand.getPlayer() != null) player = declinedSponsorQuestCommand.getPlayer();
+            if(declinedSponsorQuestCommand.getPlayer() != null) updatePlayer(declinedSponsorQuestCommand.getPlayer());
 
             view.getMainPane().remove(drawnCard);
 
@@ -416,7 +410,7 @@ public class GameController {
             QuestCommand questSetupCompleteCommand = (QuestCommand) defaultServerCommand(new QuestCommand(QuestCommandName.WILL_SPONSOR_QUEST));
             questSetupCompleteCommand.setQuest(quest);
             QuestCommand questSetupCompletedCommand = (QuestCommand) client.sendCommand(questSetupCompleteCommand);
-            if (questSetupCompletedCommand.getPlayer() != null) player = questSetupCompletedCommand.getPlayer();
+            if (questSetupCompletedCommand.getPlayer() != null) updatePlayer(questSetupCompletedCommand.getPlayer());
 
             waitTurn();
         });
@@ -436,7 +430,7 @@ public class GameController {
             GameCommand discardCardCommand = defaultServerCommand(new GameCommand(GameCommandName.DISCARD_CARD));
             discardCardCommand.setCard(cardView.getCard());
             GameCommand discardedCardCommand = (GameCommand) client.sendCommand(discardCardCommand);
-            if (discardedCardCommand.getPlayer() != null) player = discardedCardCommand.getPlayer();
+            if (discardedCardCommand.getPlayer() != null) updatePlayer(discardedCardCommand.getPlayer());
         });
 
         cardView.getPlayButton().setVisible(false);
@@ -450,6 +444,16 @@ public class GameController {
         cardView.setOnMouseExited(e -> {
             cardView.getButtonBox().setVisible(false);
         });
+    }
+
+    private void updatePlayer(Player p) {
+        this.player = p;
+        view.getHud().getShieldsView().setShields(player.getShields());
+        myHand.clear();
+        // Add player cards to gui cards
+        for (Card card : player.getCards()) {
+            addCardToHand(myHand, card);
+        }
     }
 
     public void gameOver() {
