@@ -67,7 +67,6 @@ public class GameCommandHandler extends CommandHandlerDecorator {
             returnCommand.setCommandName(GameCommandName.COMPLETED_GAME);
             returnCommand.setPlayer(player);
             returnCommand.setPlayerId(playerId);
-
         }
 
         server.incrementNumResponded(CommandType.GAME);

@@ -2,10 +2,7 @@ package networking.server;
 // CODE FROM::https://tianpan.co/blog/2015-01-13-understanding-reactor-pattern-for-highly-scalable-i-o-bound-web-server
 
 import model.Command;
-import networking.BaseCommandHandler;
-import networking.CommandHandler;
-import networking.GameCommandHandler;
-import networking.QuestCommandHandler;
+import networking.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -114,6 +111,9 @@ public class Handler implements Runnable {
                 break;
             case QUEST:
                 commandHandler = new QuestCommandHandler(commandHandler);
+                break;
+            case EVENT:
+                commandHandler = new EventCommandHandler(commandHandler);
                 break;
             default:
                 break;

@@ -89,8 +89,6 @@ public class QuestRunner extends Runner {
                 server.notifyClientByPlayerId(playerId, questStageLostCommand);
             }
 
-            waitForResponses();
-
             // Send notification to quest winners
             for (QuestPlayer stageWinner : stageWinners) {
                 quest.setCurrentTurnPlayer(stageWinner.getPlayer());
