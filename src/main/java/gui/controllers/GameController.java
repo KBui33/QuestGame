@@ -3,9 +3,12 @@ package gui.controllers;
 import component.card.*;
 import gui.controllers.quest.QuestController;
 import gui.controllers.quest.QuestSetupController;
+import gui.main.ClientApplication;
 import gui.other.AlertBox;
 import gui.panes.GamePane;
 import gui.partials.CardView;
+import gui.partials.EndGameView;
+import gui.scenes.LobbyScene;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -150,8 +153,8 @@ public class GameController {
         view.getHud().getEndTurnButton().setOnAction(e -> {
             System.out.println("Turn ended");
             // Send end turn command
-            GameCommand endTurnCommand =  defaultServerCommand(new GameCommand(Command.END_TURN));
-            GameCommand endedTurnCommand = client.sendCommand(endTurnCommand);
+            GameCommand endTurnCommand =  defaultServerCommand(new GameCommand(GameCommandName.END_TURN));
+            GameCommand endedTurnCommand = (GameCommand) client.sendCommand(endTurnCommand);
             if(endedTurnCommand.getPlayer() != null) updatePlayer(endedTurnCommand.getPlayer());
             waitTurn();
         });
