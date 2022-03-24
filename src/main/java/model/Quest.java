@@ -75,6 +75,8 @@ public class Quest implements Serializable {
         return questCard;
     }
 
+    public String getTitle() { return questCard.getTitle(); }
+
     public String getQuestFoe() {
         return questCard.getFoe();
     }

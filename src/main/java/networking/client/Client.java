@@ -1,8 +1,6 @@
 package networking.client;
 
-import model.Command;
-import model.ExternalGameState;
-import model.GameCommand;
+import model.*;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -96,10 +94,10 @@ public class Client  {
         return serverHost;
     }
 
-    public synchronized GameCommand sendCommand(GameCommand command) {
-        GameCommand receivedCommand = null;
+    public synchronized Command sendCommand(Command command) {
+        Command receivedCommand = null;
         try {
-            byte[] outMessage = GameCommand.toBytesArray(command);
+            byte[] outMessage = Command.toBytesArray(command);
             _writeBuffer = ByteBuffer.wrap(outMessage);
             _socketChannel.write(_writeBuffer);
             _writeBuffer.clear();
@@ -109,7 +107,7 @@ public class Client  {
             byte[] inMessage = new byte[_readBuffer.limit()];
             _readBuffer.get(inMessage);
 
-            receivedCommand = GameCommand.fromBytesArray(inMessage);
+            receivedCommand = Command.fromBytesArray(inMessage);
             System.out.println("== Server says: " + receivedCommand);
 
             _readBuffer.clear();
@@ -124,9 +122,9 @@ public class Client  {
         public void run() {
             while (true) {
                 try {
-                    GameCommand command = (GameCommand) _subscribeInputStream.readObject();
-                    if(command.getCommand().equals(Command.JOINED))  {
-                        clientIndex = command.getClientIndex();
+                    Command command = (Command) _subscribeInputStream.readObject();
+                    if(command.getCommandName().equals(BaseCommandName.JOINED))  {
+                        clientIndex = ((BaseCommand) command).getClientIndex();
                         System.out.println("== Client index: " + clientIndex);
                     }
                     clientEvents.notify(ClientEvent.GAME_COMMAND_RECEIVED, command);

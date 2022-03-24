@@ -22,13 +22,13 @@ public class EventRunner extends Runner{
     @Override
     public void loop() {
         gameState.setGameStatus(GameStatus.RUNNING_EVENT);
-        GameCommand startEvent = new GameCommand(Command.EVENT_STARTED);
+        EventCommand startEvent = new EventCommand(EventCommandName.EVENT_STARTED)
         startEvent.setCard(event.getEvent());
         server.notifyClients(startEvent);
         System.out.println("== Event runner says: initializing event");
         System.out.println("== Event runner says: event card " + event.getEvent().getTitle() + " in play");
 
-        GameCommand runningGameCommand = new GameCommand();
+        EventCommand runningGameCommand = new EventCommand();
 
         try{
             // Figure out which event is being played
@@ -41,7 +41,7 @@ public class EventRunner extends Runner{
                     // Send two 2 cards to player
 
                     List<Card> adventureCards = Arrays.asList(gameState.drawAdventureCard(), gameState.drawAdventureCard());
-                    runningGameCommand.setEventCommand(EventCommand.RUNNING_QUEEN);
+                    runningGameCommand.setCommandName(EventCommandName.RUNNING_QUEEN);
                     runningGameCommand.setEvent(event);
                     runningGameCommand.setCards((ArrayList<Card>) adventureCards);
 
@@ -75,7 +75,7 @@ public class EventRunner extends Runner{
             }
 
             System.out.println("== Event runner says: Ending event");
-            server.notifyClients(new GameCommand(Command.EVENT_COMPLETED));
+            server.notifyClients(new EventCommand(EventCommandName.EVENT_COMPLETED));
 
             gameState.setGameStatus(GameStatus.RUNNING);
         }catch(Exception e){
