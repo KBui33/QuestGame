@@ -22,7 +22,7 @@ public class EventRunner extends Runner{
     @Override
     public void loop() {
         gameState.setGameStatus(GameStatus.RUNNING_EVENT);
-        EventCommand startEvent = new EventCommand(EventCommandName.EVENT_STARTED)
+        EventCommand startEvent = new EventCommand(EventCommandName.EVENT_STARTED);
         startEvent.setCard(event.getEvent());
         server.notifyClients(startEvent);
         System.out.println("== Event runner says: initializing event");
