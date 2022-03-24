@@ -470,7 +470,7 @@ public class GameController {
             System.out.println("== It's my turn. Player: " + command.getPlayerId());
             view.getHud().getCurrentStateText().setText("Take your turn!");
             disableView(false);
-        } else if (command.equals(GameCommandName.GAME_COMPLETE)) { // Complete game
+        } else if (commandName.equals(GameCommandName.GAME_COMPLETE)) { // Complete game
             System.out.println("== The game is now complete");
 
             Platform.runLater(() -> {
