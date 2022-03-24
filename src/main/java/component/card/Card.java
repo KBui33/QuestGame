@@ -5,12 +5,19 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public abstract class Card implements Serializable {
 
+    private static int cardCount = 0;
+    private int id;
     private String title;
     private String cardImg;
 
     public Card(String title, String cardImg) {
+        this.id = cardCount++;
         this.title = title;
         this.cardImg = cardImg;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getTitle() {

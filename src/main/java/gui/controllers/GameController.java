@@ -3,9 +3,12 @@ package gui.controllers;
 import component.card.*;
 import gui.controllers.quest.QuestController;
 import gui.controllers.quest.QuestSetupController;
+import gui.main.ClientApplication;
 import gui.other.AlertBox;
 import gui.panes.GamePane;
 import gui.partials.CardView;
+import gui.partials.EndGameView;
+import gui.scenes.LobbyScene;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -115,6 +118,9 @@ public class GameController {
                             questController.pickCards(quest, (wl) -> {
                                 // once player has picked cards
                                 disableView(true);
+                                for (Card c : wl) {
+                                    System.out.println(c.getId());
+                                }
                                 // send cards to server
                                 GameCommand takeQuestTurnCommand = defaultServerCommand(new GameCommand(Command.TAKE_QUEST_TURN));
                                 takeQuestTurnCommand.setCards(wl);
@@ -181,7 +187,20 @@ public class GameController {
                     } else if (command.equals(Command.GAME_COMPLETE)) { // Complete game
                         System.out.println("== The game is now complete");
 
-                        // TODO::Add complete game button
+                        Platform.runLater(() -> {
+                            view.getHud().getCurrentStateText().setText("Game Over");
+
+                            EndGameView endGameView = new EndGameView();
+                            view.getChildren().remove(view.getHud());
+                            view.getMainPane().clear();
+                            view.getMainPane().add(endGameView);
+                            endGameView.getContinueButton().setOnAction(e -> {
+                                // TODO :: - Send whatever server commands
+
+                                // send user back to lobby
+                                ClientApplication.window.setScene(new LobbyScene());
+                            });
+                        });
                     }
                 }
             });
@@ -438,7 +457,7 @@ public class GameController {
     }
 
     public void sponsorDiscardRewardCard(Card card) {
-        // TODO :: - send message to server
+        // TODO :: - send discard reward card message to server
     }
 
     private void displayCard(CardView cardView, EventHandler<ActionEvent> posButtonEvent, EventHandler<ActionEvent> negButtonEvent) {
