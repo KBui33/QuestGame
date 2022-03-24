@@ -17,7 +17,7 @@ public class EventRunner extends Runner{
     @Override
     public void loop() {
         gameState.setGameStatus(GameStatus.RUNNING_EVENT);
-        server.notifyClients(new GameCommand(Command.EVENT_STARTED));
+        server.notifyClients(new EventCommand(EventCommandName.EVENT_STARTED));
         System.out.println("== Event runner says: initializing event");
 
         try{

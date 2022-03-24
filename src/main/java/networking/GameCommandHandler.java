@@ -6,259 +6,72 @@ import networking.server.GameRunner;
 import networking.server.Server;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
-public class GameCommandHandler {
-    private Server server;
+public class GameCommandHandler extends CommandHandlerDecorator {
 
-    public GameCommandHandler(Server server) {
-        this.server = server;
+    public GameCommandHandler(CommandHandler commandHandler) {
+        super(commandHandler);
     }
 
-    public GameCommand processGameCommand(GameCommand gameCommand) throws IOException {
+    @Override
+    public Command processGameCommand(Command command) throws IOException {
+        GameCommand gameCommand = (GameCommand) command;
+        Server server = Server.getInstance();
         InternalGameState gameState = server.getGameState();
-        Quest quest = gameState.getCurrentQuest();
         Player player = null;
 
-        Command command = gameCommand.getCommand();
+        CommandName commandName = gameCommand.getCommandName();
         int playerId = gameCommand.getPlayerId();
-        if(playerId > 0) player =  gameState.getPlayer(playerId);
+        if (playerId > 0) player = gameState.getPlayer(playerId);
         Card card = gameCommand.getCard();
-        ArrayList<Card> cards = gameCommand.getCards();
 
         GameCommand returnCommand = new GameCommand();
 
         boolean startGame = false;
-        boolean shouldNotifyClients = true;
 
-        Event event = null;
+        if (commandName.equals(GameCommandName.READY)) {
+            System.out.println("== Command handler says:  Adding new player");
+            player = gameState.addPlayer(new Player());
 
-        // Check if it's the player's turn TODO :: Add check for player turns
-        /*
-        if(internalGameState.getGameStatus().equals(GameStatus.RU))
-        if (player != null && internalGameState.getCurrentTurnPlayer() != null && (
-                (internalGameState.getCurrentQuest() != null && !internalGameState.getCurrentQuest().getCurrentTurnPlayer().equals(player)) ||
-                        !internalGameState.getCurrentTurnPlayer().equals(player)
-        )) {
-            System.out.println("== Command handler says: " + player.getPlayerId() + " not your turn");
-            returnCommand.setCommand(Command.NOT_PLAYER_TURN);
+            server.setClientPlayerId(gameCommand.getClientIndex(), player.getPlayerId());
+
+            returnCommand.setCommandName(GameCommandName.IS_READY);
             returnCommand.setPlayer(player);
-            returnCommand.setPlayerId(player.getPlayerId());
-            server.notifyClientByPlayerId(player.getPlayerId(), returnCommand);
+            returnCommand.setNumReady(gameState.getNumPlayers());
+
+            // If all lobby players ready, start the game
+            if (server.getNumClients() >= 2 && gameState.getNumPlayers() == server.getNumClients())
+                startGame = true;
+        } else if (commandName.equals(GameCommandName.GET_ATTACHED_PLAYER)) {
+            System.out.println("== Command handler says: Fetching player attached to client");
+            returnCommand.setCommandName(GameCommandName.RETURN_ATTACHED_PLAYER);
+            returnCommand.setPlayer(player);
+            returnCommand.setPlayerId(gameCommand.getPlayerId());
+        } else if (commandName.equals(GameCommandName.DISCARD_CARD)) {
+            System.out.println("== Command handler says: Player " + playerId + " is discarding a card");
+            player.discardCard(card);
+            gameState.discardAdventureCard(card);
+            returnCommand.setCommandName(GameCommandName.DISCARDED_CARD);
+            returnCommand.setPlayer(player);
+        } else if (commandName.equals(GameCommandName.END_TURN)) {
+            System.out.println("== Command handler says: Player took " + playerId);
+
+            returnCommand.setCommandName(GameCommandName.ENDED_TURN);
+            returnCommand.setPlayer(player);
+
+            gameState.setGameStatus(GameStatus.RUNNING); // Update game status
+
+        } else if (commandName.equals(GameCommandName.COMPLETE_GAME)) {
+            System.out.println("== Command handler says: Player " + playerId + " completed game");
+
+            returnCommand.setCommandName(GameCommandName.COMPLETED_GAME);
+            returnCommand.setPlayer(player);
+            returnCommand.setPlayerId(playerId);
 
-            return returnCommand;
-        }
-        */
-
-        switch (command) {
-            case READY: {
-                System.out.println("== Command handler says:  Adding new player");
-                player = gameState.addPlayer(new Player());
-
-                server.setClientPlayerId(gameCommand.getClientIndex(), player.getPlayerId());
-
-                returnCommand.setCommand(Command.IS_READY);
-                returnCommand.setPlayer(player);
-                returnCommand.setReadyPlayers(gameState.getNumPlayers());
-
-                // If all lobby players ready, start the game
-                if (server.getNumClients() >= 2 && gameState.getNumPlayers() == server.getNumClients())
-                    startGame = true;
-                break;
-            }
-
-            case GET_ATTACHED_PLAYER: {
-                System.out.println("== Command handler says: Fetching player attached to client");
-                returnCommand.setCommand(Command.RETURN_ATTACHED_PLAYER);
-                returnCommand.setPlayer(player);
-                returnCommand.setPlayerId(gameCommand.getPlayerId());
-                break;
-            }
-
-            case GET_LOBBY_STATE: {
-                System.out.println("== Command handler says: Fetching lobby state");
-                returnCommand.setCommand(Command.RETURN_LOBBY_STATE);
-                returnCommand.setReadyPlayers(gameState.getNumPlayers());
-                returnCommand.setJoinedPlayers(server.getNumClients());
-                break;
-            }
-
-            case DISCARD_CARD: {
-                System.out.println("== Command handler says: Player " + playerId + " is discarding a card");
-                player.discardCard(card);
-                gameState.discardAdventureCard(card);
-                returnCommand.setCommand(Command.DISCARDED_CARD);
-                returnCommand.setPlayer(player);
-                break;
-            }
-
-            case WILL_SPONSOR_QUEST: {
-                quest = gameCommand.getQuest();
-                quest.setSponsor(player);
-                gameState.setCurrentQuest(quest);
-
-                System.out.println("== Command handler says: Player " + playerId + " agreed to sponsor quest");
-
-                returnCommand.setCommand(Command.FOUND_QUEST_SPONSOR);
-                returnCommand.setPlayer(player);
-
-                gameState.setGameStatus(GameStatus.FINDING_QUEST_PARTICIPANTS);
-
-                break;
-            }
-
-            case WILL_NOT_SPONSOR_QUEST: {
-                System.out.println("== Command handler says: Player " + playerId + " refused to sponsor quest");
-
-                returnCommand.setCommand(Command.FIND_QUEST_SPONSOR);
-                returnCommand.setPlayer(player);
-
-                gameState.setGameStatus(GameStatus.FINDING_QUEST_SPONSOR);
-
-                break;
-            }
-
-            case WILL_JOIN_QUEST: {
-                quest.addQuestPlayer(player); // Add participant to quest
-
-                System.out.println("== Command handler says: Player " + playerId + " agreed to participate in quest");
-
-                returnCommand.setCommand(Command.JOINED_QUEST);
-                returnCommand.setPlayer(player);
-
-                gameState.setGameStatus(GameStatus.FINDING_QUEST_PARTICIPANTS);
-
-                break;
-            }
-
-            case WILL_NOT_JOIN_QUEST: {
-                System.out.println("== Command handler says: Player " + playerId + " did not agreed to participate in quest");
-
-                returnCommand.setCommand(Command.DID_NOT_JOIN_QUEST);
-                returnCommand.setPlayer(player);
-
-                gameState.setGameStatus(GameStatus.FINDING_QUEST_PARTICIPANTS);
-
-                break;
-            }
-
-            case END_TURN: {
-                System.out.println("== Command handler says: Player took " + playerId);
-
-                returnCommand.setCommand(Command.ENDED_TURN);
-                returnCommand.setPlayer(player);
-
-                gameState.setGameStatus(GameStatus.RUNNING); // Update game status
-
-                break;
-            }
-
-            case ACCEPT_QUEST_STAGE_CARD: {
-                System.out.println("== Command handler says: Player " + playerId + " took stage card");
-
-                quest.getQuestPlayerByPlayerId(playerId).addCard(card);
-
-                returnCommand.setCommand(Command.ACCEPTED_QUEST_STAGE_CARD);
-                returnCommand.setPlayer(player);
-
-                gameState.setGameStatus(GameStatus.RUNNING_QUEST);
-
-                break;
-            }
-
-            case DISCARD_QUEST_STAGE_CARD: {
-                System.out.println("== Command handler says: Player " + playerId + " discarded stage card");
-
-                gameState.discardAdventureCard(card);
-
-                returnCommand.setCommand(Command.DISCARDED_QUEST_STAGE_CARD);
-                returnCommand.setPlayer(player);
-
-                gameState.setGameStatus(GameStatus.RUNNING_QUEST);
-
-                break;
-            }
-
-            case TAKE_QUEST_TURN: {
-                System.out.println("== Command handler says: Player " + playerId + " took stage turn");
-
-                quest.getQuestPlayerByPlayerId(playerId).setPlayerQuestCardsUsed(cards);
-                boolean discardedQuestCards = player.discardCards(cards);
-
-                System.out.println("== Command handler says: Discarding quest cards " + discardedQuestCards);
-
-                returnCommand.setCommand(Command.TOOK_QUEST_TURN);
-                returnCommand.setPlayer(player);
-
-                gameState.setGameStatus(GameStatus.RUNNING_QUEST);
-
-                break;
-            }
-
-            case END_QUEST_TURN: {
-                System.out.println("== Command handler says: Player " + playerId + " ended stage turn");
-
-                returnCommand.setCommand(Command.ENDED_QUEST_TURN);
-                returnCommand.setPlayer(player);
-
-                gameState.setGameStatus(GameStatus.RUNNING_QUEST);
-
-                break;
-            }
-
-            case ACCEPT_SPONSOR_QUEST_CARDS: {
-                Player sponsor = quest.getSponsor();
-                System.out.println("== Command handler says: Player " + playerId + " accepted quest sponsor cards");
-
-                sponsor.addCards(cards);
-
-                returnCommand.setCommand(Command.ACCEPTED_SPONSOR_QUEST_CARDS);
-                returnCommand.setPlayer(sponsor);
-
-                gameState.setGameStatus(GameStatus.RUNNING_QUEST);
-
-                break;
-            }
-
-            // TODO :: Remove. No longer needed
-            case ACCEPT_QUEST_SHIELDS: {
-                System.out.println("== Command handler says: Player " + playerId + " accepted quest shields");
-
-                returnCommand.setCommand(Command.ACCEPTED_QUEST_SHIELDS);
-                returnCommand.setPlayer(player);
-
-                gameState.setGameStatus(GameStatus.RUNNING_QUEST);
-
-                break;
-            }
-
-            case END_QUEST: {
-                System.out.println("== Command handler says: Player " + playerId + " ended quest");
-
-                returnCommand.setCommand(Command.ENDED_QUEST);
-                returnCommand.setPlayer(player);
-
-                gameState.setGameStatus(GameStatus.RUNNING_QUEST);
-
-                break;
-            }
-
-            case COMPLETE_GAME: {
-                System.out.println("== Command handler says: Player " + playerId + " completed game");
-
-                returnCommand.setCommand(Command.COMPLETED_GAME);
-                returnCommand.setPlayer(player);
-                returnCommand.setPlayerId(playerId);
-
-                break;
-            }
         }
 
-        if (shouldNotifyClients) {
-            server.incrementNumAccepted();
-            server.notifyClients(returnCommand);
-        }
-        ;
+        server.incrementNumResponded(CommandType.GAME);
+        server.notifyClients(returnCommand);
 
         if (startGame) new Thread(new GameRunner(server, server.getGameState())).start();
 

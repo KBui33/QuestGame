@@ -22,11 +22,11 @@ public class QuestRunner extends Runner {
         //gameState.setCurrentQuest(this.quest);
         gameState.setGameStatus(GameStatus.RUNNING_QUEST);
         quest.startQuest();
-        server.notifyClients(new GameCommand(Command.QUEST_STARTED));
+        server.notifyClients(new QuestCommand(QuestCommandName.QUEST_STARTED));
         System.out.println("== Quest runner says: initializing quest");
 
         shouldRespond = 0;
-        server.resetNumAccepted();
+        server.resetNumResponded(CommandType.QUEST);
 
         // Setup already done in quest setup controller
         int stageIndex = 1;
@@ -43,15 +43,11 @@ public class QuestRunner extends Runner {
                 System.out.println("== Game runner says: Sending quest stage card to player " + playerId);
                 gameState.setGameStatus(GameStatus.TAKING_QUEST_STAGE_CARD);
 
-                GameCommand questStageCardCommand = new GameCommand(Command.PLAYER_TAKE_STAGE_CARD);
+                QuestCommand questStageCardCommand = new QuestCommand(QuestCommandName.PLAYER_TAKE_STAGE_CARD);
                 questStageCardCommand.setQuest(quest);
                 questStageCardCommand.setCard(gameState.drawAdventureCard());
                 server.notifyClientByPlayerId(playerId, questStageCardCommand);
 
-                // Wait for player to take card
-                /*while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
-                    Thread.sleep(1000);
-                }*/
             }
 
             waitForResponses();
@@ -64,15 +60,10 @@ public class QuestRunner extends Runner {
                 System.out.println("== Game runner says: Sending take quest turn command to player " + playerId);
                 gameState.setGameStatus(GameStatus.TAKING_QUEST_TURN);
 
-                GameCommand questStageCommand = new GameCommand(Command.PLAYER_QUEST_TURN);
+                QuestCommand questStageCommand = new QuestCommand(QuestCommandName.PLAYER_QUEST_TURN);
                 questStageCommand.setQuest(quest);
                 questStageCommand.setCard(stage.getStageCard());
                 server.notifyClientByPlayerId(playerId, questStageCommand);
-
-                // Wait for player to take turn
-                /*while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
-                    Thread.sleep(1000);
-                }*/
             }
 
             waitForResponses();
@@ -91,16 +82,11 @@ public class QuestRunner extends Runner {
                 System.out.println("== Game runner says: Sending end quest turn to loser " + playerId);
                 gameState.setGameStatus(GameStatus.ENDING_QUEST_TURN);
 
-                GameCommand questStageLostCommand = new GameCommand(Command.QUEST_STAGE_LOST);
+                QuestCommand questStageLostCommand = new QuestCommand(QuestCommandName.QUEST_STAGE_LOST);
                 questStageLostCommand.setPlayerId(playerId);
                 questStageLostCommand.setPlayer(stageLoser.getPlayer());
                 questStageLostCommand.setQuest(quest);
                 server.notifyClientByPlayerId(playerId, questStageLostCommand);
-
-                // Wait for player to end turn
-            /*    while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
-                    Thread.sleep(1000);
-                }*/
             }
 
             waitForResponses();
@@ -114,16 +100,11 @@ public class QuestRunner extends Runner {
                 System.out.println("== Game runner says: Sending end quest turn to winner " + playerId);
                 gameState.setGameStatus(GameStatus.ENDING_QUEST_TURN);
 
-                GameCommand questStageWonCommand = new GameCommand(Command.QUEST_STAGE_WON);
+                QuestCommand questStageWonCommand = new QuestCommand(QuestCommandName.QUEST_STAGE_WON);
                 questStageWonCommand.setPlayerId(playerId);
                 questStageWonCommand.setPlayer(stageWinner.getPlayer());
                 questStageWonCommand.setQuest(quest);
                 server.notifyClientByPlayerId(playerId, questStageWonCommand);
-
-                // Wait for player to end turn
-//                    while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
-//                        Thread.sleep(1000);
-//                    }
             }
 
             waitForResponses();
@@ -156,17 +137,12 @@ public class QuestRunner extends Runner {
             System.out.println("== Game runner says: Sending quest cards to sponsor " + playerId);
             gameState.setGameStatus(GameStatus.TAKING_QUEST_SPONSOR_CARDS);
 
-            GameCommand takeQuestSponsorCardsCommand = new GameCommand(Command.PLAYER_TAKE_SPONSOR_QUEST_CARDS);
+            QuestCommand takeQuestSponsorCardsCommand = new QuestCommand(QuestCommandName.PLAYER_TAKE_SPONSOR_QUEST_CARDS);
             takeQuestSponsorCardsCommand.setPlayerId(playerId);
             takeQuestSponsorCardsCommand.setPlayer(questSponsor);
             takeQuestSponsorCardsCommand.setQuest(quest);
             takeQuestSponsorCardsCommand.setCards(sponsorQuestCards);
             server.notifyClientByPlayerId(playerId, takeQuestSponsorCardsCommand);
-
-            // Wait for sponsor to accept cards
-           /* while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
-                Thread.sleep(1000);
-            }*/
         }
 
         waitForResponses();
@@ -184,16 +160,11 @@ public class QuestRunner extends Runner {
             System.out.println("== Game runner says: Sending end quest to player " + playerId);
             gameState.setGameStatus(GameStatus.ENDING_QUEST);
 
-            GameCommand endQuestCommand = new GameCommand(Command.PLAYER_END_QUEST);
+            QuestCommand endQuestCommand = new QuestCommand(QuestCommandName.PLAYER_END_QUEST);
             endQuestCommand.setPlayerId(playerId);
             endQuestCommand.setPlayer(player);
             endQuestCommand.setQuest(quest);
             server.notifyClientByPlayerId(playerId, endQuestCommand);
-
-            // Wait for player to end quest
-            /*while (!gameState.getGameStatus().equals(GameStatus.RUNNING_QUEST)) {
-                Thread.sleep(1000);
-            }*/
         }
 
         waitForResponses();
@@ -202,7 +173,7 @@ public class QuestRunner extends Runner {
         System.out.println("== Game runner says: Discarding all stage cards");
         discardQuestStageCards();
 
-        server.notifyClients(new GameCommand(Command.QUEST_COMPLETED));
+        server.notifyClients(new QuestCommand(QuestCommandName.QUEST_COMPLETED));
 
         gameState.setGameStatus(GameStatus.RUNNING);
 
@@ -211,8 +182,8 @@ public class QuestRunner extends Runner {
     @Override
     protected void waitForResponses() {
         try {
-            while (server.getNumAccepted() < shouldRespond) Thread.sleep(1000);
-            server.resetNumAccepted();
+            while (server.getNumResponded(CommandType.QUEST) < shouldRespond) Thread.sleep(1000);
+            server.resetNumResponded(CommandType.QUEST);
             shouldRespond = 0;
         } catch (InterruptedException e) {
             e.printStackTrace();
