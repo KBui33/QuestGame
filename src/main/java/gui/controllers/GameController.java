@@ -435,7 +435,7 @@ public class GameController {
     private void updatePlayer(Player p) {
         this.player = p;
         Platform.runLater(() -> {
-            view.getHud().getShieldsView().setShields(player.getShields());
+            view.getHud().getPlayerInfoView().updatePlayer(p);
             myHand.clear();
             // Add player cards to gui cards
             for (Card card : player.getCards()) {

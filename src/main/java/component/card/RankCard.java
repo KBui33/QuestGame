@@ -4,9 +4,27 @@ public class RankCard extends Card{
 
     private Rank rank;
 
-    public RankCard(String title, String cardImg, Rank rank) {
-        super(title, cardImg);
+    public RankCard(Rank rank) {
+        super("", "");
         this.rank = rank;
+        setRankDetails(rank);
+    }
+
+    private void setRankDetails(Rank rank) {
+        switch (rank) {
+            case SQUIRE -> {
+                this.setTitle("Squire");
+                this.setCardImg("/ranks/quest_rank_1.png");
+            }
+            case KNIGHT -> {
+                this.setTitle("Knight");
+                this.setCardImg("/ranks/quest_rank_2.png");
+            }
+            case CHAMPION_KNIGHT -> {
+                this.setTitle("Champion Knight");
+                this.setCardImg("/ranks/quest_rank_3.png");
+            }
+        }
     }
 
     public Rank getRank() {
