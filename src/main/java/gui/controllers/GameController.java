@@ -472,10 +472,23 @@ public class GameController {
             System.out.println("== It's my turn. Player: " + command.getPlayerId());
             view.getHud().getCurrentStateText().setText("Take your turn!");
             disableView(false);
-        } else if (commandName.equals(GameCommandName.GAME_COMPLETE)) { // Complete game
+        } else if (command.equals(GameCommandName.GAME_COMPLETE)) { // Complete game
             System.out.println("== The game is now complete");
 
-            // TODO::Add complete game button
+            Platform.runLater(() -> {
+                view.getHud().getCurrentStateText().setText("Game Over");
+
+                EndGameView endGameView = new EndGameView();
+                view.getChildren().remove(view.getHud());
+                view.getMainPane().clear();
+                view.getMainPane().add(endGameView);
+                endGameView.getContinueButton().setOnAction(e -> {
+                    // TODO :: - Send whatever server commands
+
+                    // send user back to lobby
+                    ClientApplication.window.setScene(new LobbyScene());
+                });
+            });
         }
     }
 
