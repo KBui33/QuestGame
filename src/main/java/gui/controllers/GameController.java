@@ -118,9 +118,6 @@ public class GameController {
                             questController.pickCards(quest, (wl) -> {
                                 // once player has picked cards
                                 disableView(true);
-                                for (Card c : wl) {
-                                    System.out.println(c.getId());
-                                }
                                 // send cards to server
                                 GameCommand takeQuestTurnCommand = defaultServerCommand(new GameCommand(Command.TAKE_QUEST_TURN));
                                 takeQuestTurnCommand.setCards(wl);
