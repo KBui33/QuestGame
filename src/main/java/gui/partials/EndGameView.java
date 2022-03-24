@@ -7,13 +7,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
-public class endGameView extends BorderPane {
+public class EndGameView extends BorderPane {
     private Text headerText, infoText;
     private HBox textBox;
     private Button continueButton;
     private ResultsView resultsView;
 
-    public endGameView() {
+    public EndGameView() {
 
         textBox = new HBox();
         textBox.setSpacing(5);
@@ -38,4 +38,19 @@ public class endGameView extends BorderPane {
         this.setBottom(continueButton);
     }
 
+    public Text getInfoText() {
+        return infoText;
+    }
+
+    public Text getHeaderText() {
+        return headerText;
+    }
+
+    public Button getContinueButton() {
+        return continueButton;
+    }
+
+    public ResultsView getResultsView() {
+        return resultsView;
+    }
 }

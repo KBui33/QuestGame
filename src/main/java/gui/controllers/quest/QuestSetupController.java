@@ -29,7 +29,6 @@ public class QuestSetupController extends AbstractQuestController {
     private QuestSetupView questSetupView;
     private StageSetupView currentStage;
     private ArrayList<Stage> stages;
-    private GameController parent;
     private Quest quest;
 
     public QuestSetupController(GameController parent, QuestCard questCard, Callback<Quest> callback) {
@@ -113,8 +112,7 @@ public class QuestSetupController extends AbstractQuestController {
             if (quest.currentStageCount() == questCard.getStages()) {
                 // quest set up complete
 //                parent.questSetupComplete(quest);
-                parent.getView().getMainPane().getChildren().clear();
-                parent.cleanUpGui();
+                cleanUpGui();
                 callback.call(quest);
             } else {
                 if (questCard.getStages() - quest.currentStageCount() <= 1) {

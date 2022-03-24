@@ -4,7 +4,9 @@ import component.card.Card;
 import component.card.WeaponCard;
 import component.card.Card;
 import component.card.WeaponCard;
+import gui.controllers.GameController;
 import gui.partials.CardView;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.HashSet;
@@ -12,6 +14,7 @@ import java.util.HashSet;
 public abstract class AbstractQuestController {
     protected ObservableList<CardView> weaponCards;
     protected HashSet<String> weaponNames;
+    protected GameController parent;
 
 
     public CardView addWeapon(WeaponCard card) {
@@ -45,6 +48,25 @@ public abstract class AbstractQuestController {
             return !weaponNames.contains(card.getTitle());
         }
         return false;
+    }
+
+    public void cleanUpGui() {
+        // clear quest setup
+        parent.getView().getMainPane().clear();
+
+        // reset view
+//        getView().getHud().getEndTurnButton().setVisible(true);
+
+        // fix list view - need better fix at some point
+        ObservableList<CardView> tmp = FXCollections.observableArrayList();
+
+        parent.getMyHandList().forEach(c -> {
+            CardView n = new CardView(c.getCard());
+            parent.setCardViewButtonActions(n);
+            tmp.add(n);
+        });
+        parent.setMyHandList(tmp);
+        parent.getView().getHud().getMyHand().setListViewItems(parent.getMyHandList());
     }
 
 }
