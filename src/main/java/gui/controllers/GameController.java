@@ -22,6 +22,7 @@ import networking.client.ClientEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 
 /**
  * @author James DiNovo
@@ -37,6 +38,8 @@ public class GameController {
     private GamePane view;
     private QuestController questController;
     private final GameController gc;
+
+    private final ArrayList<Callable> eventSubscriptions = new ArrayList<>();
 
     public GameController(GamePane view) {
         myHand = FXCollections.observableArrayList();
@@ -55,7 +58,7 @@ public class GameController {
             if(returnedAttachedPlayerCommand.getPlayer() != null) updatePlayer(returnedAttachedPlayerCommand.getPlayer());
 
             // Subscribe to command updates
-            client.clientEvents.subscribe(Client.ClientEvent.GAME_COMMAND_RECEIVED, new ClientEventListener() {
+            Callable<Void> unsubscribeCommandReceived = client.clientEvents.subscribe(Client.ClientEvent.GAME_COMMAND_RECEIVED, new ClientEventListener() {
                 @Override
                 public void update(Client.ClientEvent eventType, Object o) {
 
@@ -78,8 +81,10 @@ public class GameController {
                 }
             });
 
+            eventSubscriptions.add(unsubscribeCommandReceived);
+
             // Subscribe to game state updates
-            client.clientEvents.subscribe(Client.ClientEvent.EXTERNAL_GAME_STATE_UPDATED, new ClientEventListener() {
+            Callable<Void> unsubscribeGameStateUpdate = client.clientEvents.subscribe(Client.ClientEvent.EXTERNAL_GAME_STATE_UPDATED, new ClientEventListener() {
                 @Override
                 public void update(Client.ClientEvent eventType, Object o) {
                     ExternalGameState externalGameState = (ExternalGameState) o;
@@ -108,6 +113,7 @@ public class GameController {
                 }
             });
 
+            eventSubscriptions.add(unsubscribeGameStateUpdate);
         } catch (IOException err) {
             err.printStackTrace();
         }
@@ -481,9 +487,11 @@ public class GameController {
                 view.getMainPane().clear();
                 view.getMainPane().add(endGameView);
                 endGameView.getContinueButton().setOnAction(e -> {
-                    // TODO :: - Send whatever server commands
+                    GameCommand completeGameCommand = (GameCommand) defaultServerCommand(new GameCommand(GameCommandName.COMPLETE_GAME));
+                    GameCommand completedFameCommand = (GameCommand) client.sendCommand(completeGameCommand);
 
                     // send user back to lobby
+                    unsubscribeEvents();
                     ClientApplication.window.setScene(new LobbyScene());
                 });
             });
@@ -626,5 +634,18 @@ public class GameController {
     public void handleEventCommands(EventCommand command) {
         System.out.println("== Game Controller command update says: " + command);
 
+    }
+
+    /**
+     * Unsubscribe from all events
+     */
+    public void unsubscribeEvents() {
+        try {
+            for (Callable eventSubscription : eventSubscriptions) {
+                eventSubscription.call();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

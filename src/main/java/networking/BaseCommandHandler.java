@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class BaseCommandHandler implements CommandHandler {
-
     @Override
     public Command processGameCommand(Command command) throws IOException {
         BaseCommand baseCommand = (BaseCommand) command;
