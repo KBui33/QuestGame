@@ -1,6 +1,7 @@
 package model;
 
 import component.card.Card;
+import component.card.Rank;
 import component.deck.AdventureDeck;
 import component.deck.Deck;
 import component.deck.StoryDeck;
@@ -45,14 +46,14 @@ public class InternalGameState implements BaseGameState, Serializable {
                 "\tMax players: " + MAX_PLAYERS;
     }
 
-    public int addPlayer(Player player) {
-        if(gameStatus.equals(GameStatus.STARTED)) return 0;
-        if(players.size() >= MAX_PLAYERS) return 0;
+    public Player addPlayer(Player player) {
+        if(gameStatus.equals(GameStatus.STARTED)) return null;
+        if(players.size() >= MAX_PLAYERS) return null;
 
         players.add(numPlayers++, player);
         player.setPlayerId(numPlayers);
 
-        return numPlayers;
+        return player;
     }
 
     public Player getPlayer(int playerId) {
@@ -150,5 +151,26 @@ public class InternalGameState implements BaseGameState, Serializable {
     @Override
     public Quest getCurrentQuest() {
         return currentQuest;
+    }
+
+    @Override
+    public ArrayList<Player> getWinners() {
+        ArrayList<Player> winners = new ArrayList<>();
+        for (Player player: players) { // Find players with rank knight of the round table -> Just knight for now
+            if(player.getRank().equals(Rank.KNIGHT)) winners.add(player);
+        }
+
+        return winners;
+    }
+
+    public void resetGame() {
+        players.clear();
+        storyDeck.clear();
+        adventureDeck.clear();
+        numPlayers = 0;
+        gameStatus = null;
+        currentQuest = null;
+        currentStoryCard = null;
+        currentTurnPlayer = null;
     }
 }

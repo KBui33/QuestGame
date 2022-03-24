@@ -30,7 +30,7 @@ public class GameRunner extends Runner {
 
             System.out.println("== Game runner says: Starting game loop");
 
-            while (true) {
+            while (!gameState.getGameStatus().equals(GameStatus.GAME_OVER)) {
                 // Iterate over clients and instruct them to take turns
                 for (Player player : players) {
                     gameState.setGameStatus(GameStatus.TAKING_TURN);
@@ -75,6 +75,9 @@ public class GameRunner extends Runner {
 
                     endTurnCommand.setPlayerId(playerId);
                     server.notifyClients(endTurnCommand);
+
+                    // Check if game over
+                    if(checkGameOver()) break;
                 }
 
                 System.out.println("== All players have taken a turn");
@@ -83,6 +86,45 @@ public class GameRunner extends Runner {
             e.printStackTrace();
         }
 
-        this.shouldStopRunner();
+        shouldStopRunner();
+        System.out.println("== Game Runner says: GAME IS OVER");
+        endGame();
+    }
+
+    public boolean checkGameOver() {
+        ArrayList<Player> winners = gameState.getWinners();
+        if(winners.size() <= 0) return false;
+
+        gameState.setGameStatus(GameStatus.GAME_OVER);
+
+        return true;
+    }
+
+    public void endGame() {
+        ArrayList<Player> winners = gameState.getWinners();
+
+        shouldRespond = gameState.getNumPlayers();
+        server.resetNumAccepted();
+
+
+        GameCommand gameOverCommand = new GameCommand(Command.GAME_COMPLETE);
+        gameOverCommand.setPlayers(winners);
+        server.notifyClients(gameOverCommand);
+
+        waitForResponses();
+
+        // reset game
+        gameState.resetGame();
+    }
+
+    @Override
+    protected void waitForResponses() {
+        try {
+            while (server.getNumAccepted() < shouldRespond) Thread.sleep(1000);
+            server.resetNumAccepted();
+            shouldRespond = 0;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

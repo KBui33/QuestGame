@@ -17,5 +17,5 @@ public enum GameStatus {
     TAKING_QUEST_SHIELDS,
     ENDING_QUEST,
     RUNNING_EVENT,
-    ENDING_EVENT
+    GAME_OVER
 }

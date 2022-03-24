@@ -19,6 +19,8 @@ public class QuestJoinRunner extends Runner {
     public void loop() {
         InternalGameState gameState = this.server.getGameState();
         gameState.setGameStatus(GameStatus.FINDING_QUEST_PARTICIPANTS);
+        shouldRespond = 0;
+        server.setNumAccepted(0);
 
         System.out.println("== Quest join runner says: Finding quest participants");
 
@@ -26,6 +28,7 @@ public class QuestJoinRunner extends Runner {
             int playerId = player.getPlayerId();
 
             if(playerId == quest.getSponsor().getPlayerId()) continue; // Do not prompt quest sponsor
+            shouldRespond++;
 
             quest.setCurrentTurnPlayer(player);
             gameState.setGameStatus(GameStatus.PROMPTING_QUEST_PARTICIPANT);
@@ -36,14 +39,16 @@ public class QuestJoinRunner extends Runner {
             playerShouldJoinQuestCommand.setPlayerId(playerId);
 
             server.notifyClientByPlayerId(playerId, playerShouldJoinQuestCommand);
-            System.out.println("== Quest join runner says: should join quest command sent");
+            System.out.println("== Quest join runner says: should join quest command sent to player " + playerId);
 
-            try {
+           /* try {
                 while (gameState.getGameStatus().equals(GameStatus.PROMPTING_QUEST_PARTICIPANT)) Thread.sleep(1000); // Wait for player response
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
+            }*/
         }
+
+        waitForResponses();
 
         shouldStopRunner();
 
@@ -67,4 +72,17 @@ public class QuestJoinRunner extends Runner {
             gameState.setGameStatus(GameStatus.RUNNING);
         }
     }
+
+    @Override
+    protected void waitForResponses() {
+        try {
+            while (server.getNumAccepted() < shouldRespond) Thread.sleep(1000);
+            server.resetNumAccepted();
+            shouldRespond = 0;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }

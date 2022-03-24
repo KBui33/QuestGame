@@ -31,8 +31,10 @@ public class QuestController extends AbstractQuestController {
     private QuestView questView;
     private Quest quest;
     private boolean questStarted = false;
+    private GameController parent;
 
-    public QuestController(Quest quest) {
+    public QuestController(Quest quest, GameController parent) {
+        this.parent = parent;
         this.questView = new QuestView();
         updateQuest(quest);
 
@@ -52,7 +54,7 @@ public class QuestController extends AbstractQuestController {
 
     }
 
-    public void stageComplete(GameController parent, Quest quest, boolean passed, CallbackEmpty callback) {
+    public void stageComplete(Quest quest, boolean passed, CallbackEmpty callback) {
         updateQuest(quest);
         questView.setStageCompleted(quest.getCurrentStage(), passed);
         questView.mode(QuestView.Mode.SHOW_RESULTS);
@@ -63,13 +65,14 @@ public class QuestController extends AbstractQuestController {
             // Send continue command to server
 
             parent.cleanUpGui();
+            parent.getView().getMainPane().clear();
             callback.call();
         });
 
 
     }
 
-    public void pickCards(GameController parent, Quest quest, Callback<ArrayList<Card>> callback) {
+    public void pickCards(Quest quest, Callback<ArrayList<Card>> callback) {
         updateQuest(quest);
         this.questStarted = true;
         this.questView.mode(QuestView.Mode.PICK_CARDS);
@@ -123,7 +126,7 @@ public class QuestController extends AbstractQuestController {
 
     }
 
-    public void questComplete(GameController parent, Quest quest, Player player, CallbackEmpty callback) {
+    public void questComplete(Quest quest, Player player, CallbackEmpty callback) {
 
         updateQuest(quest);
         this.questView.mode(QuestView.Mode.COMPLETE);
@@ -153,12 +156,13 @@ public class QuestController extends AbstractQuestController {
 
         this.questView.getQuestCompleteView().getContinueButton().setOnAction(e -> {
             parent.cleanUpGui();
+            parent.getView().getMainPane().clear();
             callback.call();
         });
 
     }
 
-    public void sponsorQuestRewards(GameController parent, Quest quest, ArrayList<Card> cards, Callback<ArrayList<Card>> callback) {
+    public void sponsorQuestRewards(Quest quest, ArrayList<Card> cards, Callback<ArrayList<Card>> callback) {
         updateQuest(quest);
         this.questView.mode(QuestView.Mode.SPONSOR_CARDS);
 
@@ -170,6 +174,7 @@ public class QuestController extends AbstractQuestController {
                 tmp.getButtonBox().setVisible(true);
                 tmp.getPlayButton().setVisible(false);
                 tmp.getDiscardButton().setOnAction(e -> {
+                    parent.sponsorDiscardRewardCard(tmp.getCard());
                     cardsAwarded.remove(tmp);
                 });
             }
@@ -185,6 +190,7 @@ public class QuestController extends AbstractQuestController {
                         "reward.", Alert.AlertType.WARNING);
             } else {
                 parent.cleanUpGui();
+                parent.getView().getMainPane().clear();
                 ArrayList<Card> cardsKept = new ArrayList<>();
                 cardsAwarded.forEach(card -> {
                     cardsKept.add(card.getCard());
