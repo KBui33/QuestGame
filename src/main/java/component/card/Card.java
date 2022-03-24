@@ -42,7 +42,7 @@ public abstract class Card implements Serializable {
         if(o == this) return true;
         if(!(o instanceof Card)) return false;
         Card c = (Card) o;
-        return c.cardImg.equals(this.cardImg) && c.title.equals(this.title);
+        return c.cardImg.equals(this.cardImg) && c.title.equals(this.title) && c.id == this.id;
     }
 
     @Override

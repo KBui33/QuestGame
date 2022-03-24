@@ -46,8 +46,7 @@ public class Server implements Runnable {
     private ExternalGameState externalGameState;
 
     private HashMap<Integer, Integer> clientPlayerIds;
-
-    private int numAccepted = 0; // Keep track of number of clients who responded to a given command
+    private HashMap<CommandType, Integer> numResponded; // Keeps track of clients who responded to a given command
 
     Server() throws IOException {
         // Initialize game state
@@ -55,6 +54,7 @@ public class Server implements Runnable {
         externalGameState = new ExternalGameState(internalGameState);
 
         clientPlayerIds = new HashMap<>();
+        numResponded = new HashMap<>();
 
         _serverBroadcastSocket = new ServerSocket(SERVER_BROADCAST_PORT);
         _serverGameStateUpdateSocket = new ServerSocket(SERVER_GAME_STATE_UPDATE_PORT);
@@ -102,20 +102,19 @@ public class Server implements Runnable {
         clientPlayerIds.put(clientIndex, playerId);
     }
 
-    public int getNumAccepted() {
-        return numAccepted;
+    public int incrementNumResponded(CommandType commandType) {
+        if(!numResponded.containsKey(commandType)) numResponded.put(commandType, 0);
+        numResponded.put(commandType, numResponded.get(commandType) + 1);
+        return numResponded.get(commandType);
     }
 
-    public void setNumAccepted(int numAccepted) {
-        this.numAccepted = numAccepted;
+    public void resetNumResponded(CommandType commandType) {
+        if(numResponded.containsKey(commandType)) numResponded.put(commandType, 0);
     }
 
-    public int incrementNumAccepted() {
-        return ++numAccepted;
-    }
-
-    public void resetNumAccepted() {
-        setNumAccepted(0);
+    public int getNumResponded(CommandType commandType) {
+        if(numResponded.containsKey(commandType)) return numResponded.get(commandType);
+        return 0;
     }
 
     @Override
@@ -162,13 +161,13 @@ public class Server implements Runnable {
                 if (socketChannel != null) new Handler(Server.this, _selector, socketChannel);
 
                 clientPlayerIds.put(lastClientIndex, 0);
-                GameCommand joinedCommand = new GameCommand(Command.JOINED);
+                BaseCommand joinedCommand = new BaseCommand(BaseCommandName.JOINED);
                 joinedCommand.setClientIndex(lastClientIndex);
 
                 notifyClient(lastClientIndex, joinedCommand);
 
                 lastClientIndex++;
-                notifyClients(new GameCommand(Command.PLAYER_JOINED));
+                notifyClients(new BaseCommand(BaseCommandName.HAS_JOINED));
 
                 System.out.println("== Server Says: New client connected");
 
@@ -202,7 +201,7 @@ public class Server implements Runnable {
         _broadcastClients.remove(index);
     }
 
-    public synchronized void notifyClient(int clientIndex, GameCommand command) {
+    public synchronized void notifyClient(int clientIndex, BaseCommand command) {
         try {
             ObjectOutputStream oos = _broadcastClientOutputStreams.get(clientIndex);
             oos.writeObject(command);
@@ -212,7 +211,7 @@ public class Server implements Runnable {
         }
     }
 
-    public synchronized void notifyClientByPlayerId(int playerId, GameCommand command) {
+    public synchronized void notifyClientByPlayerId(int playerId, BaseCommand command) {
         int clientIndex = -1;
 
         for (HashMap.Entry entry : clientPlayerIds.entrySet()) {
@@ -225,9 +224,10 @@ public class Server implements Runnable {
         if(clientIndex >= 0) notifyClient(clientIndex, command);
     }
 
-    public synchronized void notifyClients(GameCommand command) {
+    public synchronized void notifyClients(Command command) {
         System.out.println("== Server notifier says: " + command);
-        command.setJoinedPlayers(lastClientIndex);
+        if(command.getCommandType().equals(CommandType.BASE)) ((BaseCommand) command).setNumJoined(lastClientIndex);
+
         try {
             for (ObjectOutputStream oos : _gameStateUpdateOutputStreams) {
                 oos.writeObject(externalGameState);
@@ -252,7 +252,7 @@ public class Server implements Runnable {
 
         try {
             new Thread(Server.getInstance()).start();
-            System.out.println("== Server started on port 5000");
+            System.out.println("== Server started on port " + SERVER_PORT);
         } catch (IOException e) {
             e.printStackTrace();
         }

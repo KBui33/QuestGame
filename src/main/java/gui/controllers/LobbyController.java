@@ -5,11 +5,8 @@ import gui.panes.LobbyPane;
 import gui.scenes.ConnectScene;
 import gui.scenes.GameScene;
 import javafx.application.Platform;
-import model.Command;
-import model.ExternalGameState;
-import model.GameCommand;
+import model.*;
 import networking.client.Client;
-import networking.client.ClientEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,18 +37,18 @@ public class LobbyController {
         try {
             client = Client.getInstance();
             // Get current lobby state
-            GameCommand initLobbyStateCommand =  client.sendCommand(new GameCommand(Command.GET_LOBBY_STATE));
-            if(initLobbyStateCommand.getCommand().equals(Command.RETURN_LOBBY_STATE)) {
-                view.getPlayersText().setText("Players Connected: " + initLobbyStateCommand.getJoinedPlayers());
+            BaseCommand initLobbyStateCommand = (BaseCommand) client.sendCommand(new BaseCommand(BaseCommandName.GET_LOBBY_STATE));
+            if(initLobbyStateCommand.getCommandName().equals(BaseCommandName.RETURN_LOBBY_STATE)) {
+                view.getPlayersText().setText("Players Connected: " + initLobbyStateCommand.getNumJoined());
             }
 
             // Subscribe to game updates
             Callable<Void> unsubscribeCommandReceived = client.clientEvents.subscribe(Client.ClientEvent.GAME_COMMAND_RECEIVED, (eventType, o) -> {
-                GameCommand receivedCommand = (GameCommand) o;
+                BaseCommand receivedCommand = (BaseCommand) o;
                 System.out.println("== Lobby Controller says: " + receivedCommand);
-                if(receivedCommand.getCommand().equals(Command.PLAYER_JOINED)) { // Update players connected
-                    view.getPlayersText().setText("Players Connected: " + receivedCommand.getJoinedPlayers());
-                } else if(receivedCommand.getCommand().equals(Command.GAME_STARTED)) { // Load game view
+                if(receivedCommand.getCommandName().equals(BaseCommandName.HAS_JOINED)) { // Update players connected
+                    view.getPlayersText().setText("Players Connected: " + receivedCommand.getNumJoined());
+                } else if(receivedCommand.getCommandName().equals(GameCommandName.GAME_STARTED)) { // Load game view
                     unsubscribeEvents(); // Unsubscribe from events
                     Platform.runLater(() ->ClientApplication.window.setScene(new GameScene()));
                 }
@@ -72,9 +69,9 @@ public class LobbyController {
 
                 if (view.getReadyButton().getText().equals("Ready")) {
                     // Send a ready command to the server
-                    GameCommand readyCommand = new GameCommand(Command.READY);
+                    GameCommand readyCommand = new GameCommand(GameCommandName.READY);
                     readyCommand.setClientIndex(client.getClientIndex());
-                    GameCommand isReadyCommand =  client.sendCommand(readyCommand);
+                    GameCommand isReadyCommand = (GameCommand) client.sendCommand(readyCommand);
                     client.setPlayerId(isReadyCommand.getPlayer().getPlayerId()); // Set id of player/client
 
                     view.getReadyButton().getStyleClass().remove("success");

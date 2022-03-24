@@ -19,7 +19,7 @@ public class GameRunner extends Runner {
         // Start game
         System.out.println("== Game runner says: Starting game");
         gameState.startGame();
-        server.notifyClients(new GameCommand(Command.GAME_STARTED));
+        server.notifyClients(new GameCommand(GameCommandName.GAME_STARTED));
 
 
         try {
@@ -37,7 +37,7 @@ public class GameRunner extends Runner {
 
                     int playerId = player.getPlayerId();
 
-                    GameCommand playerTurnCommand = new GameCommand(Command.PLAYER_TURN); // Broadcast take turn command
+                    GameCommand playerTurnCommand = new GameCommand(GameCommandName.PLAYER_TURN); // Broadcast take turn command
                     playerTurnCommand.setPlayerId(playerId);
                     gameState.setCurrentTurnPlayer(player);
 
@@ -51,8 +51,8 @@ public class GameRunner extends Runner {
                        // Start event thread if card is an event card
                     } else if (currentStoryCard instanceof EventCard){
                         System.out.println("== Game runner says: Event card played");
-                        continue;
-//                        new Thread(new EventRunner(server, gameState.getCurrentEvent())).start();
+                        //continue;
+                        new Thread(new EventRunner(server, gameState.getCurrentEvent())).start();
                     } else {
                         playerTurnCommand.setCard(currentStoryCard); // Deal story card to current player
                         server.notifyClients(playerTurnCommand);
@@ -71,7 +71,7 @@ public class GameRunner extends Runner {
                     gameState.setCurrentStoryCard(null);
 
                     // Notify clients
-                    GameCommand endTurnCommand = new GameCommand(Command.TOOK_TURN);
+                    GameCommand endTurnCommand = new GameCommand(GameCommandName.TOOK_TURN);
 
                     endTurnCommand.setPlayerId(playerId);
                     server.notifyClients(endTurnCommand);
@@ -104,10 +104,10 @@ public class GameRunner extends Runner {
         ArrayList<Player> winners = gameState.getWinners();
 
         shouldRespond = gameState.getNumPlayers();
-        server.resetNumAccepted();
+        server.resetNumResponded(CommandType.GAME);
 
 
-        GameCommand gameOverCommand = new GameCommand(Command.GAME_COMPLETE);
+        GameCommand gameOverCommand = new GameCommand(GameCommandName.GAME_COMPLETE);
         gameOverCommand.setPlayers(winners);
         server.notifyClients(gameOverCommand);
 
@@ -120,8 +120,8 @@ public class GameRunner extends Runner {
     @Override
     protected void waitForResponses() {
         try {
-            while (server.getNumAccepted() < shouldRespond) Thread.sleep(1000);
-            server.resetNumAccepted();
+            while (server.getNumResponded(CommandType.GAME) < shouldRespond) Thread.sleep(1000);
+            server.resetNumResponded(CommandType.GAME);
             shouldRespond = 0;
         } catch (InterruptedException e) {
             e.printStackTrace();

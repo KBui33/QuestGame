@@ -1,9 +1,8 @@
 package networking.server;
 // CODE FROM::https://tianpan.co/blog/2015-01-13-understanding-reactor-pattern-for-highly-scalable-i-o-bound-web-server
 
-import model.GameCommand;
-import networking.GameCommandHandler;
-import networking.server.Server;
+import model.Command;
+import networking.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -21,7 +20,7 @@ public class Handler implements Runnable {
     private ByteBuffer _readBuffer = ByteBuffer.allocate(READ_BUFFER_SIZE);
     private ByteBuffer _writeBuffer = ByteBuffer.allocate(WRITE_BUFFER_SIZE);
 
-    private GameCommandHandler _gameCommandHandler;
+    private CommandHandler commandHandler;
 
     public Handler(Server server, Selector selector, SocketChannel socketChannel) throws IOException, ClassNotFoundException {
         _socketChannel = socketChannel;
@@ -31,7 +30,7 @@ public class Handler implements Runnable {
         _selectionKey.attach(this);
         selector.wakeup();
 
-        _gameCommandHandler =  new GameCommandHandler(server);
+        commandHandler =  new BaseCommandHandler();
     }
 
     @Override
@@ -51,11 +50,11 @@ public class Handler implements Runnable {
             _readBuffer.get(bytes);
 
             // Convert input to game command and send for processing
-            GameCommand receivedCommand = GameCommand.fromBytesArray(bytes);
+            Command receivedCommand = Command.fromBytesArray(bytes);
             System.out.println("== Received command: " + receivedCommand);
-            GameCommand sentCommand = _gameCommandHandler.processGameCommand(receivedCommand);
+            Command sentCommand = handleCommand(receivedCommand);
             System.out.println("== Send command: " + sentCommand);
-            _writeBuffer = ByteBuffer.wrap(GameCommand.toBytesArray(sentCommand));
+            _writeBuffer = ByteBuffer.wrap(Command.toBytesArray(sentCommand));
 
             _selectionKey.interestOps(SelectionKey.OP_WRITE);
             _selectionKey.selector().wakeup();
@@ -105,5 +104,21 @@ public class Handler implements Runnable {
         }
     }
 
+    private Command handleCommand(Command command) throws IOException {
+        switch (command.getCommandType()) {
+            case GAME:
+                commandHandler = new GameCommandHandler(commandHandler);
+                break;
+            case QUEST:
+                commandHandler = new QuestCommandHandler(commandHandler);
+                break;
+            case EVENT:
+                commandHandler = new EventCommandHandler(commandHandler);
+                break;
+            default:
+                break;
+        }
 
+        return commandHandler.processGameCommand(command);
+    }
 }

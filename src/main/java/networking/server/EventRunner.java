@@ -1,7 +1,12 @@
 package networking.server;
 
+import component.card.Card;
 import component.card.Rank;
 import model.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class EventRunner extends Runner{
     private Server server;
@@ -17,57 +22,62 @@ public class EventRunner extends Runner{
     @Override
     public void loop() {
         gameState.setGameStatus(GameStatus.RUNNING_EVENT);
-        server.notifyClients(new GameCommand(Command.EVENT_STARTED));
+        GameCommand startEvent = new EventCommand(EventCommandName.EVENT_STARTED);
+        startEvent.setCard(event.getEvent());
+        server.notifyClients(startEvent);
         System.out.println("== Event runner says: initializing event");
+        System.out.println("== Event runner says: event card " + event.getEvent().getTitle() + " in play");
+
+        EventCommand runningGameCommand = new EventCommand();
 
         try{
             // Figure out which event is being played
             switch(event.getEvent().getTitle()){
                 case "King's Recognition":{
-                    // Can't do this rn
+                    // Can't do this rn (do not have something to keep track this card rn)
                     break;
                 }
                 case "Queen's Favor": {
-                    // If squire then add 2 cards to their hand
-                    gameState.getPlayers().forEach(
-                            player -> {
-                                if(player.getRankCard().getRank() == Rank.SQUIRE){
-                                    // add 2 cards to their hand
-                                }
-                            });
+                    // Send two 2 cards to player
+
+                    List<Card> adventureCards = Arrays.asList(gameState.drawAdventureCard(), gameState.drawAdventureCard());
+                    runningGameCommand.setCommandName(EventCommandName.RUNNING_QUEEN);
+                    runningGameCommand.setEvent(event);
+                    runningGameCommand.setCards((ArrayList<Card>) adventureCards);
+
                     break;
                 }
                 case "Court Called to Camelot": {
-                    // Can't do this rn
+                    // Can't do this rn (ally cards not applied yet)
                     break;
                 }
                 case "Pox": {
-                    // Remove 1 shield for every player beside the drawing player
-                    gameState.getPlayers().forEach(
-                            player -> {
-                                if(gameState.getCurrentTurnPlayer().getPlayerId() != player.getPlayerId()) {
-                                    if(player.getShields() > 0) player.setShields(player.getShields() - 1);
-                                }
-                            });
+                    //
                     break;
                 }
                 case "Plague": {
-                    Player drawer = gameState.getCurrentTurnPlayer();
-                    if(drawer.getShields() > 0){
-                        drawer.setShields(drawer.getShields() - 2);
-                    }
+                    //
                     break;
                 }
                 case "Chivalrous Deed": {
+                    //
                     break;
                 }
                 case "Prosperity Throughout the Realm": {
+                    //
                     break;
                 }
                 case "King's Call to Arms": {
+                    //
                     break;
                 }
+
             }
+
+            System.out.println("== Event runner says: Ending event");
+            server.notifyClients(new EventCommand(EventCommandName.EVENT_COMPLETED));
+
+            gameState.setGameStatus(GameStatus.RUNNING);
         }catch(Exception e){
             e.printStackTrace();
             shouldStopRunner();
