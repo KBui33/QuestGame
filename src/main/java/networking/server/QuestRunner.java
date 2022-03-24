@@ -145,8 +145,6 @@ public class QuestRunner extends Runner {
             server.notifyClientByPlayerId(playerId, takeQuestSponsorCardsCommand);
         }
 
-        waitForResponses();
-
         // Distribute shields to winners
         quest.distributeShieldsToWinners();
 

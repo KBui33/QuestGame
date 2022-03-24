@@ -34,6 +34,10 @@ public class QuestCommandHandler extends CommandHandlerDecorator {
             quest.setSponsor(player);
             gameState.setCurrentQuest(quest);
 
+            // Discard used cards from sponsor
+            ArrayList<Card> questCardsUsed = quest.getAllQuestCards(false);
+            System.out.println("== Discarding quest cards used: " + player.discardCards(questCardsUsed));
+
             System.out.println("== Command handler says: Player " + playerId + " agreed to sponsor quest");
 
             returnCommand.setCommandName(QuestCommandName.FOUND_QUEST_SPONSOR);
