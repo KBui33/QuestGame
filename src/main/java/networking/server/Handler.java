@@ -116,6 +116,7 @@ public class Handler implements Runnable {
                 commandHandler = new EventCommandHandler(commandHandler);
                 break;
             default:
+                commandHandler = new BaseCommandHandler();
                 break;
         }
 
