@@ -192,6 +192,10 @@ public class GameController {
                         System.out.println("== The game is now complete");
 
                         // TODO::Add complete game button
+                    } else if(command.equals(Command.EVENT_STARTED)){ //
+                        System.out.println("== Got the card and do stuff for the event");
+
+                        // TODO:: Start the event
                     }
                 }
             });
