@@ -3,9 +3,12 @@ package gui.controllers;
 import component.card.*;
 import gui.controllers.quest.QuestController;
 import gui.controllers.quest.QuestSetupController;
+import gui.main.ClientApplication;
 import gui.other.AlertBox;
 import gui.panes.GamePane;
 import gui.partials.CardView;
+import gui.partials.EndGameView;
+import gui.scenes.LobbyScene;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -197,24 +200,6 @@ public class GameController {
         return view;
     }
 
-    public void cleanUpGui() {
-        // clear quest setup
-        // getView().getMainPane().getChildren().clear();
-
-        // reset view
-//        getView().getHud().getEndTurnButton().setVisible(true);
-
-        // fix list view - need better fix at some point
-        ObservableList<CardView> tmp = FXCollections.observableArrayList();
-
-        getMyHandList().forEach(c -> {
-            CardView n = new CardView(c.getCard());
-            setCardViewButtonActions(n);
-            tmp.add(n);
-        });
-        setMyHandList(tmp);
-        getView().getHud().getMyHand().setListViewItems(getMyHandList());
-    }
 
     public void playerStageContinue() {
         // send quest turn complete command to server
@@ -344,7 +329,7 @@ public class GameController {
     }
 
     public void sponsorDiscardRewardCard(Card card) {
-        // TODO :: - send message to server
+        // TODO :: - send discard reward card message to server
     }
 
     private void displayCard(CardView cardView, EventHandler<ActionEvent> posButtonEvent, EventHandler<ActionEvent> negButtonEvent) {
@@ -448,12 +433,14 @@ public class GameController {
 
     private void updatePlayer(Player p) {
         this.player = p;
-        view.getHud().getShieldsView().setShields(player.getShields());
-        myHand.clear();
-        // Add player cards to gui cards
-        for (Card card : player.getCards()) {
-            addCardToHand(myHand, card);
-        }
+        Platform.runLater(() -> {
+            view.getHud().getShieldsView().setShields(player.getShields());
+            myHand.clear();
+            // Add player cards to gui cards
+            for (Card card : player.getCards()) {
+                addCardToHand(myHand, card);
+            }
+        });
     }
 
     public void gameOver() {
@@ -488,10 +475,23 @@ public class GameController {
             System.out.println("== It's my turn. Player: " + command.getPlayerId());
             view.getHud().getCurrentStateText().setText("Take your turn!");
             disableView(false);
-        } else if (commandName.equals(GameCommandName.GAME_COMPLETE)) { // Complete game
+        } else if (command.equals(GameCommandName.GAME_COMPLETE)) { // Complete game
             System.out.println("== The game is now complete");
 
-            // TODO::Add complete game button
+            Platform.runLater(() -> {
+                view.getHud().getCurrentStateText().setText("Game Over");
+
+                EndGameView endGameView = new EndGameView();
+                view.getChildren().remove(view.getHud());
+                view.getMainPane().clear();
+                view.getMainPane().add(endGameView);
+                endGameView.getContinueButton().setOnAction(e -> {
+                    // TODO :: - Send whatever server commands
+
+                    // send user back to lobby
+                    ClientApplication.window.setScene(new LobbyScene());
+                });
+            });
         }
     }
 
