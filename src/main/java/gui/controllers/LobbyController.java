@@ -93,10 +93,16 @@ public class LobbyController {
 
         view.getLeaveButton().setOnAction(e -> {
             System.out.println("Disconnecting");
-            ClientApplication.window.setScene(new ConnectScene());
             // should send disconnect notification to server and remove player from game
-            // TODO::Unsubscribe from all events
+            BaseCommand disconnectCommand = new BaseCommand(BaseCommandName.DISCONNECT);
+            disconnectCommand.setClientIndex(client.getClientIndex());
+            BaseCommand disconnectedCommand = (BaseCommand) client.sendCommand(disconnectCommand);
+            System.out.println("== Disconnected: " + disconnectedCommand + " " + disconnectedCommand.getNumJoined() + " " + disconnectedCommand.getNumReady());
+            Client.destroy();
+
             unsubscribeEvents();
+            ClientApplication.window.setScene(new ConnectScene());
+
         });
     }
 

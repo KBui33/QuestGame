@@ -478,6 +478,7 @@ public class GameController {
             disableView(false);
         } else if (commandName.equals(GameCommandName.GAME_COMPLETE)) { // Complete game
             System.out.println("== The game is now complete");
+            ArrayList<Player> winners = command.getPlayers(); // These are the winners
 
             Platform.runLater(() -> {
                 view.getHud().getCurrentStateText().setText("Game Over");

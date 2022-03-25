@@ -42,6 +42,14 @@ public class GameCommandHandler extends CommandHandlerDecorator {
             // If all lobby players ready, start the game
             if (server.getNumClients() >= 2 && gameState.getNumPlayers() == server.getNumClients())
                 startGame = true;
+        } if (commandName.equals(GameCommandName.UNREADY)) {
+            System.out.println("== Command handler says: Removing player " + playerId);
+            player = gameState.removePlayer(playerId);
+
+            returnCommand.setCommandName(GameCommandName.IS_UNREADY);
+            returnCommand.setPlayer(player);
+            returnCommand.setNumReady(gameState.getNumPlayers());
+            returnCommand.setNumJoined(server.getNumClients());
         } else if (commandName.equals(GameCommandName.GET_ATTACHED_PLAYER)) {
             System.out.println("== Command handler says: Fetching player attached to client");
             returnCommand.setCommandName(GameCommandName.RETURN_ATTACHED_PLAYER);

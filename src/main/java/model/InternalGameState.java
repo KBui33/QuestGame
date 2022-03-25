@@ -56,6 +56,10 @@ public class InternalGameState implements BaseGameState, Serializable {
         return player;
     }
 
+    public Player removePlayer(int playerId) {
+        return players.remove(playerId - 1);
+    }
+
     public Player getPlayer(int playerId) {
         return players.get(playerId - 1);
     }
