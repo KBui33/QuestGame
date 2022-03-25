@@ -89,9 +89,9 @@ public class Player implements Serializable {
         boolean shouldIncrementRank = false;
         switch (currentRank) {
             case SQUIRE: {
-                if(this.shields >= 2) {
+                if(this.shields >= 5) {
                     shouldIncrementRank = true;
-                    this.shields -= 2;
+                    this.shields -= 5;
                 }
                 break;
             } case KNIGHT: {
