@@ -16,7 +16,7 @@ public class Player implements Serializable {
 
     public Player() {
         cards = new ArrayList<Card>();
-        rankCard = new RankCard("", "", Rank.SQUIRE);
+        rankCard = new RankCard(Rank.SQUIRE);
         shields = 0;
     }
 

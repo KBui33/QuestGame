@@ -1,6 +1,7 @@
 package gui.panes;
 
 import gui.partials.DeckView;
+import gui.partials.PlayerInfoView;
 import gui.partials.ShieldsView;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -26,7 +27,7 @@ public class HUDPane extends BorderPane {
     private VBox deckButtons, cardButtons;
     private DeckView myHand, discardedCards;
     private HBox rankInfoBox;
-    private ShieldsView shieldsView;
+    private PlayerInfoView playerInfoView;
     private Text currentStateText;
     private Button showHandButton, showDiscardedButton, drawCardButton, endTurnButton;
 
@@ -38,8 +39,8 @@ public class HUDPane extends BorderPane {
         return discardedCards;
     }
 
-    public ShieldsView getShieldsView() {
-        return shieldsView;
+    public PlayerInfoView getPlayerInfoView() {
+        return playerInfoView;
     }
 
     public Text getCurrentStateText() {
@@ -99,7 +100,7 @@ public class HUDPane extends BorderPane {
 
         // put current rank card next to shields
         rankInfoBox = new HBox();
-        shieldsView = new ShieldsView();
+        playerInfoView = new PlayerInfoView();
 
         currentStateText = new Text();
         currentStateText.getStyleClass().add("body-font");
@@ -119,13 +120,13 @@ public class HUDPane extends BorderPane {
 
         deckButtons.getChildren().addAll(showHandButton, showDiscardedButton);
         cardButtons.getChildren().addAll(drawCardButton, endTurnButton);
-        topBar.setLeft(shieldsView);
+        topBar.setLeft(playerInfoView);
         topBar.setRight(currentStateText);
         setAlignment(deckButtons, Pos.BOTTOM_RIGHT);
         this.setRight(deckButtons);
         setAlignment(cardButtons, Pos.BOTTOM_LEFT);
         this.setLeft(cardButtons);
-        setAlignment(shieldsView, Pos.TOP_LEFT);
+        setAlignment(playerInfoView, Pos.TOP_LEFT);
         setAlignment(currentStateText, Pos.TOP_RIGHT);
         this.setTop(topBar);
     }
