@@ -24,7 +24,7 @@ public class EventCommand extends GameCommand {
     @Override
     public String toString() {
         String cmd = super.toString();
-        cmd += "Event: " + event.getEvent().getTitle() + ", ";
+        if(event != null) cmd += "Event: " + event.getEvent().getTitle() + ", ";
         return cmd;
     }
 

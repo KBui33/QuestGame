@@ -67,9 +67,4 @@ public class AdventureDeck extends Deck{
         }
     }
 
-    public static void main(String[] args) {
-        AdventureDeck ad = new AdventureDeck();
-        ad.init();
-        System.out.println(ad.cards.size());
-    }
 }

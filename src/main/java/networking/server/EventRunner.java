@@ -13,23 +13,28 @@ public class EventRunner extends Runner{
     private InternalGameState gameState;
     private Event event;
 
-    public EventRunner(Server server, Event event) {
+    public EventRunner(Server server) {
         this.server = server;
         this.gameState = server.getGameState();
-        this.event = event;
     }
 
     @Override
-    public void loop() {
+    public void loop() throws InterruptedException {
         gameState.setGameStatus(GameStatus.RUNNING_EVENT);
         EventCommand startEvent = new EventCommand(EventCommandName.EVENT_STARTED);
-        startEvent.setCard(event.getEvent());
+        startEvent.setCard(gameState.getCurrentStoryCard());
         server.notifyClients(startEvent);
-        System.out.println("== Event runner says: initializing event");
-        System.out.println("== Event runner says: event card " + event.getEvent().getTitle() + " in play");
+        System.out.println("== Event runner says: Initializing event");
+        System.out.println("== Event runner says: Event card " + gameState.getCurrentStoryCard().getTitle() + " in play");
 
+        // Wait for the client to get command and the card
+        while (gameState.getGameStatus().equals(GameStatus.RUNNING_EVENT)) {
+            Thread.sleep(1000);
+        }
+
+        // Once setup is done, get the Event object
+        if(gameState.getGameStatus().equals(GameStatus.FINDING_EVENT_CARD)) event = gameState.getCurrentEvent();
         EventCommand runningGameCommand = new EventCommand();
-
         try{
             // Figure out which event is being played
             switch(event.getEvent().getTitle()){
@@ -74,6 +79,7 @@ public class EventRunner extends Runner{
 
             }
 
+            shouldStopRunner();
             System.out.println("== Event runner says: Ending event");
             server.notifyClients(new EventCommand(EventCommandName.EVENT_COMPLETED));
 

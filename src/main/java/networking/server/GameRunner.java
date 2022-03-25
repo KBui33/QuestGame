@@ -52,7 +52,8 @@ public class GameRunner extends Runner {
                     } else if (currentStoryCard instanceof EventCard){
                         System.out.println("== Game runner says: Event card played");
                         //continue;
-                        new Thread(new EventRunner(server, gameState.getCurrentEvent())).start();
+                        //new Thread(new EventRunner(server, gameState.getCurrentEvent())).start();
+                        new Thread(new EventRunner(server)).start(); // Will eventually be replaced with EventSetupController class
                     } else {
                         playerTurnCommand.setCard(currentStoryCard); // Deal story card to current player
                         server.notifyClients(playerTurnCommand);

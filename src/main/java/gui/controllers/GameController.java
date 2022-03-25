@@ -632,8 +632,25 @@ public class GameController {
     }
 
     public void handleEventCommands(EventCommand command) {
+        CommandName commandName = command.getCommandName();
         System.out.println("== Game Controller command update says: " + command);
 
+        if(commandName.equals(EventCommandName.EVENT_STARTED)){
+            System.out.println("Setting up Event");
+            Card eventCard = command.getCard();
+
+            // TODO:: make EventSetupController view and send event over
+            // Temp
+            setUpEvent((EventCard) eventCard);
+        }
+
+    }
+
+    public void setUpEvent(EventCard event){
+        EventCommand eventSetupCompleteCommand = (EventCommand) defaultServerCommand(new EventCommand(EventCommandName.SETUP_COMPLETE));
+        eventSetupCompleteCommand.setEvent(new Event(event));
+        EventCommand eventSetupCompletedCommand = (EventCommand) client.sendCommand(eventSetupCompleteCommand);
+        if (eventSetupCompletedCommand != null) { updatePlayer(eventSetupCompletedCommand.getPlayer());}
     }
 
     /**
