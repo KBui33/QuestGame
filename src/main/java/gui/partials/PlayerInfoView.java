@@ -22,7 +22,7 @@ public class PlayerInfoView extends VBox {
         shieldsView = new ShieldsView();
 
         rankCard = new CardView();
-        rankCard.setSize(75);
+        rankCard.setSize(100);
         rankCard.setAlignment(Pos.TOP_LEFT);
 
         levelBox.getChildren().addAll(rankCard, shieldsView);
