@@ -39,7 +39,7 @@ public class RankCard extends Card{
      * Compute the number of shields based on rank
      * @return an integer representing the number of shields for the given rank card
      */
-    public int getShields() {
+    public int getBattlePoints() {
         switch (rank) {
             case SQUIRE -> {
                 return 5;

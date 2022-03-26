@@ -160,8 +160,8 @@ public class InternalGameState implements BaseGameState, Serializable {
     @Override
     public ArrayList<Player> getWinners() {
         ArrayList<Player> winners = new ArrayList<>();
-        for (Player player: players) { // Find players with rank knight of the round table -> Just knight for now
-            if(player.getRank().equals(Rank.KNIGHT)) winners.add(player);
+        for (Player player: players) { // Find players with rank knight of the round table 
+            if(player.getRank().equals(Rank.ROUND_TABLE_KNIGHT)) winners.add(player);
         }
 
         return winners;
