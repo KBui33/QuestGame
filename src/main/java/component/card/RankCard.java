@@ -24,6 +24,10 @@ public class RankCard extends Card{
                 this.setTitle("Champion Knight");
                 this.setCardImg("/ranks/quest_rank_3.png");
             }
+            default -> {
+                this.setTitle("");
+                this.setCardImg("");
+            }
         }
     }
 
@@ -33,6 +37,7 @@ public class RankCard extends Card{
 
     public void setRank(Rank rank) {
         this.rank = rank;
+        setRankDetails(rank);
     }
 
     /**
