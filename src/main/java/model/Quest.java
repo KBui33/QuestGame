@@ -205,8 +205,8 @@ public class Quest implements Serializable {
     public int computeFoeStageBattlePoints(FoeStage stage) {
         int battlePoints = 0;
 
-        battlePoints += ((FoeStage) stage).getWeaponsBattlePoints();
-        int[] foeBP = ((FoeStage) stage).getFoeBattlePoints();
+        battlePoints += stage.getWeaponsBattlePoints();
+        int[] foeBP = stage.getFoeBattlePoints();
 
         String currentFoe = questCard.getFoe() == null ? "none" : questCard.getFoe().toLowerCase();
         String stageFoe = stage.getStageCard().getTitle().toLowerCase();

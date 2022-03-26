@@ -3,6 +3,8 @@ package model;
 public enum GameCommandName implements CommandName {
     READY,
     IS_READY,
+    UNREADY,
+    IS_UNREADY,
     GET_ATTACHED_PLAYER,
     RETURN_ATTACHED_PLAYER,
     GAME_STARTED,

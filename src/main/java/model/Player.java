@@ -14,9 +14,6 @@ public class Player implements Serializable {
     private RankCard rankCard;
     private int shields;
 
-    // -- TODO:: Add cards array list
-    // -- TODO:: Add weapons array list
-
     public Player() {
         cards = new ArrayList<Card>();
         rankCard = new RankCard(Rank.SQUIRE);
@@ -73,6 +70,8 @@ public class Player implements Serializable {
     public int getShields() {
         return shields;
     }
+
+    public int getBattlePoints() { return rankCard.getBattlePoints(); }
 
     public void setShields(int shields) {
         this.shields = shields;
