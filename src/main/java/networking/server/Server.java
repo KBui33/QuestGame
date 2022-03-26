@@ -103,6 +103,8 @@ public class Server implements Runnable {
         clientPlayerIds.put(clientIndex, playerId);
     }
 
+    public Integer removeClientPlayerId(int clientIndex) { return clientPlayerIds.remove(clientIndex); }
+
     public int incrementNumResponded(CommandType commandType) {
         if(!numResponded.containsKey(commandType)) numResponded.put(commandType, 0);
         numResponded.put(commandType, numResponded.get(commandType) + 1);
