@@ -2,8 +2,6 @@ package gui.controllers.quest;
 
 import component.card.Card;
 import component.card.WeaponCard;
-import component.card.Card;
-import component.card.WeaponCard;
 import gui.controllers.GameController;
 import gui.partials.CardView;
 import javafx.collections.FXCollections;

@@ -1,13 +1,11 @@
 package gui.partials.quest;
 
+import gui.partials.CardSelectionView;
 import gui.partials.CardView;
-import gui.partials.quest.StageCardSelectionView;
-import gui.partials.quest.StageCompleteView;
 import javafx.geometry.Pos;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import model.Quest;
 import model.Stage;
 
 
@@ -29,7 +27,7 @@ public class QuestView extends BorderPane {
     private Text stageText, headerText;
     private VBox infoBox;
     private StageCompleteView stageCompletedView;
-    private StageCardSelectionView scsv;
+    private CardSelectionView scsv;
     private QuestCompleteView questCompleteView;
     private QuestSponsorCardsView questSponsorCardsView;
 
@@ -40,7 +38,7 @@ public class QuestView extends BorderPane {
         mode(Mode.SHOW_RESULTS);
     }
 
-    public StageCardSelectionView getStageCardSelectionView() {
+    public CardSelectionView getStageCardSelectionView() {
         return scsv;
     }
 
@@ -71,7 +69,7 @@ public class QuestView extends BorderPane {
 
         // show stages in the middle
         stageCompletedView = new StageCompleteView();
-        scsv = new StageCardSelectionView();
+        scsv = new CardSelectionView();
         questCompleteView = new QuestCompleteView();
         questSponsorCardsView = new QuestSponsorCardsView();
 
@@ -115,7 +113,7 @@ public class QuestView extends BorderPane {
         return stageCompletedView;
     }
 
-    public StageCardSelectionView getScsv() {
+    public CardSelectionView getScsv() {
         return scsv;
     }
 

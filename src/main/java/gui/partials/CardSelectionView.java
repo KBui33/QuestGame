@@ -1,4 +1,4 @@
-package gui.partials.quest;
+package gui.partials;
 
 import gui.partials.DeckView;
 import javafx.geometry.Pos;
@@ -7,7 +7,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-public class StageCardSelectionView extends BorderPane {
+public class CardSelectionView extends BorderPane {
     private DeckView weaponsView;
     private Button doneButton;
     private Text infoText;
@@ -22,7 +22,7 @@ public class StageCardSelectionView extends BorderPane {
         return doneButton;
     }
 
-    public StageCardSelectionView() {
+    public CardSelectionView() {
         cardSelectionBox = new VBox();
         cardSelectionBox.setSpacing(5);
         cardSelectionBox.setAlignment(Pos.CENTER);
