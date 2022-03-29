@@ -43,6 +43,10 @@ public class LobbyController {
                 System.out.println("== Lobby Controller says: " + receivedCommand);
                 if(receivedCommand.getCommandName().equals(BaseCommandName.HAS_JOINED)) { // Update players connected
                     view.getPlayersText().setText("Players Connected: " + receivedCommand.getNumJoined());
+                } else  if(receivedCommand.getCommandName().equals(GameCommandName.IS_UNREADY)) { // Update ready players
+                    // view.getPlayersText().setText("Players Connected: " + receivedCommand.getNumJoined()); -> This is different from players connected
+                } else  if(receivedCommand.getCommandName().equals(BaseCommandName.DISCONNECTED)) { // Update players connected
+                    view.getPlayersText().setText("Players Connected: " + receivedCommand.getNumJoined()); 
                 } else if(receivedCommand.getCommandName().equals(GameCommandName.GAME_STARTED)) { // Load game view
                     unsubscribeEvents(); // Unsubscribe from events
                     Platform.runLater(() ->ClientApplication.window.setScene(new GameScene()));
@@ -76,6 +80,12 @@ public class LobbyController {
                     view.getLeaveButton().setDisable(true);
                 } else {
                     // TODO :: ADD UNREADY FUNCTIONALITY
+                    // Send a unready command to the server
+                    GameCommand unreadyCommand = new GameCommand(GameCommandName.UNREADY);
+                    unreadyCommand.setClientIndex(client.getClientIndex());
+                    GameCommand isUnreadyCommand = (GameCommand) client.sendCommand(unreadyCommand);
+                    client.setPlayerId(-1); // Unset player id
+
                     view.getReadyButton().getStyleClass().remove("caution");
                     view.getReadyButton().getStyleClass().add("success");
                     view.getReadyButton().setText("Ready");
