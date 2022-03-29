@@ -25,12 +25,12 @@ public class EventCommandHandler extends CommandHandlerDecorator {
         int playerId = eventCommand.getPlayerId();
         if (playerId > 0) player = gameState.getPlayer(playerId);
 
-        GameCommand returnCommand = new GameCommand();
+        EventCommand returnCommand = new EventCommand();
 
         if (commandName.equals(EventCommandName.END_EVENT)) {
             System.out.println("== Command handler says: Player " + playerId +" ended event");
 
-            returnCommand.setCommandName(EventCommandName.ENDED_EVENT);
+            returnCommand.setCommandName(EventCommandName.PLAYER_END_EVENT);
             returnCommand.setPlayer(player);
             gameState.setGameStatus(GameStatus.ENDING_QUEST);
         }else if (commandName.equals(EventCommandName.SETUP_COMPLETE)){

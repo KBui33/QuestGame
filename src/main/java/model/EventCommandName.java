@@ -4,8 +4,8 @@ public enum EventCommandName implements CommandName {
     EVENT_STARTED,
     SETUP_COMPLETE,
     END_EVENT,
-    ENDED_EVENT,
-    RUNNING_QUEEN,
+    PLAYER_END_EVENT,
+    EVENT_EXTRA_INFO,
     EVENT_COMPLETED,
     FIND_CARD
 }

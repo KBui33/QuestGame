@@ -1,6 +1,8 @@
 package model;
 
-public class EventCommand extends GameCommand {
+import java.io.Serializable;
+
+public class EventCommand extends GameCommand implements Serializable {
     private Event event;
 
     public EventCommand() {
