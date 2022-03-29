@@ -29,11 +29,6 @@ public class LobbyController {
 
     public void setView(LobbyPane view) {
 
-        // get model
-
-
-        // ensure view is updated whenever model changes
-
         try {
             client = Client.getInstance();
             // Get current lobby state
@@ -77,11 +72,14 @@ public class LobbyController {
                     view.getReadyButton().getStyleClass().remove("success");
                     view.getReadyButton().getStyleClass().add("caution");
                     view.getReadyButton().setText("Wait");
+
+                    view.getLeaveButton().setDisable(true);
                 } else {
                     // TODO :: ADD UNREADY FUNCTIONALITY
-//                    view.getReadyButton().getStyleClass().remove("caution");
-//                    view.getReadyButton().getStyleClass().add("success");
-//                    view.getReadyButton().setText("Ready");
+                    view.getReadyButton().getStyleClass().remove("caution");
+                    view.getReadyButton().getStyleClass().add("success");
+                    view.getReadyButton().setText("Ready");
+                    view.getLeaveButton().setDisable(false);
                 }
             });
 
