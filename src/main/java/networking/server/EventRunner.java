@@ -133,7 +133,6 @@ public class EventRunner extends Runner{
             //Update the internal state
             System.out.println("== Event runner says: Updating internal state");
 
-
             // Discarding Event card
             if(gameState.getGameStatus().equals(GameStatus.ENDING_EVENT)){
                 gameState.discardStoryCard(event.getEvent());
