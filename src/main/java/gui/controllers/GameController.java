@@ -651,11 +651,8 @@ public class   GameController {
         EventCommand eventSetupCompleteCommand = (EventCommand) defaultServerCommand(new EventCommand(EventCommandName.SETUP_COMPLETE));
         eventSetupCompleteCommand.setEvent(new Event(event));
         EventCommand eventSetupCompletedCommand =  (EventCommand) client.sendCommand(eventSetupCompleteCommand);
- //       EventCommand eventSetupCompletedCommand =  (EventCommand) client.sendCommand(eventSetupCompleteCommand);
+        if (eventSetupCompletedCommand.getPlayer() != null) updatePlayer(eventSetupCompletedCommand.getPlayer());
 
-        if (eventSetupCompletedCommand.getPlayers() != null) {
-            System.out.println("not null");
-        }
     }
 
     /**

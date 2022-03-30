@@ -18,8 +18,6 @@ public class EventRunner extends Runner{
 
     @Override
     public void loop() throws InterruptedException {
-        // Instead of sending card then finding out what event, send the card and other stuff together not separate
-
         // Need to set card
         gameState.setGameStatus(GameStatus.RUNNING_EVENT);
         EventCommand startEvent = new EventCommand(EventCommandName.EVENT_STARTED);
@@ -48,13 +46,13 @@ public class EventRunner extends Runner{
                 }
                 case "Queen's Favor": {
                     // Send to the lowest rank players
-
                     // The Lowest rank players
-                    players
-                            = (ArrayList<Player>) gameState.getPlayers()
-                            .stream()
-                            .filter(p -> p.getRank().equals(Rank.SQUIRE))
-                            .toList();
+                    ArrayList<Player> eventPlayers = new ArrayList<>();
+
+                    for(Player player: gameState.getPlayers()) {
+                        if (player.getRank() == Rank.SQUIRE) eventPlayers.add(player);
+                    }
+                    players = eventPlayers;
 
                     players.forEach(
                             player -> {
@@ -69,14 +67,18 @@ public class EventRunner extends Runner{
                 }
                 case "Pox":{
                     players = gameState.getPlayers();
-                    //players.removeIf(player -> player.getPlayerId() == gameState.getCurrentTurnPlayer().getPlayerId());
-
+                    // Removing the drawer
+                    for(Player player: gameState.getPlayers()){
+                        if(player.getPlayerId()
+                                == gameState.getCurrentTurnPlayer().getPlayerId()) {
+                            players.remove(player);
+                        }
+                    }
                     runningGameCommand.setLoseShields(1);
                     break;
                 }
                 case "Prosperity Throughout the Realm": {
                     // Send to all player except drawer
-
                     // Need to update players with new shield values
                     players = gameState.getPlayers();
 
@@ -89,14 +91,13 @@ public class EventRunner extends Runner{
                 }
                 case "Plague": {
                     // Send only to drawer
-                    players = (ArrayList<Player>)List.of(gameState.getCurrentTurnPlayer());
+                    players = new ArrayList<Player>(List.of(gameState.getCurrentTurnPlayer()));
                     // Need to update drawer shield
                     runningGameCommand.setLoseShields(2);
                     break;
                 }
                 case "Chivalrous Deed": {
                     // Send to players with the lowest rank and low shield
-
                     // The lowest amount of shields a player can have
                     int lowestShields = gameState.getPlayers()
                             .stream()
@@ -104,16 +105,9 @@ public class EventRunner extends Runner{
                             .orElseThrow().getShields();
 
                     // Getting players that match conditions
-//                    players
-//                            = (ArrayList<Player>) gameState.getPlayers()
-//                            .stream()
-//                            .filter(p -> p.getRank().equals(Rank.SQUIRE) && p.getShields() == lowestShields)
-//                            .toList();
-
                     for (Player player: gameState.getPlayers()){
-                        if (player.getRank() == Rank.SQUIRE && player.getShields() == lowestShields) {
-                            players.add(player);
-                        }
+                        if (player.getRank() == Rank.SQUIRE
+                                && player.getShields() == lowestShields) players.add(player);
                     }
 
                     runningGameCommand.setGainShields(3);
