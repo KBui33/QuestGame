@@ -122,7 +122,6 @@ public class EventRunner extends Runner{
 
             //runningGameCommand.setPlayers(players);
             runningGameCommand.setCards(cards);
-
             if(players != null) event.addArrayEventPlayers(players);
             runningGameCommand.setEvent(event);
 
