@@ -44,12 +44,13 @@ public class GameCommandHandler extends CommandHandlerDecorator {
                 startGame = true;
         } if (commandName.equals(GameCommandName.UNREADY)) {
             System.out.println("== Command handler says: Removing player " + playerId);
-            assert gameState.removePlayer(playerId) != null;
-            assert server.removeClientPlayerId(gameCommand.getClientIndex()) != null;
+            gameState.removePlayer(playerId);
+            server.removeClientPlayerId(gameCommand.getClientIndex());
             returnCommand.setCommandName(GameCommandName.IS_UNREADY);
             returnCommand.setPlayer(null);
             returnCommand.setNumReady(gameState.getNumPlayers());
             returnCommand.setNumJoined(server.getNumClients());
+            System.out.println("== Joined: " + server.getNumClients() + " Ready: " + gameState.getNumPlayers());
         } else if (commandName.equals(GameCommandName.GET_ATTACHED_PLAYER)) {
             System.out.println("== Command handler says: Fetching player attached to client");
             returnCommand.setCommandName(GameCommandName.RETURN_ATTACHED_PLAYER);

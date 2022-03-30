@@ -83,6 +83,7 @@ public class LobbyController {
                     // Send a unready command to the server
                     GameCommand unreadyCommand = new GameCommand(GameCommandName.UNREADY);
                     unreadyCommand.setClientIndex(client.getClientIndex());
+                    unreadyCommand.setPlayerId(client.getPlayerId());
                     GameCommand isUnreadyCommand = (GameCommand) client.sendCommand(unreadyCommand);
                     client.setPlayerId(-1); // Unset player id
 
