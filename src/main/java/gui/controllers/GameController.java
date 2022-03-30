@@ -134,29 +134,6 @@ public class GameController {
 
         updatePlayer(player);
 
-
-        // set action for draw card button
-//        view.getDrawCardButton().setOnAction(e -> {
-//            // draw a card from server
-//            // hardcoded for testing
-//            Random r = new Random();
-//            Card drawnCard = new AllyCard(
-//                    "card",
-//                    "/specials/quest_ally_" + (r.nextInt(10) + 1) + ".png",
-//                    "", "");
-//
-//
-//            // once hand has more than 12 cards every next card drawn must be either played or discarded
-//            if (myHand.size() < 12) {
-//                addCardToHand(myHand, drawnCard);
-//            } else {
-//                // display card with option to play it or discard it
-//                view.getDrawnCard().setCard(drawnCard);
-//                view.addToCenterScreen(view.getDrawnCard(), Pos.CENTER, 100);
-//                view.getDrawCardButton().setDisable(true);
-//            }
-//        });
-
         view.getHud().getEndTurnButton().setOnAction(e -> {
             System.out.println("Turn ended");
             // Send end turn command
@@ -493,9 +470,16 @@ public class GameController {
                 view.getChildren().remove(view.getHud());
                 view.getMainPane().clear();
                 view.getMainPane().add(endGameView);
+
+                ArrayList<String> players = new ArrayList<>();
+                winners.forEach(w -> {
+                    players.add("Player " + w.getPlayerId());
+                });
+                endGameView.getResultsView().setItems(players);
+
                 endGameView.getContinueButton().setOnAction(e -> {
                     GameCommand completeGameCommand = (GameCommand) defaultServerCommand(new GameCommand(GameCommandName.COMPLETE_GAME));
-                    GameCommand completedFameCommand = (GameCommand) client.sendCommand(completeGameCommand);
+                    GameCommand completedGameCommand = (GameCommand) client.sendCommand(completeGameCommand);
 
                     // send user back to lobby
                     unsubscribeEvents();
