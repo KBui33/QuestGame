@@ -47,7 +47,6 @@ public class ConnectPane extends BorderPane {
         serverAddress.setText("127.0.0.1");
 
         connectButton = new Button("Connect");
-        connectButton.setPrefSize(100, 25);
         connectButton.getStyleClass().add("success");
 
 
