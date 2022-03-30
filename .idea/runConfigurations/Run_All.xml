@@ -2,7 +2,6 @@
   <configuration default="false" name="Run All" type="CompoundRunConfigurationType">
     <toRun name="ClientApplication" type="Application" />
     <toRun name="ClientApplication2" type="Application" />
-    <toRun name="ClientApplication3" type="Application" />
     <toRun name="Server" type="Application" />
     <method v="2" />
   </configuration>
