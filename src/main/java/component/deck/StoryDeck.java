@@ -3,6 +3,7 @@ package component.deck;
 import component.card.Card;
 import component.card.EventCard;
 import component.card.QuestCard;
+import component.card.TournamentCard;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -43,6 +44,19 @@ public class StoryDeck extends Deck{
                     this.cards.add(new EventCard(title, image));
                 }
             }
+
+            it = tournaments.iterator();
+            while(it.hasNext()){
+                JSONObject obj = it.next();
+                String title = (String) obj.get("title");
+                String image = (String)  obj.get("image");
+                int shields = (Integer) obj.get("shields");
+                Long freq = (Long) obj.get("frequency");
+                for(int i = 0 ; i < freq; i++ ){
+                    this.cards.add(new TournamentCard(title, image, shields));
+                }
+            }
+
         } catch(ParseException | IOException e) {
             e.printStackTrace();
         }

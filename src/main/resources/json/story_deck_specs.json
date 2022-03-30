@@ -75,7 +75,7 @@
     {"title": "Prosperity Throughout the Realm",
       "image": "/quests/quest_event_8.png",
       "frequency": 1
-    },
+    }
   ],
   "events": [
     {"title":"King's Recognition",
@@ -114,16 +114,20 @@
   "tournaments": [
     {"title": "Tournament at Camelot",
       "image": "/quests/quest_tournament_4.png",
-      "frequency": 1
+      "frequency": 1,
+      "shields" : 3
     }, {"title": "Tournament at Orkney",
       "image": "/quests/quest_tournament_3.png",
-      "frequency": 1
+      "frequency": 1,
+      "shields" : 2
     }, {"title": "Tournament at Tintagel",
       "image": "/quests/quest_tournament_2.png",
-      "frequency": 1
+      "frequency": 1,
+      "shields" : 1
     }, {"title": "Tournament at York",
       "image": "/quests/quest_tournament_1.png",
-      "frequency": 1
+      "frequency": 1,
+      "shields" : 0
     }
   ]
 }
