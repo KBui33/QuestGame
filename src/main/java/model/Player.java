@@ -14,12 +14,9 @@ public class Player implements Serializable {
     private RankCard rankCard;
     private int shields;
 
-    // -- TODO:: Add cards array list
-    // -- TODO:: Add weapons array list
-
     public Player() {
         cards = new ArrayList<Card>();
-        rankCard = new RankCard("", "", Rank.SQUIRE);
+        rankCard = new RankCard(Rank.SQUIRE);
         shields = 0;
     }
 
@@ -74,6 +71,8 @@ public class Player implements Serializable {
         return shields;
     }
 
+    public int getBattlePoints() { return rankCard.getBattlePoints(); }
+
     public void setShields(int shields) {
         this.shields = shields;
         this.incrementRank();
@@ -89,9 +88,9 @@ public class Player implements Serializable {
         boolean shouldIncrementRank = false;
         switch (currentRank) {
             case SQUIRE: {
-                if(this.shields >= 2) {
+                if(this.shields >= 5) {
                     shouldIncrementRank = true;
-                    this.shields -= 2;
+                    this.shields -= 5;
                 }
                 break;
             } case KNIGHT: {

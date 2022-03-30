@@ -29,7 +29,7 @@ public class QuestPlayer extends Player implements Serializable {
     }
 
     public int calculateBattlePoints() {
-        int battlePoints = player.getShields(); // Minimum battle points
+        int battlePoints = player.getBattlePoints(); // Minimum battle points
 
         for(Card questCardUsed: playerQuestCardsUsed) { // Sum up battle points based on quest cards used
             if(questCardUsed instanceof WeaponCard) {

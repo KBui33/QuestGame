@@ -110,12 +110,14 @@ public class GameRunner extends Runner {
 
         GameCommand gameOverCommand = new GameCommand(GameCommandName.GAME_COMPLETE);
         gameOverCommand.setPlayers(winners);
+        System.out.println("== Winners: " + winners.size());
         server.notifyClients(gameOverCommand);
 
         waitForResponses();
 
         // reset game
         gameState.resetGame();
+        server.resetClientPlayerIds();
     }
 
     @Override

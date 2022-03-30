@@ -66,7 +66,6 @@ public class GameCommand extends BaseCommand implements Serializable {
     public String toString() {
         String cmd = super.toString();
         cmd += "Player ID: " + playerId + ", ";
-        cmd += "Client index: " + clientIndex + ", ";
         return cmd;
     }
 }

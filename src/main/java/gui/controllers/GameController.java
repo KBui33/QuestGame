@@ -311,13 +311,17 @@ public class   GameController {
             if (myHand.filtered(c -> c.getCard() instanceof FoeCard || c.getCard() instanceof TestCard).size() < ((QuestCard) drawnCard.getCard()).getStages()) {
                 // notify user they dont have enough cards to sponsor
                 AlertBox.alert("Insufficient cards in hand. This Quest requires at least " + ((QuestCard) drawnCard.getCard()).getStages() + " Foe or Test cards to sponsor.", Alert.AlertType.WARNING, e2 -> {
+                   // TODO::Let player decline
+                    /*drawnCard.getDiscardButton().fire();
+                    waitTurn();
 
                     // send decline to server
                     QuestCommand declineSponsorQuestCommand = (QuestCommand) defaultServerCommand(new QuestCommand(QuestCommandName.WILL_NOT_SPONSOR_QUEST));
                     QuestCommand declinedSponsorQuestCommand = (QuestCommand) client.sendCommand(declineSponsorQuestCommand);
                     if(declinedSponsorQuestCommand.getPlayer() != null) updatePlayer(declinedSponsorQuestCommand.getPlayer());
 
-                    drawnCard.getDiscardButton().fire();
+                     */
+
                 });
             } else {
                 view.getMainPane().remove(drawnCard);
@@ -325,13 +329,14 @@ public class   GameController {
             }
         }, e -> {
             // send decline to server
+            view.getMainPane().remove(drawnCard);
+            waitTurn();
+
             QuestCommand declineSponsorQuestCommand = (QuestCommand) defaultServerCommand(new QuestCommand(QuestCommandName.WILL_NOT_SPONSOR_QUEST));
             QuestCommand declinedSponsorQuestCommand = (QuestCommand) client.sendCommand(declineSponsorQuestCommand);
             if(declinedSponsorQuestCommand.getPlayer() != null) updatePlayer(declinedSponsorQuestCommand.getPlayer());
 
-            view.getMainPane().remove(drawnCard);
 
-            waitTurn();
         });
     }
 
@@ -441,7 +446,7 @@ public class   GameController {
     private void updatePlayer(Player p) {
         this.player = p;
         Platform.runLater(() -> {
-            view.getHud().getShieldsView().setShields(player.getShields());
+            view.getHud().getPlayerInfoView().updatePlayer(p);
             myHand.clear();
             // Add player cards to gui cards
             for (Card card : player.getCards()) {
@@ -478,6 +483,8 @@ public class   GameController {
             disableView(false);
         } else if (commandName.equals(GameCommandName.GAME_COMPLETE)) { // Complete game
             System.out.println("== The game is now complete");
+            ArrayList<Player> winners = command.getPlayers(); // These are the winners
+            System.out.println("== Winners: " + winners.size() + " " + winners);
 
             Platform.runLater(() -> {
                 view.getHud().getCurrentStateText().setText("Game Over");
