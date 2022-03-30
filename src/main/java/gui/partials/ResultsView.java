@@ -22,25 +22,20 @@ public class ResultsView extends VBox {
     }
 
     public void setItems(ArrayList<String> column1) {
-
+        generate(column1);
     }
 
     private void generate(ArrayList<String> column1) {
         this.getChildren().clear();
         for (int i = 0; i < column1.size(); i++) {
-            HBox row = new HBox();
-            row.setAlignment(Pos.CENTER);
-            row.setSpacing(5);
 
             Text text1 = new Text("     ");
             text1.getStyleClass().add("body-font");
-            Text text2 = new Text("     ");
-            text2.getStyleClass().add("body-font");
 
             if (i < column1.size()) {
                 text1.setText(column1.get(i));
             }
-            this.getChildren().add(row);
+            this.getChildren().add(text1);
         }
 
 

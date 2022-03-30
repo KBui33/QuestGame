@@ -1,8 +1,11 @@
 package gui.main;
 
 import javafx.application.Application;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import gui.scenes.ConnectScene;
+
+import java.util.Objects;
 
 /**
  * @author James DiNovo
@@ -21,6 +24,11 @@ public class ClientApplication extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         window = stage;
+
+        Font.loadFont(ConnectScene.class.getResource("/fonts/GentiumBasic-Regular.ttf").toExternalForm(), 12);
+        Font.loadFont(ConnectScene.class.getResource("/fonts/GentiumBasic-Italic.ttf").toExternalForm(), 12);
+        Font.loadFont(ConnectScene.class.getResource("/fonts/GentiumBasic-Bold.ttf").toExternalForm(), 12);
+
 
         // launch connect scene for user to enter server address
         window.setScene(new ConnectScene());
