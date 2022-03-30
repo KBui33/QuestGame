@@ -36,7 +36,9 @@ public class EventRunner extends Runner{
         if(gameState.getGameStatus().equals(GameStatus.FINDING_EVENT_CARD)) event = gameState.getCurrentEvent();
 
         EventCommand runningGameCommand = new EventCommand(EventCommandName.EVENT_EXTRA_INFO);
-        runningGameCommand.setEvent(event);
+
+        ArrayList<Player> players = null;
+        ArrayList<Card> cards = new ArrayList<>();
         try{
             // Figure out which event is being played
             switch(event.getEvent().getTitle()){
@@ -46,57 +48,90 @@ public class EventRunner extends Runner{
                 }
                 case "Queen's Favor": {
                     // Send to the lowest rank players
+
                     // The Lowest rank players
-                    ArrayList<Player> players
+                    players
                             = (ArrayList<Player>) gameState.getPlayers()
                             .stream()
                             .filter(p -> p.getRank().equals(Rank.SQUIRE))
                             .toList();
-                    runningGameCommand.setPlayers(players);
+
+                    players.forEach(
+                            player -> {
+                                cards.add(gameState.drawAdventureCard());
+                                cards.add(gameState.drawAdventureCard());
+                            });
                     break;
                 }
                 case "Court Called to Camelot": {
                     // Can't do this rn (ally cards not applied yet)
                     break;
                 }
-                case "Pox":
+                case "Pox":{
+                    players = gameState.getPlayers();
+                    //players.removeIf(player -> player.getPlayerId() == gameState.getCurrentTurnPlayer().getPlayerId());
+
+                    runningGameCommand.setLoseShields(1);
+                    break;
+                }
                 case "Prosperity Throughout the Realm": {
-                    // ==
                     // Send to all player except drawer
+
                     // Need to update players with new shield values
-                    runningGameCommand.setPlayers(gameState.getPlayers());
+                    players = gameState.getPlayers();
+
+                    players.forEach(
+                            player -> {
+                                cards.add(gameState.drawAdventureCard());
+                                cards.add(gameState.drawAdventureCard());
+                            });
                     break;
                 }
                 case "Plague": {
-                    // send to drawer
+                    // Send only to drawer
+                    players = (ArrayList<Player>)List.of(gameState.getCurrentTurnPlayer());
                     // Need to update drawer shield
-                    runningGameCommand.setPlayers(
-                            (ArrayList<Player>) List.of(gameState.getCurrentTurnPlayer()));
+                    runningGameCommand.setLoseShields(2);
                     break;
                 }
                 case "Chivalrous Deed": {
-                    // send to players with the lowest rank and low shield
+                    // Send to players with the lowest rank and low shield
 
                     // The lowest amount of shields a player can have
-                    Integer lowestShields = gameState.getPlayers()
+                    int lowestShields = gameState.getPlayers()
                             .stream()
                             .min(Comparator.comparing(Player::getShields))
                             .orElseThrow().getShields();
 
                     // Getting players that match conditions
-                    ArrayList<Player> players
-                            = (ArrayList<Player>) gameState.getPlayers()
-                            .stream()
-                            .filter(p -> p.getRank().equals(Rank.SQUIRE) && p.getShields() == lowestShields)
-                            .toList();
+//                    players
+//                            = (ArrayList<Player>) gameState.getPlayers()
+//                            .stream()
+//                            .filter(p -> p.getRank().equals(Rank.SQUIRE) && p.getShields() == lowestShields)
+//                            .toList();
+
+                    for (Player player: gameState.getPlayers()){
+                        if (player.getRank() == Rank.SQUIRE && player.getShields() == lowestShields) {
+                            players.add(player);
+                        }
+                    }
+
+                    runningGameCommand.setGainShields(3);
                     break;
-                }// Send to all players
+                }
                 case "King's Call to Arms": {
                     // To much work rn  :( (me don't want to do)
                     break;
                 }
 
             }
+
+            //runningGameCommand.setPlayers(players);
+            runningGameCommand.setCards(cards);
+
+            if(players != null) event.addArrayEventPlayers(players);
+            runningGameCommand.setEvent(event);
+
             // Send and wait for client to apply changes to players
             server.notifyClients(runningGameCommand);
             gameState.setGameStatus(GameStatus.RUNNING_EVENT);

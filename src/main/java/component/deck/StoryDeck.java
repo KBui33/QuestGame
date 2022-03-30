@@ -20,29 +20,29 @@ public class StoryDeck extends Deck{
             Object ob = new JSONParser().parse(new FileReader(String.valueOf(StoryDeck.class.getResource("/json/story_deck_specs.json").getFile())));
             JSONObject jsonObject = (JSONObject) ob;
             JSONArray quests = (JSONArray) jsonObject.get("quests");
-            JSONArray events = (JSONArray) jsonObject.get("events");
+            JSONArray events = (JSONArray) jsonObject.get("testEvents");
             JSONArray tournaments = (JSONArray) jsonObject.get("tournaments");
 
             Iterator<JSONObject> it = quests.iterator();
-            while(it.hasNext()) {
-                JSONObject obj = (JSONObject) it.next();
-                String title = (String)  obj.get("title");
-                String image = (String) obj.get("image");
-                String foe = (String) obj.get("foe");
-                Long stages = (Long) obj.get("stages");
-                this.cards.add(new QuestCard(title, image, Math.toIntExact(stages), foe));
-            }
+//            while(it.hasNext()) {
+//                JSONObject obj = (JSONObject) it.next();
+//                String title = (String)  obj.get("title");
+//                String image = (String) obj.get("image");
+//                String foe = (String) obj.get("foe");
+//                Long stages = (Long) obj.get("stages");
+//                this.cards.add(new QuestCard(title, image, Math.toIntExact(stages), foe));
+//            }
 
             it = events.iterator();
-//            while(it.hasNext()){
-//                JSONObject obj = it.next();
-//                String title = (String) obj.get("title");
-//                String image = (String)  obj.get("image");
-//                Long freq = (Long) obj.get("frequency");
-//                for(int i = 0 ; i < freq; i++ ){
-//                    this.cards.add(new EventCard(title, image));
-//                }
-//            }
+            while(it.hasNext()){
+                JSONObject obj = it.next();
+                String title = (String) obj.get("title");
+                String image = (String)  obj.get("image");
+                Long freq = (Long) obj.get("frequency");
+                for(int i = 0 ; i < freq; i++ ){
+                    this.cards.add(new EventCard(title, image));
+                }
+            }
         } catch(ParseException | IOException e) {
             e.printStackTrace();
         }
