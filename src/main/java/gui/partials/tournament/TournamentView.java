@@ -1,7 +1,6 @@
 package gui.partials.tournament;
 
 import gui.partials.CardSelectionView;
-import gui.partials.quest.QuestView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 
@@ -12,15 +11,15 @@ public class TournamentView extends BorderPane {
     }
 
     private Text headerText;
-    private TournamentResults tournamentResults;
+    private TournamentResultsView tournamentResultsView;
     private CardSelectionView cardSelectionView;
 
     public Text getHeaderText() {
         return headerText;
     }
 
-    public TournamentResults getTournamentResults() {
-        return tournamentResults;
+    public TournamentResultsView getTournamentResultsView() {
+        return tournamentResultsView;
     }
 
     public CardSelectionView getCardSelectionView() {
@@ -40,13 +39,13 @@ public class TournamentView extends BorderPane {
         this.setCenter(null);
     }
 
-    public void mode(QuestView.Mode c) {
+    public void mode(TournamentView.Mode c) {
         switch (c) {
             case PICK_CARDS:
                 this.setCenter(this.cardSelectionView);
                 break;
             case SHOW_RESULTS:
-                this.setCenter(this.tournamentResults);
+                this.setCenter(this.tournamentResultsView);
                 break;
             default:
                 clearTournament();

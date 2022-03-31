@@ -6,13 +6,14 @@ import gui.controllers.AbstractFightController;
 import gui.controllers.GameController;
 import gui.other.AlertBox;
 import gui.partials.CardView;
-import gui.partials.quest.QuestView;
+import gui.partials.tournament.TournamentPlayerCardsView;
 import gui.partials.tournament.TournamentView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import model.Tournament;
 import utils.Callback;
+import utils.CallbackEmpty;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,7 +36,7 @@ public class TournamentController extends AbstractFightController {
         showGui();
         updateTournament(tournament);
 
-        this.tournamentView.mode(QuestView.Mode.PICK_CARDS);
+        this.tournamentView.mode(TournamentView.Mode.PICK_CARDS);
 
         ObservableList<CardView> weapons = parent.getMyHandList().filtered(c -> c.getCard() instanceof WeaponCard);
         ObservableList<CardView> addedWeapons = FXCollections.observableArrayList();
@@ -83,6 +84,24 @@ public class TournamentController extends AbstractFightController {
 
             callback.call(wl);
         });
+    }
+
+    public void tournamentComplete(Tournament tournament, CallbackEmpty callback) {
+        showGui();
+        updateTournament(tournament);
+        this.tournamentView.mode(TournamentView.Mode.SHOW_RESULTS);
+
+        this.tournamentView.getTournamentResultsView().getPlayersBox().getChildren().clear();
+
+        tournament.getTournamentPlayers().forEach(p -> {
+            this.tournamentView.getTournamentResultsView().getPlayersBox().getChildren().add(new TournamentPlayerCardsView(p));
+        });
+
+        this.tournamentView.getTournamentResultsView().getContinueButton().setOnAction(e -> {
+            cleanUpGui();
+            callback.call();
+        });
+
     }
 
     private void showGui() {
