@@ -15,7 +15,7 @@ public class TournamentResultsView extends BorderPane {
     public TournamentResultsView() {
         // will display multiple PlayerCards (depending on players in tournament)
 
-        this.resultsText = new Text();
+        this.resultsText = new Text("Winner");
         this.resultsText.getStyleClass().add("body-font");
         setAlignment(resultsText, Pos.CENTER);
 
