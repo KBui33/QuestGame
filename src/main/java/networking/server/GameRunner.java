@@ -19,7 +19,7 @@ public class GameRunner extends Runner {
         // Start game
         System.out.println("== Game runner says: Starting game");
         gameState.startGame();
-        server.notifyClients(new GameCommand(Command.GAME_STARTED));
+        server.notifyClients(new GameCommand(GameCommandName.GAME_STARTED));
 
 
         try {
@@ -30,30 +30,35 @@ public class GameRunner extends Runner {
 
             System.out.println("== Game runner says: Starting game loop");
 
-            while (true) {
+            while (!gameState.getGameStatus().equals(GameStatus.GAME_OVER)) {
                 // Iterate over clients and instruct them to take turns
                 for (Player player : players) {
                     gameState.setGameStatus(GameStatus.TAKING_TURN);
 
                     int playerId = player.getPlayerId();
 
-                    GameCommand playerTurnCommand = new GameCommand(Command.PLAYER_TURN); // Broadcast take turn command
+                    GameCommand playerTurnCommand = new GameCommand(GameCommandName.PLAYER_TURN); // Broadcast take turn command
                     playerTurnCommand.setPlayerId(playerId);
                     gameState.setCurrentTurnPlayer(player);
 
                     Card currentStoryCard = gameState.drawStoryCard();
                     gameState.setCurrentStoryCard(currentStoryCard);
 
-                    // Start quest sponsor thread if card is a quest card
-                    if(currentStoryCard instanceof QuestCard) {
-                        System.out.println("== Game runner says: Quest card played");
+
+                    if(currentStoryCard instanceof QuestCard) { // Start quest sponsor thread if card is a quest card
+                        System.out.println("== Game runner says: Quest card drawn");
                         new Thread(new QuestSponsorRunner(server)).start();
                        // Start event thread if card is an event card
                     } else if (currentStoryCard instanceof EventCard){
                         System.out.println("== Game runner says: Event card played");
-                        continue;
-//                        new Thread(new EventRunner(server, gameState.getCurrentEvent())).start();
-                    } else {
+                        //continue;
+                        //new Thread(new EventRunner(server, gameState.getCurrentEvent())).start();
+                        new Thread(new EventRunner(server)).start(); // Will eventually be replaced with EventSetupController class
+                    } else if (currentStoryCard instanceof TournamentCard){ // Start tournament join quest if card is tournament card
+                        System.out.println("== Game runner says: Tournament card drawn");
+                        gameState.setCurrentTournament(new Tournament((TournamentCard) currentStoryCard));
+                        new Thread(new TournamentJoinRunner()).start();
+                    }   else {
                         playerTurnCommand.setCard(currentStoryCard); // Deal story card to current player
                         server.notifyClients(playerTurnCommand);
                         System.out.println("== Game runner says: take turn command sent");
@@ -71,10 +76,13 @@ public class GameRunner extends Runner {
                     gameState.setCurrentStoryCard(null);
 
                     // Notify clients
-                    GameCommand endTurnCommand = new GameCommand(Command.TOOK_TURN);
+                    GameCommand endTurnCommand = new GameCommand(GameCommandName.TOOK_TURN);
 
                     endTurnCommand.setPlayerId(playerId);
                     server.notifyClients(endTurnCommand);
+
+                    // Check if game over
+                    if(checkGameOver()) break;
                 }
 
                 System.out.println("== All players have taken a turn");
@@ -83,6 +91,47 @@ public class GameRunner extends Runner {
             e.printStackTrace();
         }
 
-        this.shouldStopRunner();
+        shouldStopRunner();
+        System.out.println("== Game Runner says: GAME IS OVER");
+        endGame();
+    }
+
+    public boolean checkGameOver() {
+        ArrayList<Player> winners = gameState.getWinners();
+        if(winners.size() <= 0) return false;
+
+        gameState.setGameStatus(GameStatus.GAME_OVER);
+
+        return true;
+    }
+
+    public void endGame() {
+        ArrayList<Player> winners = gameState.getWinners();
+
+        shouldRespond = gameState.getNumPlayers();
+        server.resetNumResponded(CommandType.GAME);
+
+
+        GameCommand gameOverCommand = new GameCommand(GameCommandName.GAME_COMPLETE);
+        gameOverCommand.setPlayers(winners);
+        System.out.println("== Winners: " + winners.size());
+        server.notifyClients(gameOverCommand);
+
+        waitForResponses();
+
+        // reset game
+        gameState.resetGame();
+        server.resetClientPlayerIds();
+    }
+
+    @Override
+    protected void waitForResponses() {
+        try {
+            while (server.getNumResponded(CommandType.GAME) < shouldRespond) Thread.sleep(1000);
+            server.resetNumResponded(CommandType.GAME);
+            shouldRespond = 0;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -39,8 +39,8 @@ public class CardView extends StackPane {
 
     public void setSize(double h) {
         this.imageView.setFitHeight(h);
-        this.setHeight(h);
-        this.setWidth(h / 3);
+        this.setMaxHeight(imageView.getFitHeight());
+        this.setMaxWidth(imageView.getFitWidth());
     }
 
     public CardView() {

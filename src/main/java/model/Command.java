@@ -1,65 +1,63 @@
 package model;
 
-public enum Command {
-    JOIN,
-    JOINED,
-    PLAYER_JOINED,
-    READY,
-    IS_READY,
-    QUIT,
-    QUITED,
-    GET_LOBBY_STATE,
-    RETURN_LOBBY_STATE,
-    GET_ATTACHED_PLAYER,
-    RETURN_ATTACHED_PLAYER,
-    GAME_STARTED,
-    PLAYER_TURN,
-    NOT_PLAYER_TURN,
-    TAKE_TURN,
-    END_TURN,
-    PLAYER_QUEST_TURN,
-    TAKE_QUEST_TURN,
-    TOOK_QUEST_TURN,
-    END_QUEST_TURN,
-    ENDED_QUEST_TURN,
-    PLAYER_TAKE_STAGE_CARD,
-    ACCEPT_QUEST_STAGE_CARD,
-    ACCEPTED_QUEST_STAGE_CARD,
-    DISCARD_QUEST_STAGE_CARD,
-    DISCARDED_QUEST_STAGE_CARD,
-    PLAYER_TAKE_QUEST_SHIELDS,
-    ACCEPT_QUEST_SHIELDS,
-    ACCEPTED_QUEST_SHIELDS,
-    PLAYER_TAKE_SPONSOR_QUEST_CARDS,
-    ACCEPT_SPONSOR_QUEST_CARDS,
-    ACCEPTED_SPONSOR_QUEST_CARDS,
-    ENDED_TURN,
-    TOOK_TURN,
-    DISCARD_CARD,
-    DISCARDED_CARD,
-    QUEST_STARTED,
-    DRAW_QUEST_CARD,
-    DREW_QUEST_CARD,
-    FIND_QUEST_SPONSOR,
-    FOUND_QUEST_SPONSOR,
-    SHOULD_SPONSOR_QUEST,
-    WILL_SPONSOR_QUEST,
-    WILL_NOT_SPONSOR_QUEST,
-    SHOULD_JOIN_QUEST,
-    WILL_JOIN_QUEST,
-    JOINED_QUEST,
-    WILL_NOT_JOIN_QUEST,
-    DID_NOT_JOIN_QUEST,
-    NO_PLAYER_JOINED_QUEST,
-    QUEST_STAGE_LOST,
-    QUEST_STAGE_WON,
-    QUEST_STAGE_STATE,
-    PLAYER_END_QUEST,
-    END_QUEST,
-    ENDED_QUEST,
-    QUEST_COMPLETED,
-    EVENT_STARTED,
-    EVENT_END,
-    TAKE_QUEST_STAGE_CARD,
-    TOOK_QUEST_STAGE_CARD
+import java.io.*;
+
+public class Command implements Serializable {
+    protected CommandName commandName;
+    protected CommandType commandType;
+
+
+    public Command() {
+    }
+
+    public Command(CommandName commandName) {
+        this.commandName = commandName;
+    }
+
+    public Command(CommandType commandType) {
+        this.commandType = commandType;
+    }
+
+    public Command(CommandName commandName, CommandType commandType) {
+        this(commandName);
+        this.commandType = commandType;
+    }
+
+    public void setCommandName(CommandName commandName) {
+        this.commandName = commandName;
+    }
+
+    public CommandName getCommandName() {
+        return commandName;
+    }
+
+    public void setCommandType(CommandType commandType) {
+        this.commandType = commandType;
+    }
+
+    public CommandType getCommandType() {
+        return commandType;
+    }
+
+    @Override
+    public String toString() {
+        String cmd = "== Command: ";
+        cmd += "Name: " + commandName + ", ";
+        cmd += "Type: " + commandType + ", ";
+
+        return cmd;
+    }
+
+    public static Command fromBytesArray(byte[] bytes) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream bis = new ByteArrayInputStream(bytes, 0, bytes.length);
+        ObjectInputStream ins = new ObjectInputStream(bis);
+        return (Command) ins.readObject();
+    }
+
+    public static byte[] toBytesArray(Command command) throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream outs = new ObjectOutputStream(bos);
+        outs.writeObject(command);
+        return bos.toByteArray();
+    }
 }

@@ -29,6 +29,8 @@ public class ConnectController {
             } catch(IOException err) {
                 // display error to user later on
                 err.printStackTrace();
+            } catch (ClassNotFoundException ex) {
+                ex.printStackTrace();
             }
 
 

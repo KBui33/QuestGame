@@ -1,73 +1,148 @@
 package networking.server;
 
+import component.card.Card;
 import component.card.Rank;
 import model.*;
+
+import java.util.*;
 
 public class EventRunner extends Runner{
     private Server server;
     private InternalGameState gameState;
     private Event event;
 
-    public EventRunner(Server server, Event event) {
+    public EventRunner(Server server) {
         this.server = server;
         this.gameState = server.getGameState();
-        this.event = event;
     }
 
     @Override
-    public void loop() {
+    public void loop() throws InterruptedException {
+        // Need to set card
         gameState.setGameStatus(GameStatus.RUNNING_EVENT);
-        server.notifyClients(new GameCommand(Command.EVENT_STARTED));
-        System.out.println("== Event runner says: initializing event");
+        EventCommand startEvent = new EventCommand(EventCommandName.EVENT_STARTED);
+        startEvent.setCard(gameState.getCurrentStoryCard());
+        server.notifyClients(startEvent);
 
+        System.out.println("== Event runner says: Initializing event");
+        System.out.println("== Event runner says: Event card " + gameState.getCurrentStoryCard().getTitle() + " in play");
+
+        // Wait for the client to get command and the card
+        while (gameState.getGameStatus().equals(GameStatus.RUNNING_EVENT)) Thread.sleep(1000);
+
+        // Once setup is done, get the Event object
+        if(gameState.getGameStatus().equals(GameStatus.FINDING_EVENT_CARD)) event = gameState.getCurrentEvent();
+
+        EventCommand runningGameCommand = new EventCommand(EventCommandName.EVENT_EXTRA_INFO);
+
+        ArrayList<Player> players = null;
+        ArrayList<Card> cards = new ArrayList<>();
         try{
             // Figure out which event is being played
             switch(event.getEvent().getTitle()){
                 case "King's Recognition":{
-                    // Can't do this rn
+                    // Can't do this rn (do not have something to keep track this card rn)
                     break;
                 }
                 case "Queen's Favor": {
-                    // If squire then add 2 cards to their hand
-                    gameState.getPlayers().forEach(
+                    // Send to the lowest rank players
+                    // The Lowest rank players
+                    ArrayList<Player> eventPlayers = new ArrayList<>();
+
+                    for(Player player: gameState.getPlayers()) {
+                        if (player.getRank() == Rank.SQUIRE) eventPlayers.add(player);
+                    }
+                    players = eventPlayers;
+
+                    players.forEach(
                             player -> {
-                                if(player.getRankCard().getRank() == Rank.SQUIRE){
-                                    // add 2 cards to their hand
-                                }
+                                cards.add(gameState.drawAdventureCard());
+                                cards.add(gameState.drawAdventureCard());
                             });
                     break;
                 }
                 case "Court Called to Camelot": {
-                    // Can't do this rn
+                    // Can't do this rn (ally cards not applied yet)
                     break;
                 }
-                case "Pox": {
-                    // Remove 1 shield for every player beside the drawing player
-                    gameState.getPlayers().forEach(
+                case "Pox":{
+                    players = gameState.getPlayers();
+                    // Removing the drawer
+                    for(Player player: gameState.getPlayers()){
+                        if(player.getPlayerId()
+                                == gameState.getCurrentTurnPlayer().getPlayerId()) {
+                            players.remove(player);
+                        }
+                    }
+                    runningGameCommand.setLoseShields(1);
+                    break;
+                }
+                case "Prosperity Throughout the Realm": {
+                    // Send to all player except drawer
+                    // Need to update players with new shield values
+                    players = gameState.getPlayers();
+
+                    players.forEach(
                             player -> {
-                                if(gameState.getCurrentTurnPlayer().getPlayerId() != player.getPlayerId()) {
-                                    if(player.getShields() > 0) player.setShields(player.getShields() - 1);
-                                }
+                                cards.add(gameState.drawAdventureCard());
+                                cards.add(gameState.drawAdventureCard());
                             });
                     break;
                 }
                 case "Plague": {
-                    Player drawer = gameState.getCurrentTurnPlayer();
-                    if(drawer.getShields() > 0){
-                        drawer.setShields(drawer.getShields() - 2);
-                    }
+                    // Send only to drawer
+                    players = new ArrayList<Player>(List.of(gameState.getCurrentTurnPlayer()));
+                    // Need to update drawer shield
+                    runningGameCommand.setLoseShields(2);
                     break;
                 }
                 case "Chivalrous Deed": {
-                    break;
-                }
-                case "Prosperity Throughout the Realm": {
+                    // Send to players with the lowest rank and low shield
+                    // The lowest amount of shields a player can have
+                    int lowestShields = gameState.getPlayers()
+                            .stream()
+                            .min(Comparator.comparing(Player::getShields))
+                            .orElseThrow().getShields();
+
+                    // Getting players that match conditions
+                    for (Player player: gameState.getPlayers()){
+                        if (player.getRank() == Rank.SQUIRE
+                                && player.getShields() == lowestShields) players.add(player);
+                    }
+
+                    runningGameCommand.setGainShields(3);
                     break;
                 }
                 case "King's Call to Arms": {
+                    // To much work rn  :( (me don't want to do)
                     break;
                 }
+
             }
+
+            //runningGameCommand.setPlayers(players);
+            runningGameCommand.setCards(cards);
+            if(players != null) event.addArrayEventPlayers(players);
+            runningGameCommand.setEvent(event);
+
+            // Send and wait for client to apply changes to players
+            server.notifyClients(runningGameCommand);
+            gameState.setGameStatus(GameStatus.RUNNING_EVENT);
+            while (gameState.getGameStatus().equals(GameStatus.RUNNING_EVENT)) {Thread.sleep(1000);}
+
+            //Update the internal state
+            System.out.println("== Event runner says: Updating internal state");
+
+            // Discarding Event card
+            if(gameState.getGameStatus().equals(GameStatus.ENDING_EVENT)){
+                gameState.discardStoryCard(event.getEvent());
+            }
+            //Discard card and get new card
+            shouldStopRunner();
+            System.out.println("== Event runner says: Ending event");
+            server.notifyClients(new EventCommand(EventCommandName.EVENT_COMPLETED));
+
+            gameState.setGameStatus(GameStatus.RUNNING);
         }catch(Exception e){
             e.printStackTrace();
             shouldStopRunner();
