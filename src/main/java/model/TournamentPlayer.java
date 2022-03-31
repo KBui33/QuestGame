@@ -26,6 +26,7 @@ public class TournamentPlayer extends Player implements Serializable {
 
     public void setCardsUsed(ArrayList<Card> playerQuestCardsUsed) {
         this.cardsUsed = new ArrayList<>(playerQuestCardsUsed);
+        System.out.println("== Used: " + this.cardsUsed.size());
     }
 
     public ArrayList<Card> getCardsUsed() {
@@ -43,6 +44,7 @@ public class TournamentPlayer extends Player implements Serializable {
             }
         }
 
+        System.out.println("== BP: " + battlePoints);
         return battlePoints;
     }
 
