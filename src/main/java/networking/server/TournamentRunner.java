@@ -47,10 +47,25 @@ public class TournamentRunner extends Runner {
             ArrayList<TournamentPlayer> winners = tournament.computeWinners();
             ArrayList<TournamentPlayer> losers  = tournament.getCurrentPlayers();
             System.out.println("== Tournament:\twinners -> " + winners.size() + "\tlosers -> " + losers.size());
-            notifyLosers(server, gameState, tournament, losers);
-            notifyWinners(server, gameState, tournament, winners);
+            // notifyLosers(server, gameState, tournament, losers);
+            // notifyWinners(server, gameState, tournament, winners); -> Not needed
+
+            // waitForResponses();
+
+            // Distribute shields to winners
+            tournament.distributeShields();
+
+            // Send end tournament command to all participants
+            takeEndTournamentTurn(server, gameState, tournament);
 
             waitForResponses();
+
+            server.notifyClients(new TournamentCommand(TournamentCommandName.TOURNAMENT_COMPLETED));
+
+            gameState.setGameStatus(GameStatus.RUNNING);
+
+            shouldStopRunner();
+            System.out.println("== Tournament runner says: Tournament completed");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -103,6 +118,23 @@ public class TournamentRunner extends Runner {
             tournamentWonCommand.setPlayer(winner.getPlayer());
             tournamentWonCommand.setTournament(tournament);
             server.notifyClientByPlayerId(playerId, tournamentWonCommand);
+        }
+    }
+
+    private void takeEndTournamentTurn(Server server, InternalGameState gameState, Tournament tournament) {
+        for (TournamentPlayer tournamentPlayer : tournament.getCurrentPlayers()) {
+            tournament.setCurrentTurnPlayer(tournamentPlayer);
+            int playerId = tournamentPlayer.getPlayerId();
+            shouldRespond++;
+
+            System.out.println("== Tournament runner says: Sending end tournament to player " + playerId);
+            gameState.setGameStatus(GameStatus.ENDING_TOURNAMENT);
+
+            TournamentCommand endTournamentCommand = new TournamentCommand(TournamentCommandName.PLAYER_END_TOURNAMENT);
+            endTournamentCommand.setPlayerId(playerId);
+            endTournamentCommand.setPlayer(tournamentPlayer.getPlayer());
+            endTournamentCommand.setTournament(tournament);
+            server.notifyClientByPlayerId(playerId, endTournamentCommand);
         }
     }
 

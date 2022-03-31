@@ -759,14 +759,14 @@ public class GameController {
                 });
             });
 
-        } else if (commandName.equals(TournamentCommandName.TOURNAMENT_WON)) {
+        } else if (commandName.equals(TournamentCommandName.TOURNAMENT_WON)) { // TODO::Remove/Not needed
             System.out.println("== I just won the tournament.");
             Card tournamentAdventureCard = command.getCard();
             Tournament tournament = command.getTournament();
 
             // TODO:: GUI Stuff
 
-        } else if (commandName.equals(TournamentCommandName.TOURNAMENT_LOST)) {
+        } else if (commandName.equals(TournamentCommandName.TOURNAMENT_LOST)) { // TODO::Remove/Not needed
             System.out.println("== I just lost the tournament");
             Card tournamentAdventureCard = command.getCard();
             Tournament tournament = command.getTournament();
@@ -780,7 +780,9 @@ public class GameController {
 
             tournamentController.tournamentComplete(tournament, () -> {
                 // send continue button clicked to server
-
+                TournamentCommand endTournamentCommand = (TournamentCommand) defaultServerCommand(new TournamentCommand(TournamentCommandName.END_TOURNAMENT));
+                TournamentCommand endedTournamentCommand = (TournamentCommand) client.sendCommand(endTournamentCommand);
+                if (endedTournamentCommand.getPlayer() != null) updatePlayer(endedTournamentCommand.getPlayer());
                 waitTurn();
             });
             ;
