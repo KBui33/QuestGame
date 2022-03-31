@@ -1,6 +1,7 @@
 package gui.controllers.quest;
 
 import component.card.*;
+import gui.controllers.AbstractFightController;
 import gui.controllers.GameController;
 import gui.other.AlertBox;
 import gui.partials.CardView;
@@ -25,7 +26,7 @@ import java.util.List;
  *
  * Controls QuestSetupView and StageSetupView to allow users to set up quests
  */
-public class QuestSetupController extends AbstractQuestController {
+public class QuestSetupController extends AbstractFightController {
     private QuestSetupView questSetupView;
     private StageSetupView currentStage;
     private ArrayList<Stage> stages;

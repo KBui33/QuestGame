@@ -2,6 +2,7 @@ package gui.controllers.quest;
 
 import component.card.Card;
 import component.card.WeaponCard;
+import gui.controllers.AbstractFightController;
 import gui.controllers.GameController;
 import gui.other.AlertBox;
 import gui.partials.CardView;
@@ -24,7 +25,7 @@ import java.util.HashSet;
  *
  * Control QuestView and handle interactions
  */
-public class QuestController extends AbstractQuestController {
+public class QuestController extends AbstractFightController {
     private QuestView questView;
     private Quest quest;
     private boolean questStarted = false;

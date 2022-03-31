@@ -1,15 +1,14 @@
-package gui.controllers.quest;
+package gui.controllers;
 
 import component.card.Card;
 import component.card.WeaponCard;
-import gui.controllers.GameController;
 import gui.partials.CardView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.HashSet;
 
-public abstract class AbstractQuestController {
+public abstract class AbstractFightController {
     protected ObservableList<CardView> weaponCards;
     protected HashSet<String> weaponNames;
     protected GameController parent;
@@ -49,7 +48,7 @@ public abstract class AbstractQuestController {
     }
 
     public void cleanUpGui() {
-        // clear quest setup
+        // clear view
         parent.getView().getMainPane().clear();
 
         // reset view
