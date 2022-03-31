@@ -66,5 +66,14 @@ public class TournamentPlayer extends Player implements Serializable {
         this.player.incrementShields(inc);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (o == this) return true;
+        if (!(o instanceof TournamentPlayer)) return false;
+        TournamentPlayer p = (TournamentPlayer) o;
+        return p.getPlayerId() == this.getPlayerId();
+    }
+
 
 }
