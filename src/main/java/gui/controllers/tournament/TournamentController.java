@@ -93,7 +93,7 @@ public class TournamentController extends AbstractFightController {
 
         this.tournamentView.getTournamentResultsView().getPlayersBox().getChildren().clear();
 
-        tournament.getTournamentPlayers().forEach(p -> {
+        tournament.getCurrentPlayers().forEach(p -> {
             this.tournamentView.getTournamentResultsView().getPlayersBox().getChildren().add(new TournamentPlayerCardsView(p));
         });
 
@@ -109,7 +109,7 @@ public class TournamentController extends AbstractFightController {
         parent.getView().getMainPane().add(this.tournamentView);
     }
 
-    private void updateTournament(Tournament t) {
+    public void updateTournament(Tournament t) {
         this.tournament = t;
         tournamentView.getHeaderText().setText(tournament.getTournamentCard().getTitle());
     }

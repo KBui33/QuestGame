@@ -115,6 +115,9 @@ public class Handler implements Runnable {
             case EVENT:
                 commandHandler = new EventCommandHandler(commandHandler);
                 break;
+            case TOURNAMENT:
+                commandHandler = new TournamentCommandHandler(commandHandler);
+                break;
             default:
                 commandHandler = new BaseCommandHandler();
                 break;

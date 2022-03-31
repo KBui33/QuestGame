@@ -133,7 +133,7 @@ public class QuestController extends AbstractFightController {
         ObservableList<String> outcomes = FXCollections.observableArrayList();
 
         // get all players and when they failed or if they succeeded
-        quest.getQuestPlayers().forEach(p -> {
+        quest.getPlayers().forEach(p -> {
             players.add("Player " + p.getPlayerId());
             System.out.println();
             Boolean res = quest.getCurrentStage().getStageResults().get(p.getPlayerId());

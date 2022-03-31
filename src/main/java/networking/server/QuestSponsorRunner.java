@@ -2,8 +2,11 @@ package networking.server;
 
 import model.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import static utils.Utility.shiftLeft;
 
 public class QuestSponsorRunner extends Runner {
     private Server server;
@@ -58,43 +61,8 @@ public class QuestSponsorRunner extends Runner {
                 System.out.println("== Quest Sponsor runner says: No sponsor found. Exiting...");
                 gameState.setGameStatus(GameStatus.RUNNING);
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public int[] computePromptOrder() {
-        int numPlayers = gameState.getNumPlayers();
-        int[] promptOrder = new int[numPlayers];
-        int currentPlayerId = gameState.getCurrentTurnPlayer().getPlayerId();
-
-        int i = 0;
-        for(Player player: gameState.getPlayers()) {
-            promptOrder[i++] = player.getPlayerId();
-        }
-        Arrays.sort(promptOrder);
-
-        for(int j = 0; j < promptOrder.length; j++) {
-            if(currentPlayerId == promptOrder[j]) {
-                promptOrder = shiftLeft(promptOrder, j);
-                break;
-            }
-        }
-
-        return promptOrder;
-    }
-
-    private int[] shiftLeft(int[] arr, int steps) {
-        int n = arr.length;
-        while(steps > 0) {
-            steps--;
-            int first = arr[0];
-            for (int i = 1; i < n; i++) {
-                arr[i - 1] = arr[i];
-            }
-            arr[n - 1] = first;
-        }
-
-        return arr;
     }
 }
