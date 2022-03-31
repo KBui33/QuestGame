@@ -64,6 +64,11 @@ public class ExternalGameState implements BaseGameState, Serializable {
     }
 
     @Override
+    public Tournament getCurrentTournament() {
+        return internalGameState.getCurrentTournament();
+    }
+
+    @Override
     public ArrayList<Player> getWinners() { return internalGameState.getWinners(); }
 
     @Override

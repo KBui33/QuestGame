@@ -3,6 +3,7 @@ package gui.controllers;
 import component.card.*;
 import gui.controllers.quest.QuestController;
 import gui.controllers.quest.QuestSetupController;
+import gui.controllers.tournament.TournamentController;
 import gui.main.ClientApplication;
 import gui.other.AlertBox;
 import gui.panes.GamePane;
@@ -37,6 +38,7 @@ public class   GameController {
     private ObservableList<CardView> discarded;
     private GamePane view;
     private QuestController questController;
+    private TournamentController tournamentController;
     private final GameController gc;
 
     private final ArrayList<Callable> eventSubscriptions = new ArrayList<>();
@@ -209,25 +211,7 @@ public class   GameController {
     private void acceptQuestCard(Card card) {
         CardView drawnCard = new CardView(card, true, "Accept", "Discard");
 
-        if (myHand.size() == 12) {
-            // drawing card during quest
-            drawnCard.getPlayButton().setText("Play");
-
-            if (!(card instanceof WeaponCard)) {
-                // if it isnt a weapon we cant play it
-                drawnCard.getPlayButton().setVisible(false);
-                AlertBox.alert("You currently have too many cards so you must forfeit this draw.");
-            } else {
-                AlertBox.alert("You may choose to play this card this stage or discard it.");
-            }
-
-        } else {
-            drawnCard.getDiscardButton().setVisible(false);
-
-            AlertBox.alert("You have received a new card.");
-        }
-
-        displayCard(drawnCard, e -> {
+        acceptCard(drawnCard, e -> {
             if (myHand.size() == 12) {
                 // card cannot be removed from selected weapons
                 questController.addWeapon((WeaponCard) card, false);
@@ -322,6 +306,54 @@ public class   GameController {
 
     public void sponsorDiscardRewardCard(Card card) {
         // TODO :: - send discard reward card message to server
+    }
+
+    private void acceptTournamentCard(Card card) {
+        CardView drawnCard = new CardView(card, true, "Accept", "Discard");
+
+        acceptCard(drawnCard, e -> {
+            if (myHand.size() == 12) {
+                // card cannot be removed from selected weapons
+                tournamentController.addWeapon((WeaponCard) card, false);
+            } else if (myHand.size() < 12) {
+                // we have room in hand
+                addCardToHand(myHand, card);
+            }
+
+            // tell server card accepted either way so game can continue
+            // will probably need to change later
+            // TODO :: - SEND CARD ACCEPTED TO SERVER
+            view.getMainPane().remove(drawnCard);
+        }, e -> {
+            discardCard(drawnCard);
+
+            // Server command
+            // TODO :: - SEND CARD DISCARDED TO SERVER
+            view.getMainPane().remove(drawnCard);
+        });
+    }
+
+    private void acceptCard(CardView drawnCard, EventHandler<ActionEvent> posButtonEvent, EventHandler<ActionEvent> negButtonEvent) {
+
+        if (myHand.size() == 12) {
+            // drawing card
+            drawnCard.getPlayButton().setText("Play");
+
+            if (!(drawnCard.getCard() instanceof WeaponCard)) {
+                // if it isnt a weapon we cant play it
+                drawnCard.getPlayButton().setVisible(false);
+                AlertBox.alert("You currently have too many cards so you must forfeit this draw.");
+            } else {
+                AlertBox.alert("You may choose to play this card this stage or discard it.");
+            }
+
+        } else {
+            drawnCard.getDiscardButton().setVisible(false);
+
+            AlertBox.alert("You have received a new card.");
+        }
+
+        displayCard(drawnCard, posButtonEvent, negButtonEvent);
     }
 
     private void displayCard(CardView cardView, EventHandler<ActionEvent> posButtonEvent, EventHandler<ActionEvent> negButtonEvent) {
@@ -650,23 +682,54 @@ public class   GameController {
             Card tournamentCard = command.getCard();
             Tournament tournament = command.getTournament();
 
-            // TODO:: GUI Stuff
+            Platform.runLater(() -> {
+                CardView drawnCard = new CardView(tournamentCard, true, "Join", "Decline");
+
+                displayCard(drawnCard, e -> {
+                    // player chooses join
+                    // Send will join command to server
+
+
+                    view.getMainPane().remove(drawnCard);
+
+                    tournamentController = new TournamentController(tournament, gc);
+
+                    waitTurn();
+                }, e -> {
+                    // player chooses decline
+                    // Send will not join command to server
+
+
+                    view.getMainPane().remove(drawnCard);
+                    waitTurn();
+                });
+            });
+
         } else if (commandName.equals(TournamentCommandName.NO_PLAYER_JOINED_TOURNAMENT)) { // Handle if no player joins the tournament
-            // TODO:: GUI Stuff
             System.out.println("== No player joined tournament ");
+
+            AlertBox.alert("Nobody else joined the tournament so you win by default.");
         }  else if (commandName.equals(TournamentCommandName.PLAYER_TAKE_TOURNAMENT_CARD)) { // Handle accepting/discarding tournament adventure card
             System.out.println("== It's my turn to accept/discard tournament adventure card");
             Card tournamentAdventureCard = command.getCard();
             Tournament tournament = command.getTournament();
 
-            // TODO:: GUI Stuff
+            Platform.runLater(() -> {
+                tournamentController.updateTournament(tournament);
+                acceptTournamentCard(tournamentAdventureCard);
+            });
 
         } else if (commandName.equals(TournamentCommandName.PLAYER_TOURNAMENT_TURN)) { // Handle taking tournament turn
             System.out.println("== It's my turn to take turn for tournament");
             Card tournamentAdventureCard = command.getCard();
             Tournament tournament = command.getTournament();
 
-            // TODO:: GUI Stuff
+            Platform.runLater(() -> {
+                tournamentController.pickCards(tournament, cards -> {
+                    // send cards picked to server
+
+                });
+            });
 
         } else if (commandName.equals(TournamentCommandName.TOURNAMENT_WON)) {
             System.out.println("== I just won the tournament.");
@@ -687,7 +750,9 @@ public class   GameController {
             Card tournamentAdventureCard = command.getCard();
             Tournament tournament = command.getTournament();
 
-            // TODO:: GUI Stuff
+            tournamentController.tournamentComplete(tournament, () -> {
+                // send continue button clicked to server
+            });
 ;
         }
     }

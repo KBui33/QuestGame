@@ -54,7 +54,7 @@ public class TournamentPlayerCardsView extends VBox {
     public void setPlayerCards(TournamentPlayer player) {
         this.playerText.setText("Player " + player.getPlayerId() + ": " + player.calculateBattlePoints() + " Battle Points");
         this.playerRank.setCard(player.getRankCard());
-        player.getPlayerCardsUsed().forEach(c -> {
+        player.getCardsUsed().forEach(c -> {
             CardView cv = new CardView(c);
             cv.setSize(125);
             cv.getButtonBox().setVisible(false);

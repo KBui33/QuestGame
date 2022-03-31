@@ -2,10 +2,11 @@ package model;
 
 import component.card.TournamentCard;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-public class Tournament {
+public class Tournament implements Serializable {
     private TournamentCard tournamentCard;
     private ArrayList<TournamentPlayer> currentPlayers;
     private ArrayList<TournamentPlayer> players;

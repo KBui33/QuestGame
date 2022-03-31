@@ -13,7 +13,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 
-public class StoryDeck extends Deck{
+public class StoryDeck extends Deck {
     @Override
     public void init() {
         try {
@@ -46,18 +46,18 @@ public class StoryDeck extends Deck{
 //            }
 
             it = tournaments.iterator();
-            while(it.hasNext()){
+            while (it.hasNext()) {
                 JSONObject obj = it.next();
                 String title = (String) obj.get("title");
-                String image = (String)  obj.get("image");
-                int shields = (Integer) obj.get("shields");
+                String image = (String) obj.get("image");
+                int shields = Math.toIntExact((Long) obj.get("shields"));
                 Long freq = (Long) obj.get("frequency");
-                for(int i = 0 ; i < freq; i++ ){
+                for (int i = 0; i < freq; i++) {
                     this.cards.add(new TournamentCard(title, image, shields));
                 }
             }
 
-        } catch(ParseException | IOException e) {
+        } catch (ParseException | IOException e) {
             e.printStackTrace();
         }
     }

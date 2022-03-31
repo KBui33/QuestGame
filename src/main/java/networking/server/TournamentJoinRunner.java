@@ -61,4 +61,19 @@ public class TournamentJoinRunner extends Runner {
 
 
     }
+
+    @Override
+    protected void waitForResponses() {
+        try {
+            Server server = Server.getInstance();
+            while (server.getNumResponded(CommandType.TOURNAMENT) < shouldRespond) Thread.sleep(1000);
+            server.resetNumResponded(CommandType.TOURNAMENT);
+            shouldRespond = 0;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
