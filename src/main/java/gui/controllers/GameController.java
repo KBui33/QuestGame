@@ -776,6 +776,8 @@ public class GameController {
 
             tournamentController.tournamentComplete(tournament, () -> {
                 // send continue button clicked to server
+
+                waitTurn();
             });
             ;
         }

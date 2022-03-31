@@ -1,6 +1,7 @@
 package gui.partials.tournament;
 
 import gui.partials.CardSelectionView;
+import javafx.geometry.Pos;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 
@@ -30,7 +31,12 @@ public class TournamentView extends BorderPane {
 
         headerText = new Text("Tournament");
         headerText.getStyleClass().add("header-font");
+        setAlignment(headerText, Pos.CENTER);
         this.setTop(headerText);
+
+        cardSelectionView = new CardSelectionView();
+
+        tournamentResultsView = new TournamentResultsView();
 
 
     }

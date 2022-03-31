@@ -64,6 +64,7 @@ public abstract class AbstractFightController {
         });
         parent.setMyHandList(tmp);
         parent.getView().getHud().getMyHand().setListViewItems(parent.getMyHandList());
+        parent.hideDecks();
     }
 
 }
