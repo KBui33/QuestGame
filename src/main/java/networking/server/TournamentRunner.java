@@ -44,8 +44,8 @@ public class TournamentRunner extends Runner {
             waitForResponses();
 
             // Find tournament winners and losers
-            ArrayList<TournamentPlayer> winners = tournament.computeWinners();
-            ArrayList<TournamentPlayer> losers  = tournament.getCurrentPlayers();
+            ArrayList<TournamentPlayer> losers = tournament.computeWinners();
+            ArrayList<TournamentPlayer> winners  = tournament.getCurrentPlayers();
             System.out.println("== Tournament:\twinners -> " + winners.size() + "\tlosers -> " + losers.size());
             // notifyLosers(server, gameState, tournament, losers);
             // notifyWinners(server, gameState, tournament, winners); -> Not needed
