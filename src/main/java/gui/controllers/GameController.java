@@ -77,6 +77,9 @@ public class   GameController {
                         case EVENT:
                             handleEventCommands((EventCommand) receivedCommand);
                             break;
+                        case TOURNAMENT:
+                            handleTournamentCommands((TournamentCommand) receivedCommand);
+                            break;
                     }
                 }
             });
@@ -637,6 +640,58 @@ public class   GameController {
         }
 
     }
+
+    public void handleTournamentCommands(TournamentCommand command) {
+        CommandName commandName = command.getCommandName();
+        System.out.println("== Game Controller command update says: " + command);
+
+        if (commandName.equals(TournamentCommandName.SHOULD_JOIN_TOURNAMENT)) { // Prompt player to join tournament
+            System.out.println("== It's my turn to decide to join the tournament");
+            Card tournamentCard = command.getCard();
+            Tournament tournament = command.getTournament();
+
+            // TODO:: GUI Stuff
+        } else if (commandName.equals(TournamentCommandName.NO_PLAYER_JOINED_TOURNAMENT)) { // Handle if no player joins the tournament
+            // TODO:: GUI Stuff
+            System.out.println("== No player joined tournament ");
+        }  else if (commandName.equals(TournamentCommandName.PLAYER_TAKE_TOURNAMENT_CARD)) { // Handle accepting/discarding tournament adventure card
+            System.out.println("== It's my turn to accept/discard tournament adventure card");
+            Card tournamentAdventureCard = command.getCard();
+            Tournament tournament = command.getTournament();
+
+            // TODO:: GUI Stuff
+
+        } else if (commandName.equals(TournamentCommandName.PLAYER_TOURNAMENT_TURN)) { // Handle taking tournament turn
+            System.out.println("== It's my turn to take turn for tournament");
+            Card tournamentAdventureCard = command.getCard();
+            Tournament tournament = command.getTournament();
+
+            // TODO:: GUI Stuff
+
+        } else if (commandName.equals(TournamentCommandName.TOURNAMENT_WON)) {
+            System.out.println("== I just won the tournament.");
+            Card tournamentAdventureCard = command.getCard();
+            Tournament tournament = command.getTournament();
+
+            // TODO:: GUI Stuff
+
+        } else if (commandName.equals(TournamentCommandName.TOURNAMENT_LOST)) {
+            System.out.println("== I just lost the tournament");
+            Card tournamentAdventureCard = command.getCard();
+            Tournament tournament = command.getTournament();
+
+            // TODO:: GUI Stuff
+        } else if (commandName.equals(TournamentCommandName.PLAYER_END_TOURNAMENT)) { // Complete tournament
+            System.out.println("== As tournament participant, I end the tournament");
+            view.getHud().getCurrentStateText().setText("Tournament Over");
+            Card tournamentAdventureCard = command.getCard();
+            Tournament tournament = command.getTournament();
+
+            // TODO:: GUI Stuff
+;
+        }
+    }
+
 
     public void setUpEvent(EventCard event){
         EventCommand eventSetupCompleteCommand = (EventCommand) defaultServerCommand(new EventCommand(EventCommandName.SETUP_COMPLETE));
