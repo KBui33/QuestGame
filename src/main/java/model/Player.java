@@ -79,8 +79,10 @@ public class Player implements Serializable {
     }
 
     public void incrementShields(int inc) {
+        System.out.println("== Before: " + shields + " Received: " + inc);
         shields += inc;
         this.incrementRank();
+        System.out.println("== After: " + shields);
     }
 
     public void incrementRank() {
