@@ -2,6 +2,7 @@ package model;
 
 import component.card.AllyCard;
 import component.card.Card;
+import component.card.RankCard;
 import component.card.WeaponCard;
 
 import java.io.Serializable;
@@ -22,6 +23,10 @@ public class TournamentPlayer extends Player implements Serializable {
     @Override
     public int getPlayerId() {
         return player.getPlayerId();
+    }
+
+    public RankCard getRankCard() {
+        return player.getRankCard();
     }
 
     public void setCardsUsed(ArrayList<Card> playerQuestCardsUsed) {
