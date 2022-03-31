@@ -30,7 +30,7 @@ import java.util.concurrent.Callable;
  * <p>
  * Controller for manipulating GamePane view
  */
-public class   GameController {
+public class GameController {
 
     private Client client;
     private Player player;
@@ -57,7 +57,8 @@ public class   GameController {
             // Fetch corresponding player
             GameCommand getAttachedPlayerCommand = defaultServerCommand(new GameCommand(GameCommandName.GET_ATTACHED_PLAYER));
             GameCommand returnedAttachedPlayerCommand = (GameCommand) client.sendCommand(getAttachedPlayerCommand);
-            if(returnedAttachedPlayerCommand.getPlayer() != null) updatePlayer(returnedAttachedPlayerCommand.getPlayer());
+            if (returnedAttachedPlayerCommand.getPlayer() != null)
+                updatePlayer(returnedAttachedPlayerCommand.getPlayer());
 
             // Subscribe to command updates
             Callable<Void> unsubscribeCommandReceived = client.clientEvents.subscribe(Client.ClientEvent.GAME_COMMAND_RECEIVED, new ClientEventListener() {
@@ -142,9 +143,9 @@ public class   GameController {
         view.getHud().getEndTurnButton().setOnAction(e -> {
             System.out.println("Turn ended");
             // Send end turn command
-            GameCommand endTurnCommand =  defaultServerCommand(new GameCommand(GameCommandName.END_TURN));
+            GameCommand endTurnCommand = defaultServerCommand(new GameCommand(GameCommandName.END_TURN));
             GameCommand endedTurnCommand = (GameCommand) client.sendCommand(endTurnCommand);
-            if(endedTurnCommand.getPlayer() != null) updatePlayer(endedTurnCommand.getPlayer());
+            if (endedTurnCommand.getPlayer() != null) updatePlayer(endedTurnCommand.getPlayer());
             waitTurn();
         });
 
@@ -225,7 +226,8 @@ public class   GameController {
             QuestCommand acceptQuestStageCardCommand = (QuestCommand) defaultServerCommand(new QuestCommand(QuestCommandName.ACCEPT_QUEST_STAGE_CARD));
             acceptQuestStageCardCommand.setCard(card);
             QuestCommand acceptedQuestStageCardCommand = (QuestCommand) client.sendCommand(acceptQuestStageCardCommand);
-            if (acceptedQuestStageCardCommand.getPlayer() != null) updatePlayer(acceptedQuestStageCardCommand.getPlayer());
+            if (acceptedQuestStageCardCommand.getPlayer() != null)
+                updatePlayer(acceptedQuestStageCardCommand.getPlayer());
             view.getMainPane().remove(drawnCard);
         }, e -> {
             discardCard(drawnCard);
@@ -234,7 +236,8 @@ public class   GameController {
             QuestCommand discardQuestStageCardCommand = (QuestCommand) defaultServerCommand(new QuestCommand(QuestCommandName.DISCARD_QUEST_STAGE_CARD));
             discardQuestStageCardCommand.setCard(card);
             QuestCommand discardedQuestStageCardCommand = (QuestCommand) client.sendCommand(discardQuestStageCardCommand);
-            if (discardedQuestStageCardCommand.getPlayer() != null) updatePlayer(discardedQuestStageCardCommand.getPlayer());
+            if (discardedQuestStageCardCommand.getPlayer() != null)
+                updatePlayer(discardedQuestStageCardCommand.getPlayer());
 
             view.getMainPane().remove(drawnCard);
         });
@@ -275,7 +278,7 @@ public class   GameController {
             if (myHand.filtered(c -> c.getCard() instanceof FoeCard || c.getCard() instanceof TestCard).size() < ((QuestCard) drawnCard.getCard()).getStages()) {
                 // notify user they dont have enough cards to sponsor
                 AlertBox.alert("Insufficient cards in hand. This Quest requires at least " + ((QuestCard) drawnCard.getCard()).getStages() + " Foe or Test cards to sponsor.", Alert.AlertType.WARNING, e2 -> {
-                   // TODO::Let player decline
+                    // TODO::Let player decline
                     /*drawnCard.getDiscardButton().fire();
                     waitTurn();
 
@@ -298,7 +301,7 @@ public class   GameController {
 
             QuestCommand declineSponsorQuestCommand = (QuestCommand) defaultServerCommand(new QuestCommand(QuestCommandName.WILL_NOT_SPONSOR_QUEST));
             QuestCommand declinedSponsorQuestCommand = (QuestCommand) client.sendCommand(declineSponsorQuestCommand);
-            if(declinedSponsorQuestCommand.getPlayer() != null) updatePlayer(declinedSponsorQuestCommand.getPlayer());
+            if (declinedSponsorQuestCommand.getPlayer() != null) updatePlayer(declinedSponsorQuestCommand.getPlayer());
 
 
         });
@@ -311,6 +314,12 @@ public class   GameController {
     private void acceptTournamentCard(Card card) {
         CardView drawnCard = new CardView(card, true, "Accept", "Discard");
 
+
+        view.getMainPane().remove(drawnCard);
+
+        // Server command
+
+
         acceptCard(drawnCard, e -> {
             if (myHand.size() == 12) {
                 // card cannot be removed from selected weapons
@@ -322,13 +331,23 @@ public class   GameController {
 
             // tell server card accepted either way so game can continue
             // will probably need to change later
-            // TODO :: - SEND CARD ACCEPTED TO SERVER
+            TournamentCommand acceptTournamentCardCommand = (TournamentCommand) defaultServerCommand(new TournamentCommand(TournamentCommandName.ACCEPT_TOURNAMENT_CARD));
+            acceptTournamentCardCommand.setCard(card);
+            TournamentCommand acceptedTournamentCardCommand = (TournamentCommand) client.sendCommand(acceptTournamentCardCommand);
+            if (acceptedTournamentCardCommand.getPlayer() != null)
+                updatePlayer(acceptedTournamentCardCommand.getPlayer());
+
             view.getMainPane().remove(drawnCard);
         }, e -> {
             discardCard(drawnCard);
 
             // Server command
-            // TODO :: - SEND CARD DISCARDED TO SERVER
+            TournamentCommand discardTournamentCardCommand = (TournamentCommand) defaultServerCommand(new TournamentCommand(TournamentCommandName.DISCARD_TOURNAMENT_CARD));
+            discardTournamentCardCommand.setCard(card);
+            TournamentCommand discardedTournamentCardCommand = (TournamentCommand) client.sendCommand(discardTournamentCardCommand);
+            if (discardedTournamentCardCommand.getPlayer() != null)
+                updatePlayer(discardedTournamentCardCommand.getPlayer());
+
             view.getMainPane().remove(drawnCard);
         });
     }
@@ -552,7 +571,7 @@ public class   GameController {
             ArrayList<Card> questCardsUsed = command.getCards();
             updatePlayer(command.getPlayer()); // Update player
             System.out.println("== No player joined my quest " + questCardsUsed.size());
-        }  else if (commandName.equals(QuestCommandName.PLAYER_TAKE_STAGE_CARD)) { // Handle accepting/discarding quest stage card
+        } else if (commandName.equals(QuestCommandName.PLAYER_TAKE_STAGE_CARD)) { // Handle accepting/discarding quest stage card
             System.out.println("== It's my turn to accept/discard stage card");
             Card questStageAdventureCard = command.getCard();
             Quest quest = command.getQuest();
@@ -572,8 +591,7 @@ public class   GameController {
             Platform.runLater(() -> {
                 // if quest controller is null you are sponsor i guess? not really -> NO NEED: If sponsoring, will never receive this command
                 try {
-                    while (questController == null)
-                        Thread.sleep(1000); // Wait for quest controller to be setup
+                    while (questController == null) Thread.sleep(1000); // Wait for quest controller to be setup
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -587,7 +605,7 @@ public class   GameController {
                     QuestCommand takeQuestTurnCommand = (QuestCommand) defaultServerCommand(new QuestCommand(QuestCommandName.TAKE_QUEST_TURN));
                     takeQuestTurnCommand.setCards(wl);
                     QuestCommand tookQuestTurnCommand = (QuestCommand) client.sendCommand(takeQuestTurnCommand);
-                    if(tookQuestTurnCommand.getPlayer() != null) updatePlayer(tookQuestTurnCommand.getPlayer());
+                    if (tookQuestTurnCommand.getPlayer() != null) updatePlayer(tookQuestTurnCommand.getPlayer());
                     waitTurn();
                 });
                 disableView(false);
@@ -635,7 +653,8 @@ public class   GameController {
                     QuestCommand acceptSponsorQuestCardsCommand = (QuestCommand) defaultServerCommand(new QuestCommand(QuestCommandName.ACCEPT_SPONSOR_QUEST_CARDS));
                     acceptSponsorQuestCardsCommand.setCards(keptCards);
                     QuestCommand acceptedSponsorQuestCardsCommand = (QuestCommand) client.sendCommand(acceptSponsorQuestCardsCommand);
-                    if (acceptedSponsorQuestCardsCommand.getPlayer() != null) updatePlayer(acceptedSponsorQuestCardsCommand.getPlayer());
+                    if (acceptedSponsorQuestCardsCommand.getPlayer() != null)
+                        updatePlayer(acceptedSponsorQuestCardsCommand.getPlayer());
                     waitTurn();
                 });
             });
@@ -661,13 +680,13 @@ public class   GameController {
         CommandName commandName = command.getCommandName();
         System.out.println("== Game Controller command update says: " + command);
 
-        if(commandName.equals(EventCommandName.EVENT_STARTED)){
+        if (commandName.equals(EventCommandName.EVENT_STARTED)) {
             System.out.println("== Setting up Event");
             Card eventCard = command.getCard();
 
             // TODO:: make EventSetupController view and send event over
             setUpEvent((EventCard) eventCard);
-        }else if(commandName.equals(EventCommandName.EVENT_EXTRA_INFO)){
+        } else if (commandName.equals(EventCommandName.EVENT_EXTRA_INFO)) {
             System.out.println("== Got extra stuff");
         }
 
@@ -702,7 +721,8 @@ public class   GameController {
                     // Send will not join command to server
                     TournamentCommand willNotJoinTournamentCommand = (TournamentCommand) defaultServerCommand(new TournamentCommand(TournamentCommandName.WILL_NOT_JOIN_TOURNAMENT));
                     TournamentCommand didNotJoinTournamentCommand = (TournamentCommand) client.sendCommand(willNotJoinTournamentCommand);
-                    if (didNotJoinTournamentCommand.getPlayer() != null) updatePlayer(didNotJoinTournamentCommand.getPlayer());
+                    if (didNotJoinTournamentCommand.getPlayer() != null)
+                        updatePlayer(didNotJoinTournamentCommand.getPlayer());
 
                     view.getMainPane().remove(drawnCard);
                     waitTurn();
@@ -713,7 +733,7 @@ public class   GameController {
             System.out.println("== No player joined tournament ");
 
             AlertBox.alert("Nobody else joined the tournament so you win by default.");
-        }  else if (commandName.equals(TournamentCommandName.PLAYER_TAKE_TOURNAMENT_CARD)) { // Handle accepting/discarding tournament adventure card
+        } else if (commandName.equals(TournamentCommandName.PLAYER_TAKE_TOURNAMENT_CARD)) { // Handle accepting/discarding tournament adventure card
             System.out.println("== It's my turn to accept/discard tournament adventure card");
             Card tournamentAdventureCard = command.getCard();
             Tournament tournament = command.getTournament();
@@ -757,15 +777,15 @@ public class   GameController {
             tournamentController.tournamentComplete(tournament, () -> {
                 // send continue button clicked to server
             });
-;
+            ;
         }
     }
 
 
-    public void setUpEvent(EventCard event){
+    public void setUpEvent(EventCard event) {
         EventCommand eventSetupCompleteCommand = (EventCommand) defaultServerCommand(new EventCommand(EventCommandName.SETUP_COMPLETE));
         eventSetupCompleteCommand.setEvent(new Event(event));
-        EventCommand eventSetupCompletedCommand =  (EventCommand) client.sendCommand(eventSetupCompleteCommand);
+        EventCommand eventSetupCompletedCommand = (EventCommand) client.sendCommand(eventSetupCompleteCommand);
         if (eventSetupCompletedCommand.getPlayer() != null) updatePlayer(eventSetupCompletedCommand.getPlayer());
 
     }
