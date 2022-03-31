@@ -55,4 +55,14 @@ public class QuestPlayer extends Player implements Serializable {
     public void incrementShields(int inc) {
         this.player.incrementShields(inc);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (o == this) return true;
+        if (!(o instanceof QuestPlayer)) return false;
+        QuestPlayer p = (QuestPlayer) o;
+        return p.getPlayerId() == this.getPlayerId();
+    }
+
 }

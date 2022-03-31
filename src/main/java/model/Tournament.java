@@ -35,7 +35,7 @@ public class Tournament implements Serializable {
 
     public void startTournament(){
         this.currentPlayers = new ArrayList<>(players);
-        checkPlayers();
+        // checkPlayers(); REMOVE FOR NOW
     }
 
     public void setTournamentCard(TournamentCard tournamentCard) {
@@ -92,15 +92,31 @@ public class Tournament implements Serializable {
         System.out.println("== Current highest battle point player: " + highestPlayer.getPlayerId() + " with battle points: " + highestPlayer.calculateBattlePoints());
 
         // Find if anybody else has same battle points as highest player
-        for(int i = 0; i < currentPlayers.size(); i++){
-            TournamentPlayer currentPlayer = currentPlayers.get(i);
-
-            if(currentPlayer.calculateBattlePoints() == highestPlayer.calculateBattlePoints()){
-                System.out.println("== Player " + currentPlayer.getPlayerId() + " has same battle points as " + highestPlayer.getPlayerId());
-            } else {
-                currentPlayers.remove(currentPlayer);
+        for(TournamentPlayer currentPlayer: currentPlayers) {
+            if(currentPlayer.calculateBattlePoints() < highestPlayer.calculateBattlePoints()){
                 losers.add(currentPlayer);
+            } else {
+                System.out.println("== Player " + currentPlayer.getPlayerId() + " has same battle points as " + highestPlayer.getPlayerId());
             }
+        }
+//        for(int i = 0; i < currentPlayers.size(); i++){
+//            TournamentPlayer currentPlayer = currentPlayers.get(i);
+//
+//            if(currentPlayer.calculateBattlePoints() == highestPlayer.calculateBattlePoints()){
+//                System.out.println("== Player " + currentPlayer.getPlayerId() + " has same battle points as " + highestPlayer.getPlayerId());
+//            } else {
+//                losers.add(currentPlayer);
+//            }
+//        }
+
+        System.out.println("== Before size: " + currentPlayers.size());
+        for (TournamentPlayer loser : losers) {
+            System.out.println("== Loser: " + loser.getPlayerId() + " " + currentPlayers.remove(loser));
+        }
+        System.out.println("== After size: " + currentPlayers.size());
+
+        for(TournamentPlayer pl: currentPlayers) {
+            System.out.println("== Winner: " + pl.getPlayerId() + " BP: " + pl.calculateBattlePoints());
         }
 
         return losers;

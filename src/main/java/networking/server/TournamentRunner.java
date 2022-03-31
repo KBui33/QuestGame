@@ -47,10 +47,6 @@ public class TournamentRunner extends Runner {
             ArrayList<TournamentPlayer> losers = tournament.computeWinners();
             ArrayList<TournamentPlayer> winners  = tournament.getCurrentPlayers();
             System.out.println("== Tournament:\twinners -> " + winners.size() + "\tlosers -> " + losers.size());
-            // notifyLosers(server, gameState, tournament, losers);
-            // notifyWinners(server, gameState, tournament, winners); -> Not needed
-
-            // waitForResponses();
 
             // Distribute shields to winners
             tournament.distributeShields();
@@ -82,6 +78,8 @@ public class TournamentRunner extends Runner {
             gameState.setGameStatus(GameStatus.TAKING_TOURNAMENT_TURN);
 
             TournamentCommand tournamentTurnCommand = new TournamentCommand(TournamentCommandName.PLAYER_TOURNAMENT_TURN);
+            tournamentTurnCommand.setPlayerId(playerId);
+            tournamentTurnCommand.setPlayer(tournamentPlayer.getPlayer());
             tournamentTurnCommand.setTournament(tournament);
             server.notifyClientByPlayerId(playerId, tournamentTurnCommand);
         }
@@ -122,6 +120,11 @@ public class TournamentRunner extends Runner {
     }
 
     private void takeEndTournamentTurns(Server server, InternalGameState gameState, Tournament tournament) {
+
+        // TESTING
+        for(TournamentPlayer pl: tournament.getCurrentPlayers()) {
+            System.out.println("== Player: " + pl.getPlayerId() + " BP: " + pl.calculateBattlePoints());
+        }
         for (TournamentPlayer tournamentPlayer : tournament.getPlayers()) {
             tournament.setCurrentTurnPlayer(tournamentPlayer);
             int playerId = tournamentPlayer.getPlayerId();
