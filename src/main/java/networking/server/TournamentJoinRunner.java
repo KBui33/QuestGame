@@ -1,13 +1,8 @@
 package networking.server;
 
-import component.card.Card;
 import model.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import static utils.Utility.shiftLeft;
 
 public class TournamentJoinRunner extends Runner {
 
@@ -31,7 +26,7 @@ public class TournamentJoinRunner extends Runner {
                 shouldRespond++;
 
                 Player player = gameState.getPlayer(playerId);
-                tournament.setCurrentTurnPlayer(player);
+                //tournament.setCurrentTurnPlayer(player);
                 gameState.setGameStatus(GameStatus.PROMPTING_TOURNAMENT_PARTICIPANT);
                 TournamentCommand playerShouldJoinTournamentCommand = new TournamentCommand(TournamentCommandName.SHOULD_JOIN_TOURNAMENT);
                 playerShouldJoinTournamentCommand.setTournament(tournament);
@@ -47,7 +42,7 @@ public class TournamentJoinRunner extends Runner {
 
             shouldStopRunner();
 
-            int numParticipants = tournament.getTournamentPlayers().size();
+            int numParticipants = tournament.getPlayers().size();
 
             if(numParticipants > 0) {  // if any participants, start tournament
                 System.out.println("== Tournament join runner says: starting tournament with " + numParticipants + " participants");

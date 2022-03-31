@@ -54,7 +54,7 @@ public class QuestCommandHandler extends CommandHandlerDecorator {
             gameState.setGameStatus(GameStatus.FINDING_QUEST_SPONSOR);
 
         } else if (commandName.equals(QuestCommandName.WILL_JOIN_QUEST)) {
-            quest.addQuestPlayer(player); // Add participant to quest
+            quest.addPlayer(player); // Add participant to quest
 
             System.out.println("== Command handler says: Player " + playerId + " agreed to participate in quest");
 

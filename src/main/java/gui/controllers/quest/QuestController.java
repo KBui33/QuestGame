@@ -1,9 +1,6 @@
 package gui.controllers.quest;
 
 import component.card.Card;
-import component.card.QuestCard;
-import component.card.WeaponCard;
-import component.card.Card;
 import component.card.WeaponCard;
 import gui.controllers.GameController;
 import gui.other.AlertBox;
@@ -135,7 +132,7 @@ public class QuestController extends AbstractQuestController {
         ObservableList<String> outcomes = FXCollections.observableArrayList();
 
         // get all players and when they failed or if they succeeded
-        quest.getQuestPlayers().forEach(p -> {
+        quest.getPlayers().forEach(p -> {
             players.add("Player " + p.getPlayerId());
             System.out.println();
             Boolean res = quest.getCurrentStage().getStageResults().get(p.getPlayerId());

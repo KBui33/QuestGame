@@ -3,38 +3,66 @@ package model;
 import component.card.TournamentCard;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 
 public class Tournament {
     private TournamentCard tournamentCard;
-    private ArrayList<TournamentPlayer> currentTournamentPlayers;
-    private ArrayList<TournamentPlayer> tournamentPlayers;
+    private ArrayList<TournamentPlayer> currentPlayers;
+    private ArrayList<TournamentPlayer> players;
     private ArrayList<TournamentPlayer> tiedPlayers;
+    private TournamentPlayer currentTurnPlayer;
 
-    public Tournament(TournamentCard tournamentCard) {
-        this.tournamentCard = tournamentCard;
-        this.tournamentPlayers = new ArrayList<>();
+    public Tournament() {
+        this.players = new ArrayList<>();
         this.tiedPlayers = new ArrayList<>();
     }
 
-    public boolean addTournamentPlayer(Player player){ return this.tournamentPlayers.add(new TournamentPlayer(player));}
+    public Tournament(TournamentCard tournamentCard) {
+        this();
+        this.tournamentCard = tournamentCard;
+    }
+
+    public boolean addPlayer(Player player){ return this.players.add(new TournamentPlayer(player));}
+
+    public TournamentPlayer getCurrentTurnPlayer() {
+        return currentTurnPlayer;
+    }
+
+    public void setCurrentTurnPlayer(TournamentPlayer currentTurnPlayer) {
+        this.currentTurnPlayer = currentTurnPlayer;
+    }
 
     public void startTournament(){
-        this.currentTournamentPlayers = new ArrayList<>(tournamentPlayers);
+        this.currentPlayers = new ArrayList<>(players);
         checkPlayers();
+    }
+
+    public void setTournamentCard(TournamentCard tournamentCard) {
+        this.tournamentCard = tournamentCard;
     }
 
     public TournamentCard getTournamentCard() {
         return tournamentCard;
     }
 
-    public ArrayList<TournamentPlayer> getCurrentTournamentPlayers() {
-        return currentTournamentPlayers;
+    public ArrayList<TournamentPlayer> getCurrentPlayers() {
+        return currentPlayers;
     }
 
-    public ArrayList<TournamentPlayer> getTournamentPlayers() {
-        return tournamentPlayers;
+    public ArrayList<TournamentPlayer> getPlayers() {
+        return players;
+    }
+
+    public TournamentPlayer getPlayer(int playerId) {
+        for (TournamentPlayer player : players) {
+            if (player.getPlayerId() == playerId) return player;
+        }
+
+        return null;
+    }
+
+    public String getTitle() {
+        return tournamentCard.getTitle();
     }
 
 
@@ -42,8 +70,8 @@ public class Tournament {
      * Checks if there is only one player in the tournament
      * */
     public void checkPlayers(){
-        if(currentTournamentPlayers.size() == 1) {
-            currentTournamentPlayers.get(0)
+        if(currentPlayers.size() == 1) {
+            currentPlayers.get(0)
                     .incrementShields(1 + tournamentCard.getShields());
         }
     }
@@ -58,18 +86,18 @@ public class Tournament {
 
         // Player with the highest battle points
         TournamentPlayer highestPlayer =
-                currentTournamentPlayers.stream()
+                currentPlayers.stream()
                                 .max(Comparator.comparing(TournamentPlayer::calculateBattlePoints)).get();
 
         System.out.println("== Current highest battle point player: " + highestPlayer);
 
         // Find if anybody else has same battle points as highest player
-        for(int i = 1; i < currentTournamentPlayers.size(); i++){
-            TournamentPlayer currentPlayer = currentTournamentPlayers.get(i);
+        for(int i = 1; i < currentPlayers.size(); i++){
+            TournamentPlayer currentPlayer = currentPlayers.get(i);
 
             if(currentPlayer.calculateBattlePoints() != highestPlayer.calculateBattlePoints()){
                 System.out.println("== Player " + currentPlayer.getPlayerId() + " has same battle points as " + highestPlayer.getPlayerId());
-                currentTournamentPlayers.remove(currentPlayer);
+                currentPlayers.remove(currentPlayer);
                 losers.add(currentPlayer);
             }
         }
@@ -81,8 +109,8 @@ public class Tournament {
      * Distribute shields accordingly to tournament winners
      * */
     public void distributeShields(){
-        for(TournamentPlayer player: currentTournamentPlayers){
-            player.incrementShields(tournamentPlayers.size() + tournamentCard.getShields());
+        for(TournamentPlayer player: currentPlayers){
+            player.incrementShields(players.size() + tournamentCard.getShields());
         }
     }
 

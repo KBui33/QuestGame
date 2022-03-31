@@ -35,7 +35,7 @@ public class QuestRunner extends Runner {
 
             // Deal adventure cards to participants
             System.out.println("== Quest runner says: Dealing an adventure card to each participant");
-            for (QuestPlayer questPlayer : quest.getCurrentQuestPlayers()) {
+            for (QuestPlayer questPlayer : quest.getCurrentPlayers()) {
                 quest.setCurrentTurnPlayer(questPlayer.getPlayer());
                 int playerId = questPlayer.getPlayerId();
                 shouldRespond++;
@@ -52,7 +52,7 @@ public class QuestRunner extends Runner {
 
             waitForResponses();
 
-            for (QuestPlayer questPlayer : quest.getCurrentQuestPlayers()) {
+            for (QuestPlayer questPlayer : quest.getCurrentPlayers()) {
                 quest.setCurrentTurnPlayer(questPlayer.getPlayer());
                 int playerId = questPlayer.getPlayerId();
                 shouldRespond++;
@@ -70,8 +70,8 @@ public class QuestRunner extends Runner {
 
             // Find stage winners and losers
             ArrayList<QuestPlayer> stageLosers = quest.computeStageWinners(stage);
-            ArrayList<QuestPlayer> stageWinners = quest.getCurrentQuestPlayers();
-            System.out.println("== Stage:\tin game -> " + quest.getCurrentQuestPlayers().size() + "\tlosers -> " + stageLosers.size());
+            ArrayList<QuestPlayer> stageWinners = quest.getCurrentPlayers();
+            System.out.println("== Stage:\tin game -> " + quest.getCurrentPlayers().size() + "\tlosers -> " + stageLosers.size());
 
             // Send notification to quest losers
             for (QuestPlayer stageLoser : stageLosers) {
@@ -147,7 +147,7 @@ public class QuestRunner extends Runner {
         quest.distributeShieldsToWinners();
 
         // Send end quest command to all participants
-        for (QuestPlayer questPlayer : quest.getQuestPlayers()) {
+        for (QuestPlayer questPlayer : quest.getPlayers()) {
             quest.setCurrentTurnPlayer(questPlayer.getPlayer());
             Player player = questPlayer.getPlayer();
             int playerId = player.getPlayerId();

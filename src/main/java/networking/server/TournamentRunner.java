@@ -23,8 +23,8 @@ public class TournamentRunner extends Runner {
             // Deal adventure cards to participants
             System.out.println("== Tournament runner says: Dealing an adventure card to each participant");
             for(TournamentPlayer tournamentPlayer: tournament.getCurrentPlayers()) {
-                tournament.setCurrentTurnPlayer(tournamentPlayer.getPlayer());
-                int playerId = tournament.getPlayerId();
+                tournament.setCurrentTurnPlayer(tournamentPlayer);
+                int playerId = tournamentPlayer.getPlayerId();
                 shouldRespond++;
 
                 System.out.println("== Tournament runner says: Sending tournament adventure card to player " + playerId);

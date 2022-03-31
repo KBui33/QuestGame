@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class TournamentPlayer extends Player implements Serializable {
     private Player player;
-    private ArrayList<Card> playerCardsUsed;
+    private ArrayList<Card> cardsUsed;
 
     public TournamentPlayer(Player player) {
         this.player = player;
@@ -19,14 +19,23 @@ public class TournamentPlayer extends Player implements Serializable {
         return player;
     }
 
-    public ArrayList<Card> getPlayerCardsUsed() {
-        return playerCardsUsed;
+    @Override
+    public int getPlayerId() {
+        return player.getPlayerId();
+    }
+
+    public void setCardsUsed(ArrayList<Card> playerQuestCardsUsed) {
+        this.cardsUsed = new ArrayList<>(playerQuestCardsUsed);
+    }
+
+    public ArrayList<Card> getCardsUsed() {
+        return cardsUsed;
     }
 
     public int calculateBattlePoints(){
         int battlePoints = player.getBattlePoints();
 
-        for(Card card: playerCardsUsed){
+        for(Card card: cardsUsed){
             if(card instanceof WeaponCard){
                 battlePoints += ((WeaponCard) card).getBattlePoints();
             }else if (card instanceof AllyCard){
@@ -36,4 +45,19 @@ public class TournamentPlayer extends Player implements Serializable {
 
         return battlePoints;
     }
+
+    public void resetCardsUsed() {
+        cardsUsed.clear();
+    }
+
+    public void addCard(Card card) {
+        this.player.addCard(card);
+    }
+
+    @Override
+    public void incrementShields(int inc) {
+        this.player.incrementShields(inc);
+    }
+
+
 }
