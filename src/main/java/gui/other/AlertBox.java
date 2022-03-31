@@ -1,6 +1,5 @@
 package gui.other;
 
-import gui.scenes.LobbyScene;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;

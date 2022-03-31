@@ -8,11 +8,10 @@ import java.util.ArrayList;
 
 public class QuestPlayer extends Player implements Serializable {
     private Player player;
-    private ArrayList<Card> playerQuestCardsUsed;
+    private ArrayList<Card> cardsUsed;
 
     public QuestPlayer(Player player) {
         this.player = player;
-        this.setPlayerId(player.getPlayerId());
     }
 
     @Override
@@ -20,18 +19,18 @@ public class QuestPlayer extends Player implements Serializable {
         return player.getPlayerId();
     }
 
-    public void setPlayerQuestCardsUsed(ArrayList<Card> playerQuestCardsUsed) {
-        this.playerQuestCardsUsed = new ArrayList<>(playerQuestCardsUsed);
+    public void setCardsUsed(ArrayList<Card> cardsUsed) {
+        this.cardsUsed = new ArrayList<>(cardsUsed);
     }
 
-    public ArrayList<Card> getPlayerQuestCardsUsed() {
-        return playerQuestCardsUsed;
+    public ArrayList<Card> getCardsUsed() {
+        return cardsUsed;
     }
 
     public int calculateBattlePoints() {
-        int battlePoints = player.getShields(); // Minimum battle points
+        int battlePoints = player.getBattlePoints(); // Minimum battle points
 
-        for(Card questCardUsed: playerQuestCardsUsed) { // Sum up battle points based on quest cards used
+        for(Card questCardUsed: cardsUsed) { // Sum up battle points based on quest cards used
             if(questCardUsed instanceof WeaponCard) {
                 battlePoints += ((WeaponCard) questCardUsed).getBattlePoints();
             }
@@ -40,8 +39,8 @@ public class QuestPlayer extends Player implements Serializable {
         return battlePoints;
     }
 
-    public void resetQuestCardsUsed() {
-        playerQuestCardsUsed.clear();
+    public void resetCardsUsed() {
+        cardsUsed.clear();
     }
 
     public Player getPlayer() {
@@ -56,4 +55,14 @@ public class QuestPlayer extends Player implements Serializable {
     public void incrementShields(int inc) {
         this.player.incrementShields(inc);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (o == this) return true;
+        if (!(o instanceof QuestPlayer)) return false;
+        QuestPlayer p = (QuestPlayer) o;
+        return p.getPlayerId() == this.getPlayerId();
+    }
+
 }

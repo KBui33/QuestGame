@@ -27,4 +27,8 @@ public interface BaseGameState {
     public Player getCurrentTurnPlayer();
 
     public Quest getCurrentQuest();
+
+    public Tournament getCurrentTournament();
+
+    public ArrayList<Player> getWinners();
 }

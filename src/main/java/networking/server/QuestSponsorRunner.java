@@ -2,7 +2,11 @@ package networking.server;
 
 import model.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import static utils.Utility.shiftLeft;
 
 public class QuestSponsorRunner extends Runner {
     private Server server;
@@ -18,7 +22,7 @@ public class QuestSponsorRunner extends Runner {
         // Ask players to sponsor quest
         System.out.println("== Quest Sponsor runner says: Looking for quest sponsor");
         gameState.setGameStatus(GameStatus.FINDING_QUEST_SPONSOR);
-        server.notifyClients(new GameCommand(Command.FIND_QUEST_SPONSOR));
+        server.notifyClients(new QuestCommand(QuestCommandName.FIND_QUEST_SPONSOR));
         boolean foundSponsor = false;
         try {
             ArrayList<Player> players = gameState.getPlayers();
@@ -30,7 +34,7 @@ public class QuestSponsorRunner extends Runner {
             // Iterate over clients to find sponsor
             for(int playerId: promptOrder) {
                 gameState.setGameStatus(GameStatus.PROMPTING_QUEST_SPONSOR);
-                GameCommand playerShouldSponsorQuestCommand = new GameCommand(Command.SHOULD_SPONSOR_QUEST);
+                QuestCommand playerShouldSponsorQuestCommand = new QuestCommand(QuestCommandName.SHOULD_SPONSOR_QUEST);
                 playerShouldSponsorQuestCommand.setCard(gameState.getCurrentStoryCard());
                 playerShouldSponsorQuestCommand.setPlayerId(playerId);
 
@@ -57,21 +61,8 @@ public class QuestSponsorRunner extends Runner {
                 System.out.println("== Quest Sponsor runner says: No sponsor found. Exiting...");
                 gameState.setGameStatus(GameStatus.RUNNING);
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public int[] computePromptOrder() {
-        int numPlayers = gameState.getNumPlayers();
-        int[] promptOrder = new int[numPlayers];
-        int currentPlayerId = gameState.getCurrentTurnPlayer().getPlayerId();
-
-        for (int i = 0; i < numPlayers; i++) {
-            if (currentPlayerId > numPlayers) currentPlayerId = 1;
-            promptOrder[i] = currentPlayerId++;
-        }
-
-        return promptOrder;
     }
 }

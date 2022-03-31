@@ -1,32 +1,32 @@
 package networking.client;
 
-import model.Command;
-import model.ExternalGameState;
-import model.GameCommand;
+import model.*;
 
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Scanner;
 
-public class Client  {
+public class Client {
     private final int PORT = 80;
     private static final int READ_BUFFER_SIZE = 4096;
     private static final int WRITE_BUFFER_SIZE = 4096;
 
     // Various game commands
     public static enum ClientEvent {
-        EXTERNAL_GAME_STATE_UPDATED,
-        GAME_COMMAND_RECEIVED
-    };
+        EXTERNAL_GAME_STATE_UPDATED, GAME_COMMAND_RECEIVED
+    }
+
+    ;
 
     private static Client instance = null;
 
-    private final SocketChannel _socketChannel;
-    private final ObjectInputStream _subscribeInputStream;
-    private final ObjectInputStream _gameStateInputStream;
+    private SocketChannel _socketChannel;
+    private ObjectInputStream _subscribeInputStream;
+    private ObjectInputStream _gameStateInputStream;
 
     private Socket _subscribeSocket;
     private Socket _gameStateSocket;
@@ -39,16 +39,51 @@ public class Client  {
     private int playerId = -1;
     private int clientIndex = -1;
 
+    private boolean shouldStopSubscriptionThread = false;
+    private boolean shouldStopGameStateUpdateThread = false;
+
     public ClientEventManager clientEvents;
 
-    public Client(String serverHost) throws IOException {
+    public Client(String serverHost) throws IOException, ClassNotFoundException {
         this.serverHost = serverHost;
+
+        connectSocketChannel();
+
+        clientEvents = new ClientEventManager(new ClientEvent[]{ClientEvent.EXTERNAL_GAME_STATE_UPDATED, ClientEvent.GAME_COMMAND_RECEIVED});
+
+        connectInputStreams();
+
+        _scanner = new Scanner(System.in);
+
+    }
+
+    public Client() throws IOException, ClassNotFoundException {
+        this("192.168.0.18");
+    }
+
+    private void connectSocketChannel() throws IOException, ClassNotFoundException {
         InetSocketAddress address = new InetSocketAddress(serverHost, 5700);
         _socketChannel = SocketChannel.open(address);
         System.out.println("== Client connected to server socket");
 
-        clientEvents = new ClientEventManager(new ClientEvent[] {ClientEvent.EXTERNAL_GAME_STATE_UPDATED, ClientEvent.GAME_COMMAND_RECEIVED});
+        int numBytes = _socketChannel.read(_readBuffer);
 
+        if (numBytes != -1) {
+            _readBuffer.flip();
+            byte[] bytes = new byte[_readBuffer.limit()];
+            _readBuffer.get(bytes);
+
+            // Convert input to game command and send for processing
+            Command receivedCommand = Command.fromBytesArray(bytes);
+            System.out.println("== Received command: " + receivedCommand);
+            _readBuffer.clear();
+
+            if (!receivedCommand.getCommandName().equals(BaseCommandName.CONNECT_SUCCESSFULL))
+                throw new IOException("Could not connect to server: " + receivedCommand);
+        }
+    }
+
+    public void connectInputStreams() throws IOException {
         _subscribeSocket = new Socket(serverHost, 5710);
         _subscribeInputStream = new ObjectInputStream(_subscribeSocket.getInputStream());
         new Thread(new SocketSubscriptionThread()).start(); // Listen for server broadcasts
@@ -58,18 +93,27 @@ public class Client  {
         _gameStateInputStream = new ObjectInputStream(_gameStateSocket.getInputStream());
         new Thread(new GameStateUpdateThread()).start(); // Listen for game state updates
         System.out.println("== Client subscribed to game state update channel");
-
-        _scanner = new Scanner(System.in);
-
     }
 
-    public Client() throws IOException {
-        this("192.168.122.1");
-    }
-
-    public static Client initialize(String serverHost) throws IOException {
-        if(instance == null) instance = new Client(serverHost);
+    public static Client initialize(String serverHost) throws IOException, ClassNotFoundException {
+        if (instance == null) instance = new Client(serverHost);
         return instance;
+    }
+
+    public static void destroy() {
+        instance.shouldStopGameStateUpdateThread = true;
+        instance.shouldStopSubscriptionThread = true;
+        instance.clientEvents = null;
+
+        try {
+            instance._socketChannel.close();
+            instance._scanner.close();
+            instance.clientIndex = -1;
+            instance.playerId = -1;
+            instance = null;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static Client getInstance() throws IOException {
@@ -96,10 +140,10 @@ public class Client  {
         return serverHost;
     }
 
-    public synchronized GameCommand sendCommand(GameCommand command) {
-        GameCommand receivedCommand = null;
+    public synchronized Command sendCommand(Command command) {
+        Command receivedCommand = null;
         try {
-            byte[] outMessage = GameCommand.toBytesArray(command);
+            byte[] outMessage = Command.toBytesArray(command);
             _writeBuffer = ByteBuffer.wrap(outMessage);
             _socketChannel.write(_writeBuffer);
             _writeBuffer.clear();
@@ -109,11 +153,11 @@ public class Client  {
             byte[] inMessage = new byte[_readBuffer.limit()];
             _readBuffer.get(inMessage);
 
-            receivedCommand = GameCommand.fromBytesArray(inMessage);
+            receivedCommand = Command.fromBytesArray(inMessage);
             System.out.println("== Server says: " + receivedCommand);
 
             _readBuffer.clear();
-        } catch(IOException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return receivedCommand;
@@ -122,11 +166,11 @@ public class Client  {
     private class SocketSubscriptionThread implements Runnable {
         @Override
         public void run() {
-            while (true) {
+            while (!shouldStopSubscriptionThread) {
                 try {
-                    GameCommand command = (GameCommand) _subscribeInputStream.readObject();
-                    if(command.getCommand().equals(Command.JOINED))  {
-                        clientIndex = command.getClientIndex();
+                    Command command = (Command) _subscribeInputStream.readObject();
+                    if (command.getCommandName().equals(BaseCommandName.JOINED)) {
+                        clientIndex = ((BaseCommand) command).getClientIndex();
                         System.out.println("== Client index: " + clientIndex);
                     }
                     clientEvents.notify(ClientEvent.GAME_COMMAND_RECEIVED, command);
@@ -135,13 +179,20 @@ public class Client  {
                     e.printStackTrace();
                 }
             }
+
+            try {
+                _subscribeInputStream.close();
+                _subscribeSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     private class GameStateUpdateThread implements Runnable {
         @Override
         public void run() {
-            while (true) {
+            while (!shouldStopGameStateUpdateThread) {
                 try {
                     ExternalGameState externalGameState = (ExternalGameState) _gameStateInputStream.readObject();
                     clientEvents.notify(ClientEvent.EXTERNAL_GAME_STATE_UPDATED, externalGameState);
@@ -150,6 +201,14 @@ public class Client  {
                     e.printStackTrace();
                 }
             }
+
+            try {
+                _gameStateInputStream.close();
+                _gameStateSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 }
