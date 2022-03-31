@@ -18,7 +18,7 @@ public class QuestRunner extends Runner {
 
 
     @Override
-    public void loop() {
+    protected void loop() {
         //gameState.setCurrentQuest(this.quest);
         gameState.setGameStatus(GameStatus.RUNNING_QUEST);
         quest.startQuest();

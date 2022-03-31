@@ -44,16 +44,20 @@ public class GameRunner extends Runner {
                     Card currentStoryCard = gameState.drawStoryCard();
                     gameState.setCurrentStoryCard(currentStoryCard);
 
-                    // Start quest sponsor thread if card is a quest card
-                    if(currentStoryCard instanceof QuestCard) {
-                        System.out.println("== Game runner says: Quest card played");
+
+                    if(currentStoryCard instanceof QuestCard) { // Start quest sponsor thread if card is a quest card
+                        System.out.println("== Game runner says: Quest card drawn");
                         new Thread(new QuestSponsorRunner(server)).start();
                        // Start event thread if card is an event card
                     } else if (currentStoryCard instanceof EventCard){
                         System.out.println("== Game runner says: Event card played");
                         //continue;
                         new Thread(new EventRunner(server, gameState.getCurrentEvent())).start();
-                    } else {
+                    }  else if (currentStoryCard instanceof TournamentCard){ // Start tournament join quest if card is tournament card
+                        System.out.println("== Game runner says: Tournament card drawn");
+                        gameState.setCurrentTournament(new Tournament());
+                        new Thread(new TournamentJoinRunner()).start();
+                    }  else {
                         playerTurnCommand.setCard(currentStoryCard); // Deal story card to current player
                         server.notifyClients(playerTurnCommand);
                         System.out.println("== Game runner says: take turn command sent");
