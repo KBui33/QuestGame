@@ -25,10 +25,9 @@ public class ClientApplication extends Application {
     public void start(Stage stage) throws Exception {
         window = stage;
 
-        Font.loadFont(ConnectScene.class.getResource("/fonts/GentiumBasic-Regular.ttf").toExternalForm(), 12);
-        Font.loadFont(ConnectScene.class.getResource("/fonts/GentiumBasic-Italic.ttf").toExternalForm(), 12);
-        Font.loadFont(ConnectScene.class.getResource("/fonts/GentiumBasic-Bold.ttf").toExternalForm(), 12);
-
+        Font.loadFont(String.valueOf(ConnectScene.class.getResource("/fonts/GentiumBasic-Regular.ttf")), 12);
+        Font.loadFont(String.valueOf(ConnectScene.class.getResource("/fonts/GentiumBasic-Italic.ttf")), 12);
+        Font.loadFont(String.valueOf(ConnectScene.class.getResource("/fonts/GentiumBasic-Bold.ttf")), 12);
 
         // launch connect scene for user to enter server address
         window.setScene(new ConnectScene());
