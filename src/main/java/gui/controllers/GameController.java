@@ -688,7 +688,9 @@ public class   GameController {
                 displayCard(drawnCard, e -> {
                     // player chooses join
                     // Send will join command to server
-
+                    TournamentCommand willJoinTournamentCommand = (TournamentCommand) defaultServerCommand(new TournamentCommand(TournamentCommandName.WILL_JOIN_TOURNAMENT));
+                    TournamentCommand joinedTournamentCommand = (TournamentCommand) client.sendCommand(willJoinTournamentCommand);
+                    if (joinedTournamentCommand.getPlayer() != null) updatePlayer(joinedTournamentCommand.getPlayer());
 
                     view.getMainPane().remove(drawnCard);
 
@@ -698,7 +700,9 @@ public class   GameController {
                 }, e -> {
                     // player chooses decline
                     // Send will not join command to server
-
+                    TournamentCommand willNotJoinTournamentCommand = (TournamentCommand) defaultServerCommand(new TournamentCommand(TournamentCommandName.WILL_NOT_JOIN_TOURNAMENT));
+                    TournamentCommand didNotJoinTournamentCommand = (TournamentCommand) client.sendCommand(willNotJoinTournamentCommand);
+                    if (didNotJoinTournamentCommand.getPlayer() != null) updatePlayer(didNotJoinTournamentCommand.getPlayer());
 
                     view.getMainPane().remove(drawnCard);
                     waitTurn();
