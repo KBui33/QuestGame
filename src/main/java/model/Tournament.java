@@ -82,28 +82,30 @@ public class Tournament implements Serializable {
      * Returns -> players who lost tournament
      * */
     public ArrayList<TournamentPlayer> computeWinners(){
-
-        ArrayList<TournamentPlayer> losers = new ArrayList<>();
+        ArrayList<TournamentPlayer> winners = new ArrayList<>();
 
         // Player with the highest battle points
         TournamentPlayer highestPlayer =
                 currentPlayers.stream()
                                 .max(Comparator.comparing(TournamentPlayer::calculateBattlePoints)).get();
 
-        System.out.println("== Current highest battle point player: " + highestPlayer);
+        System.out.println("== Current highest battle point player: " + highestPlayer.getPlayerId() + " with battle points: " + highestPlayer.calculateBattlePoints());
 
         // Find if anybody else has same battle points as highest player
-        for(int i = 1; i < currentPlayers.size(); i++){
+        for(int i = 0; i < currentPlayers.size(); i++){
             TournamentPlayer currentPlayer = currentPlayers.get(i);
 
-            if(currentPlayer.calculateBattlePoints() != highestPlayer.calculateBattlePoints()){
+            if(currentPlayer.calculateBattlePoints() == highestPlayer.calculateBattlePoints()){
                 System.out.println("== Player " + currentPlayer.getPlayerId() + " has same battle points as " + highestPlayer.getPlayerId());
-                currentPlayers.remove(currentPlayer);
-                losers.add(currentPlayer);
+                winners.add(currentPlayer);
             }
         }
 
-        return losers;
+        for(TournamentPlayer player: winners){
+            currentPlayers.remove(player);
+        }
+
+        return winners;
     }
 
     /**
