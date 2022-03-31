@@ -363,7 +363,7 @@ public class GameController {
                 drawnCard.getPlayButton().setVisible(false);
                 AlertBox.alert("You currently have too many cards so you must forfeit this draw.");
             } else {
-                AlertBox.alert("You may choose to play this card this stage or discard it.");
+                AlertBox.alert("You may choose to play this card or discard it.");
             }
 
         } else {
@@ -700,6 +700,7 @@ public class GameController {
             System.out.println("== It's my turn to decide to join the tournament");
             Card tournamentCard = command.getCard();
             Tournament tournament = command.getTournament();
+            view.getHud().getCurrentStateText().setText("Join " + tournamentCard.getTitle() + "?");
 
             Platform.runLater(() -> {
                 CardView drawnCard = new CardView(tournamentCard, true, "Join", "Decline");
@@ -737,6 +738,7 @@ public class GameController {
             System.out.println("== It's my turn to accept/discard tournament adventure card");
             Card tournamentAdventureCard = command.getCard();
             Tournament tournament = command.getTournament();
+            view.getHud().getCurrentStateText().setText("Take an Adventure Card");
 
             Platform.runLater(() -> {
                 tournamentController.updateTournament(tournament);
@@ -747,6 +749,7 @@ public class GameController {
             System.out.println("== It's my turn to take turn for tournament");
             Card tournamentAdventureCard = command.getCard();
             Tournament tournament = command.getTournament();
+            view.getHud().getCurrentStateText().setText("Select Cards to increase Battle Points");
 
             Platform.runLater(() -> {
                 tournamentController.pickCards(tournament, cards -> {
@@ -757,6 +760,7 @@ public class GameController {
                     if (tookTournamentTurnCommand.getPlayer() != null) updatePlayer(tookTournamentTurnCommand.getPlayer());
                     waitTurn();
                 });
+                disableView(false);
             });
 
         } else if (commandName.equals(TournamentCommandName.TOURNAMENT_WON)) { // TODO::Remove/Not needed
@@ -778,14 +782,16 @@ public class GameController {
             Card tournamentAdventureCard = command.getCard();
             Tournament tournament = command.getTournament();
 
-            tournamentController.tournamentComplete(tournament, () -> {
-                // send continue button clicked to server
-                TournamentCommand endTournamentCommand = (TournamentCommand) defaultServerCommand(new TournamentCommand(TournamentCommandName.END_TOURNAMENT));
-                TournamentCommand endedTournamentCommand = (TournamentCommand) client.sendCommand(endTournamentCommand);
-                if (endedTournamentCommand.getPlayer() != null) updatePlayer(endedTournamentCommand.getPlayer());
-                waitTurn();
+            Platform.runLater(() -> {
+                tournamentController.tournamentComplete(tournament, () -> {
+                    // send continue button clicked to server
+                    TournamentCommand endTournamentCommand = (TournamentCommand) defaultServerCommand(new TournamentCommand(TournamentCommandName.END_TOURNAMENT));
+                    TournamentCommand endedTournamentCommand = (TournamentCommand) client.sendCommand(endTournamentCommand);
+                    if (endedTournamentCommand.getPlayer() != null) updatePlayer(endedTournamentCommand.getPlayer());
+                    waitTurn();
+                });
             });
-            ;
+
         }
     }
 

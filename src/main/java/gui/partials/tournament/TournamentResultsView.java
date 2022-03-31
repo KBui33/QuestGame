@@ -17,13 +17,16 @@ public class TournamentResultsView extends BorderPane {
 
         this.resultsText = new Text();
         this.resultsText.getStyleClass().add("body-font");
+        setAlignment(resultsText, Pos.CENTER);
 
         this.playersBox = new VBox();
         this.playersBox.setSpacing(5);
         this.playersBox.setAlignment(Pos.CENTER);
+        setAlignment(playersBox, Pos.CENTER);
 
         this.continueButton = new Button("Continue");
         this.continueButton.getStyleClass().add("success");
+        setAlignment(continueButton, Pos.CENTER);
 
         this.setTop(resultsText);
         this.setCenter(playersBox);

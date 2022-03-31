@@ -24,25 +24,25 @@ public class TournamentPlayerCardsView extends VBox {
 
         cardsBox = new HBox();
         cardsBox.setSpacing(5);
-        cardsBox.setAlignment(Pos.TOP_LEFT);
+        cardsBox.setAlignment(Pos.CENTER);
 
         playerText = new Text();
         playerText.getStyleClass().add("stats-font");
 
         playerRank = new CardView();
-        playerRank.setSize(150);
+        playerRank.setSize(125);
         playerRank.getButtonBox().setVisible(false);
 
         cardsView = new DeckView();
-        cardsView.setHeight(150);
+        cardsView.setHeight(125);
         cardsView.setWidth(400);
         this.cardsList = FXCollections.observableArrayList();
         cardsView.setListViewItems(cardsList);
 
-        cardsBox.getChildren().addAll(playerRank, playerText);
+        cardsBox.getChildren().addAll(playerRank, cardsView.getListView());
 
-        this.getChildren().addAll(playerText);
-        this.setAlignment(Pos.TOP_LEFT);
+        this.getChildren().addAll(playerText, cardsBox);
+        this.setAlignment(Pos.CENTER);
     }
 
     public TournamentPlayerCardsView(TournamentPlayer player) {
@@ -56,7 +56,7 @@ public class TournamentPlayerCardsView extends VBox {
         this.playerRank.setCard(player.getRankCard());
         player.getCardsUsed().forEach(c -> {
             CardView cv = new CardView(c);
-            cv.setSize(125);
+            cv.setSize(100);
             cv.getButtonBox().setVisible(false);
             cardsList.add(cv);
         });
