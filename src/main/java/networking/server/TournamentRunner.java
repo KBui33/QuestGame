@@ -122,7 +122,7 @@ public class TournamentRunner extends Runner {
     }
 
     private void takeEndTournamentTurn(Server server, InternalGameState gameState, Tournament tournament) {
-        for (TournamentPlayer tournamentPlayer : tournament.getCurrentPlayers()) {
+        for (TournamentPlayer tournamentPlayer : tournament.getPlayers()) {
             tournament.setCurrentTurnPlayer(tournamentPlayer);
             int playerId = tournamentPlayer.getPlayerId();
             shouldRespond++;
