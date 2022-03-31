@@ -55,29 +55,58 @@
       "foe": "All Saxons"
     }
   ],
+  "testEvents" : [
+    {"title":"Queen's Favor",
+      "image": "/quests/quest_event_5.png",
+      "frequency": 2
+    },
+    {"title":"Pox",
+      "image": "/quests/quest_event_2.png",
+      "frequency": 1
+    },
+    {"title":"Plague",
+      "image": "/quests/quest_event_3.png",
+      "frequency": 1
+    },
+    {"title":"Chivalrous Deed",
+      "image": "/quests/quest_event_1.png",
+      "frequency": 1
+    },
+    {"title": "Prosperity Throughout the Realm",
+      "image": "/quests/quest_event_8.png",
+      "frequency": 1
+    }
+  ],
   "events": [
     {"title":"King's Recognition",
       "image": "/quests/quest_event_4.png",
       "frequency": 2
-    }, {"title":"Queen's Favor",
+    },
+    {"title":"Queen's Favor",
       "image": "/quests/quest_event_5.png",
       "frequency": 2
-    }, {"title":"Court Called to Camelot",
+    },
+    {"title":"Court Called to Camelot",
       "image": "/quests/quest_event_6.png",
       "frequency": 2
-    }, {"title":"Pox",
+    },
+    {"title":"Pox",
       "image": "/quests/quest_event_2.png",
       "frequency": 1
-    }, {"title":"Plague",
+    },
+    {"title":"Plague",
       "image": "/quests/quest_event_3.png",
       "frequency": 1
-    }, {"title":"Chivalrous Deed",
+    },
+    {"title":"Chivalrous Deed",
       "image": "/quests/quest_event_1.png",
       "frequency": 1
-    }, {"title": "Prosperity Throughout the Realm",
+    },
+    {"title": "Prosperity Throughout the Realm",
       "image": "/quests/quest_event_8.png",
       "frequency": 1
-    }, {"title": "King's Call to Arms",
+    },
+    {"title": "King's Call to Arms",
       "image": "/quests/quest_event_7.png",
       "frequency": 1
     }
@@ -85,16 +114,20 @@
   "tournaments": [
     {"title": "Tournament at Camelot",
       "image": "/quests/quest_tournament_4.png",
-      "frequency": 1
+      "frequency": 1,
+      "shields" : 3
     }, {"title": "Tournament at Orkney",
       "image": "/quests/quest_tournament_3.png",
-      "frequency": 1
+      "frequency": 1,
+      "shields" : 2
     }, {"title": "Tournament at Tintagel",
       "image": "/quests/quest_tournament_2.png",
-      "frequency": 1
+      "frequency": 1,
+      "shields" : 1
     }, {"title": "Tournament at York",
       "image": "/quests/quest_tournament_1.png",
-      "frequency": 1
+      "frequency": 1,
+      "shields" : 0
     }
   ]
 }

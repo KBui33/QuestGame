@@ -52,12 +52,13 @@ public class GameRunner extends Runner {
                     } else if (currentStoryCard instanceof EventCard){
                         System.out.println("== Game runner says: Event card played");
                         //continue;
-                        new Thread(new EventRunner(server, gameState.getCurrentEvent())).start();
-                    }  else if (currentStoryCard instanceof TournamentCard){ // Start tournament join quest if card is tournament card
+                        //new Thread(new EventRunner(server, gameState.getCurrentEvent())).start();
+                        new Thread(new EventRunner(server)).start(); // Will eventually be replaced with EventSetupController class
+                    } else if (currentStoryCard instanceof TournamentCard){ // Start tournament join quest if card is tournament card
                         System.out.println("== Game runner says: Tournament card drawn");
                         gameState.setCurrentTournament(new Tournament());
                         new Thread(new TournamentJoinRunner()).start();
-                    }  else {
+                    }   else {
                         playerTurnCommand.setCard(currentStoryCard); // Deal story card to current player
                         server.notifyClients(playerTurnCommand);
                         System.out.println("== Game runner says: take turn command sent");

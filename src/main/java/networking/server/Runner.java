@@ -13,14 +13,20 @@ public abstract class Runner implements Runnable {
     protected int shouldRespond = 0;
     @Override
     public void run() {
-        while (!stopRunner) loop();
+        while (!stopRunner) {
+            try {
+                loop();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     protected void shouldStopRunner() {
         this.stopRunner = true;
     }
 
-    protected abstract void loop();
+    protected abstract void loop() throws InterruptedException;
 
     protected void waitForResponses() {};
 

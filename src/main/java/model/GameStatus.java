@@ -27,5 +27,7 @@ public enum GameStatus {
     ENDING_TOURNAMENT_TURN,
     ENDING_TOURNAMENT,
 
+    ENDING_EVENT,
+    FINDING_EVENT_CARD,
     GAME_OVER
 }

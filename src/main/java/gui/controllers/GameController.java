@@ -29,7 +29,7 @@ import java.util.concurrent.Callable;
  * <p>
  * Controller for manipulating GamePane view
  */
-public class GameController {
+public class   GameController {
 
     private Client client;
     private Player player;
@@ -623,7 +623,26 @@ public class GameController {
     }
 
     public void handleEventCommands(EventCommand command) {
+        CommandName commandName = command.getCommandName();
         System.out.println("== Game Controller command update says: " + command);
+
+        if(commandName.equals(EventCommandName.EVENT_STARTED)){
+            System.out.println("== Setting up Event");
+            Card eventCard = command.getCard();
+
+            // TODO:: make EventSetupController view and send event over
+            setUpEvent((EventCard) eventCard);
+        }else if(commandName.equals(EventCommandName.EVENT_EXTRA_INFO)){
+            System.out.println("== Got extra stuff");
+        }
+
+    }
+
+    public void setUpEvent(EventCard event){
+        EventCommand eventSetupCompleteCommand = (EventCommand) defaultServerCommand(new EventCommand(EventCommandName.SETUP_COMPLETE));
+        eventSetupCompleteCommand.setEvent(new Event(event));
+        EventCommand eventSetupCompletedCommand =  (EventCommand) client.sendCommand(eventSetupCompleteCommand);
+        if (eventSetupCompletedCommand.getPlayer() != null) updatePlayer(eventSetupCompletedCommand.getPlayer());
 
     }
 
