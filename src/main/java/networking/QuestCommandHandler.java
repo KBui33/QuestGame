@@ -54,7 +54,7 @@ public class QuestCommandHandler extends CommandHandlerDecorator {
             gameState.setGameStatus(GameStatus.FINDING_QUEST_SPONSOR);
 
         } else if (commandName.equals(QuestCommandName.WILL_JOIN_QUEST)) {
-            quest.addQuestPlayer(player); // Add participant to quest
+            quest.addPlayer(player); // Add participant to quest
 
             System.out.println("== Command handler says: Player " + playerId + " agreed to participate in quest");
 
@@ -94,7 +94,7 @@ public class QuestCommandHandler extends CommandHandlerDecorator {
         } else if (commandName.equals(QuestCommandName.TAKE_QUEST_TURN)) {
             System.out.println("== Command handler says: Player " + playerId + " took stage turn");
 
-            quest.getQuestPlayerByPlayerId(playerId).setPlayerQuestCardsUsed(cards);
+            quest.getQuestPlayerByPlayerId(playerId).setCardsUsed(cards);
             boolean discardedQuestCards = player.discardCards(cards);
 
             System.out.println("== Command handler says: Discarding quest cards " + discardedQuestCards);

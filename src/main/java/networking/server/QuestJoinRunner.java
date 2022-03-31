@@ -46,7 +46,7 @@ public class QuestJoinRunner extends Runner {
 
         shouldStopRunner();
 
-        int numParticipants = quest.getQuestPlayers().size();
+        int numParticipants = quest.getPlayers().size();
         if(numParticipants > 0) {  // if any participants, start quest
             System.out.println("== Quest join runner says: starting quest with " + numParticipants + " participants");
             new Thread(new QuestRunner(server, quest)).start();

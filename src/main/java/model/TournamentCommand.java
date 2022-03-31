@@ -3,7 +3,7 @@ package model;
 import java.io.Serializable;
 
 public class TournamentCommand extends GameCommand implements Serializable {
-    // private Tournament tournament;
+    private Tournament tournament;
 
     public TournamentCommand() {
         super();

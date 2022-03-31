@@ -73,7 +73,7 @@ public class TournamentCommandHandler extends CommandHandlerDecorator  {
            tournament.getPlayer(playerId).setCardsUsed(cards);
             boolean discardedCards = player.discardCards(cards);
 
-            System.out.println("== Command handler says: Discarding tournament cards " + discardedCards.size());
+            System.out.println("== Command handler says: Discarding tournament cards " + discardedCards);
 
             returnCommand.setCommandName(TournamentCommandName.TOOK_TOURNAMENT_TURN);
             returnCommand.setPlayer(player);
