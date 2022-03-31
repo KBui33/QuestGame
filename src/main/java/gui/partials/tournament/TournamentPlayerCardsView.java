@@ -52,7 +52,8 @@ public class TournamentPlayerCardsView extends VBox {
 
     // take in tournament player and set cards accordingly
     public void setPlayerCards(TournamentPlayer player) {
-        this.playerText.setText("Player " + player.getPlayerId() + ": " + player.calculateBattlePoints() + " Battle Points");
+//        this.playerText.setText("Player " + player.getPlayerId() + ": " + player.calculateBattlePoints() + " Battle Points");
+        this.playerText.setText("Player " + player.getPlayerId());
         this.playerRank.setCard(player.getRankCard());
         player.getCardsUsed().forEach(c -> {
             CardView cv = new CardView(c);
