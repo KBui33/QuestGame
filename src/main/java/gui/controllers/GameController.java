@@ -751,7 +751,11 @@ public class GameController {
             Platform.runLater(() -> {
                 tournamentController.pickCards(tournament, cards -> {
                     // send cards picked to server
-
+                    TournamentCommand takeTournamentTurnCommand = (TournamentCommand) defaultServerCommand(new TournamentCommand(TournamentCommandName.TAKE_TOURNAMENT_TURN));
+                    takeTournamentTurnCommand.setCards(cards);
+                    TournamentCommand tookTournamentTurnCommand = (TournamentCommand) client.sendCommand(takeTournamentTurnCommand);
+                    if (tookTournamentTurnCommand.getPlayer() != null) updatePlayer(tookTournamentTurnCommand.getPlayer());
+                    waitTurn();
                 });
             });
 

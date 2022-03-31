@@ -44,8 +44,11 @@ public class TournamentRunner extends Runner {
             waitForResponses();
 
             // Find tournament winners and losers
-            notifyLosers(server, gameState, tournament);
-            notifyWinners(server, gameState, tournament);
+            ArrayList<TournamentPlayer> winners = tournament.computeWinners();
+            ArrayList<TournamentPlayer> losers  = tournament.getCurrentPlayers();
+            System.out.println("== Tournament:\twinners -> " + winners.size() + "\tlosers -> " + losers.size());
+            notifyLosers(server, gameState, tournament, losers);
+            notifyWinners(server, gameState, tournament, winners);
 
             waitForResponses();
         } catch (IOException e) {
@@ -69,8 +72,7 @@ public class TournamentRunner extends Runner {
         }
     }
 
-    private void notifyLosers(Server server, InternalGameState gameState, Tournament tournament) {
-        ArrayList<TournamentPlayer> losers = tournament.computeWinners();
+    private void notifyLosers(Server server, InternalGameState gameState, Tournament tournament, ArrayList<TournamentPlayer> losers) {
         for (TournamentPlayer loser : losers) {
             tournament.setCurrentTurnPlayer(loser);
             int playerId = loser.getPlayerId();
@@ -87,8 +89,7 @@ public class TournamentRunner extends Runner {
         }
     }
 
-    private void notifyWinners(Server server, InternalGameState gameState, Tournament tournament) {
-        ArrayList<TournamentPlayer> winners = tournament.getCurrentPlayers();
+    private void notifyWinners(Server server, InternalGameState gameState, Tournament tournament, ArrayList<TournamentPlayer> winners) {
         for (TournamentPlayer winner : winners) {
             tournament.setCurrentTurnPlayer(winner);
             int playerId = winner.getPlayerId();
