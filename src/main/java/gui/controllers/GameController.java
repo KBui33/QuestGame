@@ -749,7 +749,7 @@ public class GameController {
             System.out.println("== It's my turn to take turn for tournament");
             Card tournamentAdventureCard = command.getCard();
             Tournament tournament = command.getTournament();
-            view.getHud().getCurrentStateText().setText("Select Cards to increase Battle Points");
+            view.getHud().getCurrentStateText().setText("Prepare for Battle");
 
             Platform.runLater(() -> {
                 tournamentController.pickCards(tournament, cards -> {
