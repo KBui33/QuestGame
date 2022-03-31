@@ -15,6 +15,18 @@ public class TournamentView extends BorderPane {
     private TournamentResults tournamentResults;
     private CardSelectionView cardSelectionView;
 
+    public Text getHeaderText() {
+        return headerText;
+    }
+
+    public TournamentResults getTournamentResults() {
+        return tournamentResults;
+    }
+
+    public CardSelectionView getCardSelectionView() {
+        return cardSelectionView;
+    }
+
     public TournamentView() {
 
         headerText = new Text("Tournament");
@@ -24,7 +36,7 @@ public class TournamentView extends BorderPane {
 
     }
 
-    private void clearTournament() {
+    public void clearTournament() {
         this.setCenter(null);
     }
 
