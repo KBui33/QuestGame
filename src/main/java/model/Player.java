@@ -8,14 +8,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Player implements Serializable {
+public class Player implements Playable, Serializable {
     private int playerId;
-    private List<Card> cards;
+    private final List<Card> cards;
     private RankCard rankCard;
     private int shields;
 
     public Player() {
-        cards = new ArrayList<Card>();
+        cards = new ArrayList<>();
         rankCard = new RankCard(Rank.SQUIRE);
         shields = 0;
     }
@@ -25,12 +25,12 @@ public class Player implements Serializable {
         this.playerId = playerId;
     }
 
-    public void addCard(Card card) {
-        this.cards.add(card);
+    public boolean addCard(Card card) {
+        return this.cards.add(card);
     }
 
-    public void addCards(ArrayList<Card> cards) {
-        this.cards.addAll(cards);
+    public boolean addCards(ArrayList<Card> cards) {
+        return this.cards.addAll(cards);
     }
 
     public Card discardCard(int cardIndex) {
@@ -89,24 +89,23 @@ public class Player implements Serializable {
         Rank currentRank = rankCard.getRank();
         boolean shouldIncrementRank = false;
         switch (currentRank) {
-            case SQUIRE: {
-                if(this.shields >= 5) {
+            case SQUIRE -> {
+                if (this.shields >= 5) {
                     shouldIncrementRank = true;
                     this.shields -= 5;
                 }
-                break;
-            } case KNIGHT: {
-                if(this.shields >= 7) {
+            }
+            case KNIGHT -> {
+                if (this.shields >= 7) {
                     shouldIncrementRank = true;
                     this.shields -= 7;
                 }
-                break;
-            } case CHAMPION_KNIGHT: {
-                if(this.shields >= 10) {
+            }
+            case CHAMPION_KNIGHT -> {
+                if (this.shields >= 10) {
                     shouldIncrementRank = true;
                     this.shields -= 10;
                 }
-                break;
             }
         }
 
@@ -117,8 +116,7 @@ public class Player implements Serializable {
     public boolean equals(Object o) {
         if (o == null) return false;
         if (o == this) return true;
-        if (!(o instanceof Player)) return false;
-        Player p = (Player) o;
+        if (!(o instanceof Player p)) return false;
         return p.playerId == this.playerId;
     }
 
