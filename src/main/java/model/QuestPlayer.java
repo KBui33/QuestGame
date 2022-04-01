@@ -62,7 +62,7 @@ public class QuestPlayer extends Player implements Serializable {
         if (o == this) return true;
         if (!(o instanceof QuestPlayer)) return false;
         QuestPlayer p = (QuestPlayer) o;
-        return p.getPlayerId() == this.getPlayerId();
+        return p.player.equals(this.player);
     }
 
 }

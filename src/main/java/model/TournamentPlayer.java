@@ -31,7 +31,6 @@ public class TournamentPlayer extends Player implements Serializable {
 
     public void setCardsUsed(ArrayList<Card> playerQuestCardsUsed) {
         this.cardsUsed = new ArrayList<>(playerQuestCardsUsed);
-        System.out.println("== Used: " + this.cardsUsed.size());
     }
 
     public ArrayList<Card> getCardsUsed() {
@@ -48,8 +47,6 @@ public class TournamentPlayer extends Player implements Serializable {
                 // Impl later
             }
         }
-
-        System.out.println("== BP: " + battlePoints);
         return battlePoints;
     }
 
@@ -72,7 +69,7 @@ public class TournamentPlayer extends Player implements Serializable {
         if (o == this) return true;
         if (!(o instanceof TournamentPlayer)) return false;
         TournamentPlayer p = (TournamentPlayer) o;
-        return p.getPlayerId() == this.getPlayerId();
+        return p.player.equals(this.player);
     }
 
 

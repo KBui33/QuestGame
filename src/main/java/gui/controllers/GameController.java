@@ -791,7 +791,9 @@ public class GameController {
                     waitTurn();
                 });
             });
-
+        } else if (commandName.equals(TournamentCommandName.PLAYER_TAKE_TOURNAMENT_SHIELDS)) { // Receive tournament shields
+            System.out.println("== As tournament winner, I receive tournament shields");
+            if (command.getPlayer() != null) updatePlayer(command.getPlayer()); // Update player
         }
     }
 

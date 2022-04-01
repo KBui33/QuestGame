@@ -48,13 +48,13 @@ public class TournamentRunner extends Runner {
             ArrayList<TournamentPlayer> winners  = tournament.getCurrentPlayers();
             System.out.println("== Tournament:\twinners -> " + winners.size() + "\tlosers -> " + losers.size());
 
-            // Distribute shields to winners
-            tournament.distributeShields();
-
             // Send end tournament command to all participants
             takeEndTournamentTurns(server, gameState, tournament);
 
             waitForResponses();
+
+            // Distribute shields to winners
+            distributeTournamentShields(server, gameState, tournament);
 
             server.notifyClients(new TournamentCommand(TournamentCommandName.TOURNAMENT_COMPLETED));
 
@@ -120,11 +120,6 @@ public class TournamentRunner extends Runner {
     }
 
     private void takeEndTournamentTurns(Server server, InternalGameState gameState, Tournament tournament) {
-
-        // TESTING
-        for(TournamentPlayer pl: tournament.getCurrentPlayers()) {
-            System.out.println("== Player: " + pl.getPlayerId() + " BP: " + pl.calculateBattlePoints());
-        }
         for (TournamentPlayer tournamentPlayer : tournament.getPlayers()) {
             tournament.setCurrentTurnPlayer(tournamentPlayer);
             int playerId = tournamentPlayer.getPlayerId();
@@ -138,6 +133,22 @@ public class TournamentRunner extends Runner {
             endTournamentCommand.setPlayer(tournamentPlayer.getPlayer());
             endTournamentCommand.setTournament(tournament);
             server.notifyClientByPlayerId(playerId, endTournamentCommand);
+        }
+    }
+
+    private void distributeTournamentShields(Server server, InternalGameState gameState, Tournament tournament) {
+        tournament.distributeShields();
+        for (TournamentPlayer tournamentPlayer : tournament.getCurrentPlayers()) {
+            tournament.setCurrentTurnPlayer(tournamentPlayer);
+            int playerId = tournamentPlayer.getPlayerId();
+
+            System.out.println("== Tournament runner says: Sending tournament shields to player " + playerId);
+            gameState.setGameStatus(GameStatus.DISTRIBUTING_TOURNAMENT_SHIELDS);
+
+            TournamentCommand takeTournamentShieldsCommand = new TournamentCommand(TournamentCommandName.PLAYER_TAKE_TOURNAMENT_SHIELDS);
+            takeTournamentShieldsCommand.setPlayerId(playerId);
+            takeTournamentShieldsCommand.setPlayer(tournamentPlayer.getPlayer());
+            server.notifyClientByPlayerId(playerId, takeTournamentShieldsCommand);
         }
     }
 
