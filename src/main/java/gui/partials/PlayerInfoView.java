@@ -1,5 +1,6 @@
 package gui.partials;
 
+import component.card.Rank;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -35,8 +36,16 @@ public class PlayerInfoView extends VBox {
     }
 
     public void updatePlayer(Player p) {
-        name.setText("Player " + p.getPlayerId());
-        shieldsView.setShields(p.getShields());
-        rankCard.setCard(p.getRankCard());
+        if (p.getRankCard().getRank() == Rank.ROUND_TABLE_KNIGHT) {
+            shieldsView.setVisible(false);
+            rankCard.setVisible(false);
+            name.setText("Player " + p.getPlayerId() + " - Knight of the Round Table");
+        } else {
+            shieldsView.setVisible(true);
+            rankCard.setVisible(true);
+            name.setText("Player " + p.getPlayerId());
+            shieldsView.setShields(p.getShields());
+            rankCard.setCard(p.getRankCard());
+        }
     }
 }
