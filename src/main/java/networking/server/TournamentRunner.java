@@ -14,50 +14,63 @@ public class TournamentRunner extends Runner {
             Tournament tournament = gameState.getCurrentTournament();
 
             gameState.setGameStatus(GameStatus.RUNNING_TOURNAMENT);
-            tournament.startTournament();
-            server.notifyClients(new TournamentCommand(TournamentCommandName.TOURNAMENT_STARTED));
+            boolean shouldStartTournament = tournament.startTournament();
 
             shouldRespond = 0;
             server.resetNumResponded(CommandType.TOURNAMENT);
 
-            // Deal adventure cards to participants
-            System.out.println("== Tournament runner says: Dealing an adventure card to each participant");
-            for(TournamentPlayer tournamentPlayer: tournament.getCurrentPlayers()) {
-                tournament.setCurrentTurnPlayer(tournamentPlayer);
-                int playerId = tournamentPlayer.getPlayerId();
-                shouldRespond++;
+            if(!shouldStartTournament) { // Only one player joined tournament
+                // Send end tournament command to player
+                takeEndTournamentTurns(server, gameState, tournament);
 
-                System.out.println("== Tournament runner says: Sending tournament adventure card to player " + playerId);
-                gameState.setGameStatus(GameStatus.TAKING_TOURNAMENT_CARD);
+                waitForResponses();
 
-                TournamentCommand tournamentCardCommand = new TournamentCommand(TournamentCommandName.PLAYER_TAKE_TOURNAMENT_CARD);
-                tournamentCardCommand.setTournament(tournament);
-                tournamentCardCommand.setCard(gameState.drawAdventureCard());
-                server.notifyClientByPlayerId(playerId, tournamentCardCommand);
+                // Distribute shields to single player
+                distributeTournamentShields(server, gameState, tournament);
+            } else {
+
+                server.notifyClients(new TournamentCommand(TournamentCommandName.TOURNAMENT_STARTED));
+
+
+                // Deal adventure cards to participants
+                System.out.println("== Tournament runner says: Dealing an adventure card to each participant");
+                for (TournamentPlayer tournamentPlayer : tournament.getCurrentPlayers()) {
+                    tournament.setCurrentTurnPlayer(tournamentPlayer);
+                    int playerId = tournamentPlayer.getPlayerId();
+                    shouldRespond++;
+
+                    System.out.println("== Tournament runner says: Sending tournament adventure card to player " + playerId);
+                    gameState.setGameStatus(GameStatus.TAKING_TOURNAMENT_CARD);
+
+                    TournamentCommand tournamentCardCommand = new TournamentCommand(TournamentCommandName.PLAYER_TAKE_TOURNAMENT_CARD);
+                    tournamentCardCommand.setTournament(tournament);
+                    tournamentCardCommand.setCard(gameState.drawAdventureCard());
+                    server.notifyClientByPlayerId(playerId, tournamentCardCommand);
+                }
+
+                waitForResponses();
+
+                // Player take turns (Choose weapons, etc...)
+                takeTurns(server, gameState, tournament);
+
+                waitForResponses();
+
+                // Find tournament winners and losers
+                ArrayList<TournamentPlayer> losers = tournament.computeWinners();
+                ArrayList<TournamentPlayer> winners = tournament.getCurrentPlayers();
+                System.out.println("== Tournament:\twinners -> " + winners.size() + "\tlosers -> " + losers.size());
+
+                // Send end tournament command to all participants
+                takeEndTournamentTurns(server, gameState, tournament);
+
+                waitForResponses();
+
+                // Distribute shields to winners
+                tournament.distributeShields();
+                distributeTournamentShields(server, gameState, tournament);
+
+                server.notifyClients(new TournamentCommand(TournamentCommandName.TOURNAMENT_COMPLETED));
             }
-
-            waitForResponses();
-
-            // Player take turns (Choose weapons, etc...)
-            takeTurns(server, gameState, tournament);
-
-            waitForResponses();
-
-            // Find tournament winners and losers
-            ArrayList<TournamentPlayer> losers = tournament.computeWinners();
-            ArrayList<TournamentPlayer> winners  = tournament.getCurrentPlayers();
-            System.out.println("== Tournament:\twinners -> " + winners.size() + "\tlosers -> " + losers.size());
-
-            // Send end tournament command to all participants
-            takeEndTournamentTurns(server, gameState, tournament);
-
-            waitForResponses();
-
-            // Distribute shields to winners
-            distributeTournamentShields(server, gameState, tournament);
-
-            server.notifyClients(new TournamentCommand(TournamentCommandName.TOURNAMENT_COMPLETED));
-
             gameState.setGameStatus(GameStatus.RUNNING);
 
             shouldStopRunner();
@@ -137,7 +150,6 @@ public class TournamentRunner extends Runner {
     }
 
     private void distributeTournamentShields(Server server, InternalGameState gameState, Tournament tournament) {
-        tournament.distributeShields();
         for (TournamentPlayer tournamentPlayer : tournament.getCurrentPlayers()) {
             tournament.setCurrentTurnPlayer(tournamentPlayer);
             int playerId = tournamentPlayer.getPlayerId();

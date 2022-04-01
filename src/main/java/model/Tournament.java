@@ -33,9 +33,9 @@ public class Tournament implements Serializable {
         this.currentTurnPlayer = currentTurnPlayer;
     }
 
-    public void startTournament(){
+    public boolean startTournament(){
         this.currentPlayers = new ArrayList<>(players);
-        // checkPlayers(); REMOVE FOR NOW
+        return checkPlayers();
     }
 
     public void setTournamentCard(TournamentCard tournamentCard) {
@@ -70,11 +70,13 @@ public class Tournament implements Serializable {
     /**
      * Checks if there is only one player in the tournament
      * */
-    public void checkPlayers(){
+    public boolean checkPlayers(){
         if(currentPlayers.size() == 1) {
-            currentPlayers.get(0)
-                    .incrementShields(1 + tournamentCard.getShields());
+            currentPlayers.get(0).incrementShields(1 + tournamentCard.getShields());
+            return false;
         }
+
+        return true;
     }
 
     /**

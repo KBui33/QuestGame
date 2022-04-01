@@ -14,6 +14,7 @@ public class TournamentPlayer extends Player implements Serializable {
 
     public TournamentPlayer(Player player) {
         this.player = player;
+        this.cardsUsed = new ArrayList<>();
     }
 
     public Player getPlayer() {
