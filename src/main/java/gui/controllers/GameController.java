@@ -752,6 +752,7 @@ public class GameController {
             view.getHud().getCurrentStateText().setText("Prepare for Battle");
 
             Platform.runLater(() -> {
+                disableView(false);
                 tournamentController.pickCards(tournament, cards -> {
                     // send cards picked to server
                     TournamentCommand takeTournamentTurnCommand = (TournamentCommand) defaultServerCommand(new TournamentCommand(TournamentCommandName.TAKE_TOURNAMENT_TURN));
@@ -760,7 +761,6 @@ public class GameController {
                     if (tookTournamentTurnCommand.getPlayer() != null) updatePlayer(tookTournamentTurnCommand.getPlayer());
                     waitTurn();
                 });
-                disableView(false);
             });
 
         } else if (commandName.equals(TournamentCommandName.TOURNAMENT_WON)) { // TODO::Remove/Not needed
