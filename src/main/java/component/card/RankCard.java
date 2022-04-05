@@ -1,6 +1,6 @@
 package component.card;
 
-public class RankCard extends Card{
+public class RankCard extends Card implements Battleable{
 
     private Rank rank;
 
