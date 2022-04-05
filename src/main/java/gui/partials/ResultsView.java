@@ -8,6 +8,11 @@ import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 
+/**
+ * @author James DiNovo
+ *
+ * Display results to the user in the form of a list
+ */
 public class ResultsView extends VBox {
 
     public ResultsView() {

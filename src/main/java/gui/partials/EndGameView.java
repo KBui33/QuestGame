@@ -7,6 +7,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
+/**
+ * @author James DiNovo
+ *
+ * Display end of game results to user
+ */
 public class EndGameView extends BorderPane {
     private Text headerText, infoText;
     private VBox textBox;

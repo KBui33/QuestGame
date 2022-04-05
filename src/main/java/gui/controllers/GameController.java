@@ -1,6 +1,7 @@
 package gui.controllers;
 
 import component.card.*;
+import gui.controllers.event.EventController;
 import gui.controllers.quest.QuestController;
 import gui.controllers.quest.QuestSetupController;
 import gui.controllers.tournament.TournamentController;
@@ -685,6 +686,18 @@ public class GameController {
             Card eventCard = command.getCard();
 
             // TODO:: make EventSetupController view and send event over
+
+            Platform.runLater(() -> {
+                EventController eventController = new EventController(gc, (EventCard) eventCard);
+                eventController.showNonInteractiveEvent((EventCard) eventCard, () -> {
+                    // TODO :: - send command to the server
+                });
+
+//                eventController.showInteractiveEvent((EventCard) eventCard, cards, () -> {
+//                    // TODO :: - send command to the server
+//                });
+            });
+
             setUpEvent((EventCard) eventCard);
         } else if (commandName.equals(EventCommandName.EVENT_EXTRA_INFO)) {
             System.out.println("== Got extra stuff");
@@ -732,8 +745,10 @@ public class GameController {
 
         } else if (commandName.equals(TournamentCommandName.NO_PLAYER_JOINED_TOURNAMENT)) { // Handle if no player joins the tournament
             System.out.println("== No player joined tournament ");
-
-            AlertBox.alert("Nobody else joined the tournament so you win by default.");
+            // if no player joins the tournament just carry on with game?
+//            Platform.runLater(() -> {
+//                AlertBox.alert("Nobody else joined the tournament so you win by default.");
+//            });
         } else if (commandName.equals(TournamentCommandName.PLAYER_TAKE_TOURNAMENT_CARD)) { // Handle accepting/discarding tournament adventure card
             System.out.println("== It's my turn to accept/discard tournament adventure card");
             Card tournamentAdventureCard = command.getCard();
@@ -752,6 +767,7 @@ public class GameController {
             view.getHud().getCurrentStateText().setText("Prepare for Battle");
 
             Platform.runLater(() -> {
+                disableView(false);
                 tournamentController.pickCards(tournament, cards -> {
                     // send cards picked to server
                     TournamentCommand takeTournamentTurnCommand = (TournamentCommand) defaultServerCommand(new TournamentCommand(TournamentCommandName.TAKE_TOURNAMENT_TURN));
@@ -760,22 +776,8 @@ public class GameController {
                     if (tookTournamentTurnCommand.getPlayer() != null) updatePlayer(tookTournamentTurnCommand.getPlayer());
                     waitTurn();
                 });
-                disableView(false);
             });
 
-        } else if (commandName.equals(TournamentCommandName.TOURNAMENT_WON)) { // TODO::Remove/Not needed
-            System.out.println("== I just won the tournament.");
-            Card tournamentAdventureCard = command.getCard();
-            Tournament tournament = command.getTournament();
-
-            // TODO:: GUI Stuff
-
-        } else if (commandName.equals(TournamentCommandName.TOURNAMENT_LOST)) { // TODO::Remove/Not needed
-            System.out.println("== I just lost the tournament");
-            Card tournamentAdventureCard = command.getCard();
-            Tournament tournament = command.getTournament();
-
-            // TODO:: GUI Stuff
         } else if (commandName.equals(TournamentCommandName.PLAYER_END_TOURNAMENT)) { // Complete tournament
             System.out.println("== As tournament participant, I end the tournament");
             view.getHud().getCurrentStateText().setText("Tournament Over");

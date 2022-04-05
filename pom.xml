@@ -65,9 +65,9 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>gui.main.ClientApplication</mainClass>
-                            <launcher>app</launcher>
-                            <jlinkZipName>app</jlinkZipName>
-                            <jlinkImageName>app</jlinkImageName>
+                            <launcher>Quest</launcher>
+                            <jlinkZipName>Quest</jlinkZipName>
+                            <jlinkImageName>Quest</jlinkImageName>
                             <noManPages>true</noManPages>
                             <stripDebug>true</stripDebug>
                             <noHeaderFiles>true</noHeaderFiles>
