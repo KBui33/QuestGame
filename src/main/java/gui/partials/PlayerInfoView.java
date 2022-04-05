@@ -35,7 +35,7 @@ public class PlayerInfoView extends VBox {
     }
 
     public void updatePlayer(Player p) {
-        name.setText("Player " + p.getPlayerId());
+        name.setText("Player " + p.getPlayerNumber());
         shieldsView.setShields(p.getShields());
         rankCard.setCard(p.getRankCard());
     }

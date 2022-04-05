@@ -7,7 +7,9 @@ import component.deck.Deck;
 import component.deck.StoryDeck;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -76,6 +78,7 @@ public class InternalGameState implements BaseGameState, Serializable {
         adventureDeck.init();
         storyDeck.shuffle();
         adventureDeck.shuffle();
+        assignPlayerNumbers();
         dealAdventureCards(12); // Deal 12 adventure cards to each player
         gameStatus = GameStatus.STARTED;
     }
@@ -177,10 +180,26 @@ public class InternalGameState implements BaseGameState, Serializable {
     public ArrayList<Player> getWinners() {
         ArrayList<Player> winners = new ArrayList<>();
         for (Player player: players.values()) { // Find players with rank knight of the round table
-            if(player.getRank().equals(Rank.ROUND_TABLE_KNIGHT)) winners.add(player);
+            if(player.getRank().equals(Rank.KNIGHT)) winners.add(player);
         }
 
         return winners;
+    }
+
+    private void assignPlayerNumbers() {
+        int[] playerIds = new int[getNumPlayers()];
+
+        int i = 0;
+        for(Player player: players.values()) {
+            playerIds[i] = player.getPlayerId();
+            i++;
+        }
+
+        Arrays.sort(playerIds);
+
+        for (int j = 0; j < playerIds.length; j++) {
+            players.get(playerIds[j]).setPlayerNumber(j + 1);
+        }
     }
 
     public void resetGame() {

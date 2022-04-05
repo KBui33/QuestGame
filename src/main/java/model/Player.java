@@ -11,6 +11,7 @@ import java.util.List;
 
 public class Player implements Playable, Serializable {
     private int playerId;
+    private int playerNumber;
     private final List<Card> cards;
     private RankCard rankCard;
     private int shields;
@@ -52,6 +53,14 @@ public class Player implements Playable, Serializable {
 
     public void setPlayerId(int playerId) {
         this.playerId = playerId;
+    }
+
+    public int getPlayerNumber() {
+        return playerNumber;
+    }
+
+    public void setPlayerNumber(int playerNumber) {
+        this.playerNumber = playerNumber;
     }
 
     public List<Card> getCards() {
