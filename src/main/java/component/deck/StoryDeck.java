@@ -25,37 +25,37 @@ public class StoryDeck extends Deck {
             JSONArray tournaments = (JSONArray) jsonObject.get("tournaments");
 
             Iterator<JSONObject> it = quests.iterator();
-            while(it.hasNext()) {
-                JSONObject obj = (JSONObject) it.next();
-                String title = (String)  obj.get("title");
-                String image = (String) obj.get("image");
-                String foe = (String) obj.get("foe");
-                Long stages = (Long) obj.get("stages");
-                this.cards.add(new QuestCard(title, image, Math.toIntExact(stages), foe));
-            }
-
-//            it = events.iterator();
-//            while(it.hasNext()){
-//                JSONObject obj = it.next();
-//                String title = (String) obj.get("title");
-//                String image = (String)  obj.get("image");
-//                Long freq = (Long) obj.get("frequency");
-//                for(int i = 0 ; i < freq; i++ ){
-//                    this.cards.add(new EventCard(title, image));
-//                }
+//            while(it.hasNext()) {
+//                JSONObject obj = (JSONObject) it.next();
+//                String title = (String)  obj.get("title");
+//                String image = (String) obj.get("image");
+//                String foe = (String) obj.get("foe");
+//                Long stages = (Long) obj.get("stages");
+//                this.cards.add(new QuestCard(title, image, Math.toIntExact(stages), foe));
 //            }
 
-            it = tournaments.iterator();
-            while (it.hasNext()) {
+            it = events.iterator();
+            while(it.hasNext()){
                 JSONObject obj = it.next();
                 String title = (String) obj.get("title");
-                String image = (String) obj.get("image");
-                int shields = Math.toIntExact((Long) obj.get("shields"));
+                String image = (String)  obj.get("image");
                 Long freq = (Long) obj.get("frequency");
-                for (int i = 0; i < freq; i++) {
-                    this.cards.add(new TournamentCard(title, image, shields));
+                for(int i = 0 ; i < freq; i++ ){
+                    this.cards.add(new EventCard(title, image));
                 }
             }
+
+//            it = tournaments.iterator();
+//            while (it.hasNext()) {
+//                JSONObject obj = it.next();
+//                String title = (String) obj.get("title");
+//                String image = (String) obj.get("image");
+//                int shields = Math.toIntExact((Long) obj.get("shields"));
+//                Long freq = (Long) obj.get("frequency");
+//                for (int i = 0; i < freq; i++) {
+//                    this.cards.add(new TournamentCard(title, image, shields));
+//                }
+//            }
 
         } catch (ParseException | IOException e) {
             e.printStackTrace();

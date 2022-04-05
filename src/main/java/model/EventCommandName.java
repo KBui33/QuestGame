@@ -7,5 +7,7 @@ public enum EventCommandName implements CommandName {
     PLAYER_END_EVENT,
     EVENT_EXTRA_INFO,
     EVENT_COMPLETED,
-    FIND_CARD
+    FIND_CARD_INTERACTIVE_OR_NOT,
+    EVENT_INTERACTIVE,
+    EVENT_NON_INTERACTIVE
 }

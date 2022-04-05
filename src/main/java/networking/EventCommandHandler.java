@@ -32,14 +32,14 @@ public class EventCommandHandler extends CommandHandlerDecorator {
 
             returnCommand.setCommandName(EventCommandName.PLAYER_END_EVENT);
             returnCommand.setPlayer(player);
-            gameState.setGameStatus(GameStatus.ENDING_QUEST);
+            gameState.setGameStatus(GameStatus.ENDING_EVENT);
         }else if (commandName.equals(EventCommandName.SETUP_COMPLETE)){
             System.out.println("== Command handler says: Event is running");
 
             event = eventCommand.getEvent();
             gameState.setCurrentEvent(event);
 
-            returnCommand.setCommandName(EventCommandName.FIND_CARD);
+            returnCommand.setCommandName(EventCommandName.FIND_CARD_INTERACTIVE_OR_NOT);
             returnCommand.setPlayer(player);
 
             gameState.setGameStatus(GameStatus.FINDING_EVENT_CARD);
