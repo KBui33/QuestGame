@@ -1,16 +1,13 @@
 package gui.controllers.quest;
 
 import component.card.Card;
-import component.card.WeaponCard;
 import gui.controllers.AbstractFightController;
+import gui.controllers.CardsReceivedController;
 import gui.controllers.GameController;
-import gui.other.AlertBox;
-import gui.partials.CardView;
 import gui.partials.quest.QuestCompleteView;
 import gui.partials.quest.QuestView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
 import model.Player;
 import model.Quest;
 import utils.Callback;
@@ -124,46 +121,18 @@ public class QuestController extends AbstractFightController {
         updateQuest(quest);
         this.questView.mode(QuestView.Mode.SPONSOR_CARDS);
 
-        ObservableList<CardView> cardsAwarded = FXCollections.observableArrayList();
+        CardsReceivedController cardsReceivedController = new CardsReceivedController(parent, questView.getCardsReceivedView());
 
-        cards.forEach(card -> {
-            CardView tmp = new CardView(card);
-            if (parent.getMyHandList().size() + cards.size() > 12) {
-                tmp.getButtonBox().setVisible(true);
-                tmp.getPlayButton().setVisible(false);
-                tmp.getDiscardButton().setOnAction(e -> {
-                    parent.sponsorDiscardRewardCard(tmp.getCard());
-                    cardsAwarded.remove(tmp);
-                });
-            }
-            cardsAwarded.add(tmp);
+        cardsReceivedController.receiveCards(cards, chosen -> {
+            cleanUpGui();
+            callback.call(chosen);
         });
-
-        this.questView.getCardsReceivedView().getDeckView().setListViewItems(cardsAwarded);
-        this.questView.getCardsReceivedView().getInfoText().setText("Cards earned for sponsoring the quest.");
-
-        this.questView.getCardsReceivedView().getAcceptButton().setOnAction(e -> {
-            if (cardsAwarded.size() + parent.getMyHandList().size() > 12) {
-                AlertBox.alert("You cannot have more than 12 cards in your hand. You must choose "
-                        + ((cardsAwarded.size() + parent.getMyHandList().size()) - 12) + " cards to discard from your " +
-                        "reward.", Alert.AlertType.WARNING);
-            } else {
-                cleanUpGui();
-                ArrayList<Card> cardsKept = new ArrayList<>();
-                cardsAwarded.forEach(card -> {
-                    cardsKept.add(card.getCard());
-                });
-                callback.call(cardsKept);
-            }
-        });
-
     }
 
     private void showGui() {
         parent.getView().getMainPane().clear();
         parent.getView().getMainPane().add(this.getQuestView());
     }
-
     public QuestView getQuestView() {
         return questView;
     }

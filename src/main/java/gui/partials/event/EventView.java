@@ -68,4 +68,24 @@ public class EventView extends BorderPane {
 //        this.infoText.setText("");
         this.setCenter(null);
     }
+
+    public Text getHeaderText() {
+        return headerText;
+    }
+
+    public Text getInfoText() {
+        return infoText;
+    }
+
+    public CardView getEventCard() {
+        return eventCard;
+    }
+
+    public CardsReceivedView getCardsReceivedView() {
+        return cardsReceivedView;
+    }
+
+    public Button getContinueButton() {
+        return continueButton;
+    }
 }
