@@ -36,4 +36,9 @@ public class EventController {
 
     }
 
+    private void showGUI() {
+        parent.getView().getMainPane().clear();
+        parent.getView().getMainPane().add(this.eventView);
+    }
+
 }
