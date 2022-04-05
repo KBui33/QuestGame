@@ -73,6 +73,7 @@ public class QuestView extends BorderPane {
         scsv = new CardSelectionView();
         questCompleteView = new QuestCompleteView();
         cardsReceivedView = new CardsReceivedView();
+        cardsReceivedView.getInfoText().setText("Cards earned for sponsoring the quest.");
 
     }
 

@@ -49,6 +49,7 @@ public class EventView extends BorderPane {
         this.setTop(infoBox);
 
         cardsReceivedView = new CardsReceivedView();
+        cardsReceivedView.getInfoText().setText("Cards earned from event.");
     }
 
     public void mode(EventView.Mode c) {
