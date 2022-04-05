@@ -206,7 +206,7 @@ public class InternalGameState implements BaseGameState, Serializable {
         players.clear();
         storyDeck.clear();
         adventureDeck.clear();
-        nextPlayerId = 0;
+        nextPlayerId = 1;
         gameStatus = GameStatus.READY;
         currentQuest = null;
         currentTournament = null;
