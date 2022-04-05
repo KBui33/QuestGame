@@ -179,9 +179,10 @@ public class QuestController extends AbstractFightController {
             cardsAwarded.add(tmp);
         });
 
-        this.questView.getQuestSponsorCardsView().getDeckView().setListViewItems(cardsAwarded);
+        this.questView.getCardsReceivedView().getDeckView().setListViewItems(cardsAwarded);
+        this.questView.getCardsReceivedView().getInfoText().setText("Cards earned for sponsoring the quest.");
 
-        this.questView.getQuestSponsorCardsView().getAcceptButton().setOnAction(e -> {
+        this.questView.getCardsReceivedView().getAcceptButton().setOnAction(e -> {
             if (cardsAwarded.size() + parent.getMyHandList().size() > 12) {
                 AlertBox.alert("You cannot have more than 12 cards in your hand. You must choose "
                         + ((cardsAwarded.size() + parent.getMyHandList().size()) - 12) + " cards to discard from your " +

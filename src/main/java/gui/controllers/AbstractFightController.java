@@ -8,6 +8,11 @@ import javafx.collections.ObservableList;
 
 import java.util.HashSet;
 
+/**
+ * @author James DiNovo
+ *
+ * Shared controller for quests and tournaments to allow the selection of weapons for battle
+ */
 public abstract class AbstractFightController {
     protected ObservableList<CardView> weaponCards;
     protected HashSet<String> weaponNames;

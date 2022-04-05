@@ -7,6 +7,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import model.Player;
 
+/**
+ * @author James DiNovo
+ *
+ * Display player current state to user
+ */
 public class PlayerInfoView extends VBox {
 
     private ShieldsView shieldsView;

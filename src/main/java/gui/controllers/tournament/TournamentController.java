@@ -18,6 +18,11 @@ import utils.CallbackEmpty;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+/**
+ * @author James DiNovo
+ *
+ * Tournament gui controller for handling display of information to user and input from user
+ */
 public class TournamentController extends AbstractFightController {
 
     Tournament tournament;

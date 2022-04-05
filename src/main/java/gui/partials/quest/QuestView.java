@@ -2,6 +2,7 @@ package gui.partials.quest;
 
 import gui.partials.CardSelectionView;
 import gui.partials.CardView;
+import gui.partials.CardsReceivedView;
 import javafx.geometry.Pos;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -29,7 +30,7 @@ public class QuestView extends BorderPane {
     private StageCompleteView stageCompletedView;
     private CardSelectionView scsv;
     private QuestCompleteView questCompleteView;
-    private QuestSponsorCardsView questSponsorCardsView;
+    private gui.partials.CardsReceivedView cardsReceivedView;
 
     public static final String STAGE_TEXT = "Stage: ";
 
@@ -71,7 +72,7 @@ public class QuestView extends BorderPane {
         stageCompletedView = new StageCompleteView();
         scsv = new CardSelectionView();
         questCompleteView = new QuestCompleteView();
-        questSponsorCardsView = new QuestSponsorCardsView();
+        cardsReceivedView = new CardsReceivedView();
 
     }
 
@@ -89,7 +90,7 @@ public class QuestView extends BorderPane {
                 this.stageText.setText("Quest Complete");
                 break;
             case SPONSOR_CARDS:
-                this.setCenter(this.questSponsorCardsView);
+                this.setCenter(this.cardsReceivedView);
                 this.stageText.setText("Sponsored Quest has ended");
                 break;
             default:
@@ -121,7 +122,7 @@ public class QuestView extends BorderPane {
         return questCompleteView;
     }
 
-    public QuestSponsorCardsView getQuestSponsorCardsView() {
-        return questSponsorCardsView;
+    public CardsReceivedView getCardsReceivedView() {
+        return cardsReceivedView;
     }
 }
