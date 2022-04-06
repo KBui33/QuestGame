@@ -7,6 +7,11 @@
 
 3. At least two clients are required to connect to the server and click ready to start the game.
 
+### How to build
+
+1. Run `mvn clean install`
+
+2. The generated jar will be located at `target/quest.jar`
 
 ### Music
 

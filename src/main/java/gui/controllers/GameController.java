@@ -392,12 +392,11 @@ public class GameController {
     }
 
     private void disableView(Boolean disable) {
-        if (disable) {
-            view.getHud().getCardButtons().setVisible(false);
-            clearCardViewButtonsHighlight();
-        } else {
-            view.getHud().getCardButtons().setVisible(true);
-        }
+//        if (disable) {
+//            view.getHud().getControlButtons().setVisible(false);
+//        } else {
+//            view.getHud().getControlButtons().setVisible(true);
+//        }
         disableDecks(disable);
         hideDecks();
     }
@@ -405,6 +404,7 @@ public class GameController {
     private void disableDecks(Boolean disable) {
         if (disable) {
             view.getHud().getDeckButtons().setVisible(false);
+            clearCardViewButtonsHighlight();
         } else {
             view.getHud().getDeckButtons().setVisible(true);
         }
