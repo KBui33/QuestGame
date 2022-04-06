@@ -704,19 +704,19 @@ public class GameController {
             System.out.println("== Event is interactive");
 
             Card eventCard = command.getEvent().getEventCard();
-
-
             Platform.runLater(() -> {
                 eventController.showInteractiveEvent((EventCard) eventCard, command.getCards(), (cards) -> {
 
                 });
-
             });
         } else if (commandName.equals(EventCommandName.EVENT_NON_INTERACTIVE)){
-            Card eventCard = command.getCard();
             System.out.println("== Event not interactive");
-            Platform.runLater(() -> {
 
+            Card eventCard = command.getEvent().getEventCard();
+            Platform.runLater(() -> {
+                eventController.showNonInteractiveEvent((EventCard) eventCard, () -> {
+
+                });
             });
         }
 
