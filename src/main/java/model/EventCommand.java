@@ -4,14 +4,14 @@ import java.io.Serializable;
 
 public class EventCommand extends GameCommand implements Serializable {
     private Event event;
-    private int loseShields;
-    private int gainShields;
+    private int shields;
+    private EventCommandName shieldResult;
 
     public EventCommand() {
         super();
         commandType = CommandType.EVENT;
-        loseShields = 0;
-        gainShields = 0;
+        this.shields = 0;
+        this.shieldResult = null;
     }
 
     public EventCommand(EventCommandName commandName) {
@@ -27,26 +27,26 @@ public class EventCommand extends GameCommand implements Serializable {
         this.event = event;
     }
 
-    public int getLoseShields() {
-        return loseShields;
+    public int getShields() {
+        return shields;
     }
 
-    public int getGainShields() {
-        return gainShields;
+    public void setShields(int shields) {
+        this.shields = shields;
     }
 
-    public void setLoseShields(int loseShields) {
-        this.loseShields = loseShields;
+    public EventCommandName getShieldResult() {
+        return shieldResult;
     }
 
-    public void setGainShields(int gainShields) {
-        this.gainShields = gainShields;
+    public void setShieldResult(EventCommandName shieldResult) {
+        this.shieldResult = shieldResult;
     }
 
     @Override
     public String toString() {
         String cmd = super.toString();
-        if(event != null) cmd += "Event: " + event.getEvent().getTitle() + ", ";
+        if(event != null) cmd += "Event: " + event.getEventCard().getTitle() + ", ";
         return cmd;
     }
 

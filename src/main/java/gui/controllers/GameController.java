@@ -40,6 +40,7 @@ public class GameController {
     private GamePane view;
     private QuestController questController;
     private TournamentController tournamentController;
+    private EventController eventController;
     private final GameController gc;
 
     private final ArrayList<Callable> eventSubscriptions = new ArrayList<>();
@@ -684,12 +685,12 @@ public class GameController {
 
         if (commandName.equals(EventCommandName.EVENT_STARTED)) {
             System.out.println("== Setting up Event");
-            Card eventCard = command.getCard();
+            Card eventCard = command.getEvent().getEventCard();
 
             // TODO:: make EventSetupController view and send event over
 
             Platform.runLater(() -> {
-                EventController eventController = new EventController(gc, (EventCard) eventCard);
+                eventController = new EventController(gc, (EventCard) eventCard);
                 eventController.showNonInteractiveEvent((EventCard) eventCard, () -> {
                     // TODO :: - send command to the server
                 });
@@ -700,9 +701,33 @@ public class GameController {
             });
 
             setUpEvent((EventCard) eventCard);
-        } else if (commandName.equals(EventCommandName.EVENT_EXTRA_INFO)) {
-            System.out.println("== Got extra stuff");
+        } else if (commandName.equals(EventCommandName.EVENT_INTERACTIVE)) {
+            System.out.println("== Event is interactive");
+
+            Card eventCard = command.getEvent().getEventCard();
+            Platform.runLater(() -> {
+                eventController.showInteractiveEvent((EventCard) eventCard, command.getCards(), (cards) -> {
+                    System.out.println("interactive");
+                });
+            });
+        } else if (commandName.equals(EventCommandName.EVENT_NON_INTERACTIVE)){
+            System.out.println("== Event not interactive");
+
+            Card eventCard = command.getEvent().getEventCard();
+            Platform.runLater(() -> {
+                eventController.showNonInteractiveEvent((EventCard) eventCard, () -> {
+                    System.out.println("non int");
+                });
+            });
         }
+
+    }
+
+    public void setUpEvent(EventCard event) {
+        EventCommand eventSetupCompleteCommand = (EventCommand) defaultServerCommand(new EventCommand(EventCommandName.SETUP_COMPLETE));
+        eventSetupCompleteCommand.setEvent(new Event(event));
+        EventCommand eventSetupCompletedCommand = (EventCommand) client.sendCommand(eventSetupCompleteCommand);
+        if (eventSetupCompletedCommand.getPlayer() != null) updatePlayer(eventSetupCompletedCommand.getPlayer());
 
     }
 
@@ -800,14 +825,6 @@ public class GameController {
         }
     }
 
-
-    public void setUpEvent(EventCard event) {
-        EventCommand eventSetupCompleteCommand = (EventCommand) defaultServerCommand(new EventCommand(EventCommandName.SETUP_COMPLETE));
-        eventSetupCompleteCommand.setEvent(new Event(event));
-        EventCommand eventSetupCompletedCommand = (EventCommand) client.sendCommand(eventSetupCompleteCommand);
-        if (eventSetupCompletedCommand.getPlayer() != null) updatePlayer(eventSetupCompletedCommand.getPlayer());
-
-    }
 
     /**
      * Unsubscribe from all events

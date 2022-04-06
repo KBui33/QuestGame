@@ -53,7 +53,8 @@ public class GameRunner extends Runner {
                         System.out.println("== Game runner says: Event card played");
                         //continue;
                         //new Thread(new EventRunner(server, gameState.getCurrentEvent())).start();
-                        new Thread(new EventRunner(server)).start(); // Will eventually be replaced with EventSetupController class
+                        gameState.setCurrentEvent(new Event((EventCard) currentStoryCard));
+                        new Thread(new EventRunner()).start(); // Will eventually be replaced with EventSetupController class
                     } else if (currentStoryCard instanceof TournamentCard){ // Start tournament join quest if card is tournament card
                         System.out.println("== Game runner says: Tournament card drawn");
                         gameState.setCurrentTournament(new Tournament((TournamentCard) currentStoryCard));

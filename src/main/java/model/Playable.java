@@ -15,5 +15,6 @@ public interface Playable {
     int getPlayerId();
     RankCard getRankCard();
     void incrementShields(int inc);
+    void decrementShields(int dec);
 
 }

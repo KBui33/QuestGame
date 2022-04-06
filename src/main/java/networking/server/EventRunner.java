@@ -4,24 +4,22 @@ import component.card.Card;
 import component.card.Rank;
 import model.*;
 
+import java.io.IOException;
 import java.util.*;
 
 public class EventRunner extends Runner{
-    private Server server;
-    private InternalGameState gameState;
-    private Event event;
-
-    public EventRunner(Server server) {
-        this.server = server;
-        this.gameState = server.getGameState();
-    }
 
     @Override
-    public void loop() throws InterruptedException {
-        // Need to set card
+    public void loop() throws InterruptedException, IOException {
+
+        Server server = Server.getInstance();
+        InternalGameState gameState = server.getGameState();
+        Event event = gameState.getCurrentEvent();
+
+        // Set event and card
         gameState.setGameStatus(GameStatus.RUNNING_EVENT);
         EventCommand startEvent = new EventCommand(EventCommandName.EVENT_STARTED);
-        startEvent.setCard(gameState.getCurrentStoryCard());
+        startEvent.setEvent(event);
         server.notifyClients(startEvent);
 
         System.out.println("== Event runner says: Initializing event");
@@ -30,16 +28,15 @@ public class EventRunner extends Runner{
         // Wait for the client to get command and the card
         while (gameState.getGameStatus().equals(GameStatus.RUNNING_EVENT)) Thread.sleep(1000);
 
-        // Once setup is done, get the Event object
-        if(gameState.getGameStatus().equals(GameStatus.FINDING_EVENT_CARD)) event = gameState.getCurrentEvent();
+        shouldRespond = 0;
+        server.resetNumResponded(CommandType.EVENT);
 
-        EventCommand runningGameCommand = new EventCommand(EventCommandName.EVENT_EXTRA_INFO);
-
-        ArrayList<Player> players = null;
-        ArrayList<Card> cards = new ArrayList<>();
+        EventCommand runningGameCommand = new EventCommand(EventCommandName.EVENT_NON_INTERACTIVE);
+        runningGameCommand.setEvent(event);
+        int totalCards = 0;
         try{
             // Figure out which event is being played
-            switch(event.getEvent().getTitle()){
+            switch(event.getEventCard().getTitle()){
                 case "King's Recognition":{
                     // Can't do this rn (do not have something to keep track this card rn)
                     break;
@@ -47,18 +44,12 @@ public class EventRunner extends Runner{
                 case "Queen's Favor": {
                     // Send to the lowest rank players
                     // The Lowest rank players
-                    ArrayList<Player> eventPlayers = new ArrayList<>();
-
                     for(Player player: gameState.getPlayers()) {
-                        if (player.getRank() == Rank.SQUIRE) eventPlayers.add(player);
+                        if (player.getRank() == Rank.SQUIRE) event.addEventPlayer(player);
                     }
-                    players = eventPlayers;
 
-                    players.forEach(
-                            player -> {
-                                cards.add(gameState.drawAdventureCard());
-                                cards.add(gameState.drawAdventureCard());
-                            });
+                    runningGameCommand.setCommandName(EventCommandName.EVENT_INTERACTIVE);
+                    totalCards = 2;
                     break;
                 }
                 case "Court Called to Camelot": {
@@ -66,34 +57,32 @@ public class EventRunner extends Runner{
                     break;
                 }
                 case "Pox":{
-                    players = gameState.getPlayers();
+                    event.addArrayEventPlayers(gameState.getPlayers());
                     // Removing the drawer
                     for(Player player: gameState.getPlayers()){
                         if(player.getPlayerId()
                                 == gameState.getCurrentTurnPlayer().getPlayerId()) {
-                            players.remove(player);
+                            event.removePlayer(player);
                         }
                     }
-                    runningGameCommand.setLoseShields(1);
+                    runningGameCommand.setShieldResult(EventCommandName.EVENT_SHIELD_LOST);
+                    runningGameCommand.setShields(1);
                     break;
                 }
                 case "Prosperity Throughout the Realm": {
                     // Send to all player except drawer
                     // Need to update players with new shield values
-                    players = gameState.getPlayers();
-
-                    players.forEach(
-                            player -> {
-                                cards.add(gameState.drawAdventureCard());
-                                cards.add(gameState.drawAdventureCard());
-                            });
+                    event.addArrayEventPlayers(gameState.getPlayers());
+                    runningGameCommand.setCommandName(EventCommandName.EVENT_INTERACTIVE);
+                    totalCards = 2;
                     break;
                 }
                 case "Plague": {
                     // Send only to drawer
-                    players = new ArrayList<Player>(List.of(gameState.getCurrentTurnPlayer()));
+                    event.addArrayEventPlayers(new ArrayList<Player>(List.of(gameState.getCurrentTurnPlayer())));
                     // Need to update drawer shield
-                    runningGameCommand.setLoseShields(2);
+                    runningGameCommand.setShieldResult(EventCommandName.EVENT_SHIELD_LOST);
+                    runningGameCommand.setShields(2);
                     break;
                 }
                 case "Chivalrous Deed": {
@@ -107,10 +96,13 @@ public class EventRunner extends Runner{
                     // Getting players that match conditions
                     for (Player player: gameState.getPlayers()){
                         if (player.getRank() == Rank.SQUIRE
-                                && player.getShields() == lowestShields) players.add(player);
+                                && player.getShields() == lowestShields) {
+                            event.addEventPlayer(player);
+                        }
                     }
 
-                    runningGameCommand.setGainShields(3);
+                    runningGameCommand.setShieldResult(EventCommandName.EVENT_SHIELD_GAIN);
+                    runningGameCommand.setShields(3);
                     break;
                 }
                 case "King's Call to Arms": {
@@ -120,32 +112,77 @@ public class EventRunner extends Runner{
 
             }
 
-            //runningGameCommand.setPlayers(players);
-            runningGameCommand.setCards(cards);
-            if(players != null) event.addArrayEventPlayers(players);
-            runningGameCommand.setEvent(event);
+            // Give cards to players
+            if(runningGameCommand.getCommandName() == EventCommandName.EVENT_INTERACTIVE && totalCards != 0){
+                for(EventPlayer player: event.getEventPlayers()){
+                    int playerId = player.getPlayerId();
+                    shouldRespond++;
 
-            // Send and wait for client to apply changes to players
-            server.notifyClients(runningGameCommand);
-            gameState.setGameStatus(GameStatus.RUNNING_EVENT);
-            while (gameState.getGameStatus().equals(GameStatus.RUNNING_EVENT)) {Thread.sleep(1000);}
+                    System.out.println("== Event runner says: Sending "+ totalCards + " adventure card(s) to player " + playerId);
+                    gameState.setGameStatus(GameStatus.TAKING_EVENT_ADVENTURE_CARD);
 
-            //Update the internal state
-            System.out.println("== Event runner says: Updating internal state");
+                    ArrayList<Card> cards = new ArrayList<>();
+                    for(int i = 0; i < totalCards; i++) cards.add(gameState.drawAdventureCard());
+
+                    runningGameCommand.setCards(cards);
+                    runningGameCommand.setPlayerId(playerId);
+                    runningGameCommand.setPlayer(player.getPlayer());
+                    server.notifyClientByPlayerId(playerId, runningGameCommand);
+                }
+
+                waitForResponses();
+            }else {
+                for(EventPlayer player: event.getEventPlayers()){
+                    int playerId = player.getPlayerId();
+                    int add_lose_shields = runningGameCommand.getShields();
+
+                    if(runningGameCommand.getShieldResult().equals(EventCommandName.EVENT_SHIELD_LOST)
+                            && player.getShields() > add_lose_shields){
+                        player.decrementShields(add_lose_shields);
+                    }else if (runningGameCommand.getShieldResult().equals(EventCommandName.EVENT_SHIELD_GAIN)) {
+                        player.incrementShields(add_lose_shields);
+                    }
+
+                    runningGameCommand.setPlayerId(playerId);
+                    runningGameCommand.setPlayer(player.getPlayer());
+                    server.notifyClientByPlayerId(playerId, runningGameCommand);
+                }
+                while (gameState.getGameStatus().equals(GameStatus.FINDING_EVENT_CARD)) Thread.sleep(1000);
+            }
+
 
             // Discarding Event card
             if(gameState.getGameStatus().equals(GameStatus.ENDING_EVENT)){
-                gameState.discardStoryCard(event.getEvent());
+                gameState.discardStoryCard(gameState.getCurrentStoryCard());
             }
-            //Discard card and get new card
-            shouldStopRunner();
+
             System.out.println("== Event runner says: Ending event");
             server.notifyClients(new EventCommand(EventCommandName.EVENT_COMPLETED));
 
             gameState.setGameStatus(GameStatus.RUNNING);
+
+            shouldStopRunner();
+            System.out.println("== Event runner says: Event completed");
         }catch(Exception e){
             e.printStackTrace();
             shouldStopRunner();
+        }
+    }
+
+    public void endEventTurns(){}
+
+
+    @Override
+    protected void waitForResponses() {
+        try {
+            Server server = Server.getInstance();
+            while (server.getNumResponded(CommandType.EVENT) < shouldRespond) Thread.sleep(1000);
+            server.resetNumResponded(CommandType.EVENT);
+            shouldRespond = 0;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
