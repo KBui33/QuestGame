@@ -448,6 +448,7 @@ public class GameController {
 
 
     public void setCardViewButtonActions(CardView cardView) {
+        cardView.setSize(300);
         cardView.getDiscardButton().setOnAction(e -> {
             // send delete signal to server and await response
             System.out.println("Discarding card");
