@@ -58,6 +58,7 @@ public class QuestSetupController extends AbstractFightController {
             if (stages.isEmpty()) {
                 questSetupView.getBackButton().setVisible(false);
             }
+            questSetupView.getNextStageButton().setText("Next");
             this.questSetupView.getPromptText().setText(QuestSetupView.STAGE_PROMPT + (stages.size() + 1));
         });
 
@@ -102,7 +103,7 @@ public class QuestSetupController extends AbstractFightController {
                 });
                 callback.call(quest);
             } else {
-                if (questCard.getStages() - stages.size() < 1) {
+                if (questCard.getStages() - stages.size() <= 1) {
                     questSetupView.getNextStageButton().setText("Finish");
                 }
                 this.questSetupView.getPromptText().setText(QuestSetupView.STAGE_PROMPT + (stages.size() + 1));
