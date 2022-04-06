@@ -529,7 +529,7 @@ public class GameController {
 
                 ArrayList<String> players = new ArrayList<>();
                 winners.forEach(w -> {
-                    players.add("Player " + w.getPlayerId());
+                    players.add("Player " + w.getPlayerNumber());
                 });
                 endGameView.getResultsView().setItems(players);
 

@@ -49,5 +49,4 @@ public abstract class Card implements Serializable {
     public int hashCode() {
         return new HashCodeBuilder(17, 37).append(cardImg).append(title).toHashCode();
     }
-
 }

@@ -1,5 +1,6 @@
 package model;
 
+import component.card.AllyCard;
 import component.card.Card;
 import component.card.Rank;
 import component.card.RankCard;
@@ -10,6 +11,7 @@ import java.util.List;
 
 public class Player implements Playable, Serializable {
     private int playerId;
+    private int playerNumber;
     private final List<Card> cards;
     private RankCard rankCard;
     private int shields;
@@ -53,6 +55,14 @@ public class Player implements Playable, Serializable {
         this.playerId = playerId;
     }
 
+    public int getPlayerNumber() {
+        return playerNumber;
+    }
+
+    public void setPlayerNumber(int playerNumber) {
+        this.playerNumber = playerNumber;
+    }
+
     public List<Card> getCards() {
         return cards;
     }
@@ -71,7 +81,7 @@ public class Player implements Playable, Serializable {
         return shields;
     }
 
-    public int getBattlePoints() { return rankCard.getBattlePoints(); }
+    public int getBattlePoints() { return rankCard.getBattlePoints() + handBattlePoints(); }
 
     public void setShields(int shields) {
         this.shields = shields;
@@ -126,5 +136,18 @@ public class Player implements Playable, Serializable {
                 "playerId=" + playerId +
                 ", cards=" + cards +
                 '}';
+    }
+
+    /**
+     * Computes the total battle points of the cards in a player's hand
+     * @return an int, representing the battle points of all battleable cards in a player's hand (Only allies for now)
+     */
+    private int handBattlePoints() {
+        int bp = 0;
+//        for (Card card: cards) {
+//            if (card.getClass() == AllyCard.class) bp += ((AllyCard) card).getBattlePoints();
+//        }
+
+        return bp;
     }
 }

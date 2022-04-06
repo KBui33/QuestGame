@@ -1,6 +1,6 @@
 package component.card;
 
-public class WeaponCard extends Card{
+public class WeaponCard extends Card implements Battleable{
     private Integer battlePoints;
 
     public WeaponCard(String title, String cardImg, Integer battlePoints) {
@@ -8,7 +8,7 @@ public class WeaponCard extends Card{
         this.battlePoints = battlePoints;
     }
 
-    public Integer getBattlePoints() {
+    public int getBattlePoints() {
         return battlePoints;
     }
 }
