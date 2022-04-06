@@ -1,5 +1,6 @@
 package gui.panes;
 
+import gui.partials.AudioControlButton;
 import gui.partials.DeckView;
 import gui.partials.PlayerInfoView;
 import gui.partials.ShieldsView;
@@ -30,6 +31,7 @@ public class HUDPane extends BorderPane {
     private PlayerInfoView playerInfoView;
     private Text currentStateText;
     private Button showHandButton, showDiscardedButton, drawCardButton, endTurnButton;
+    private AudioControlButton audioControlButton;
 
     public DeckView getMyHand() {
         return myHand;
@@ -111,6 +113,8 @@ public class HUDPane extends BorderPane {
 
         showDiscardedButton = new Button("Discarded");
 
+        audioControlButton = new AudioControlButton();
+
         drawCardButton = new Button("Draw Card");
         drawCardButton.getStyleClass().add("success");
         drawCardButton.setVisible(false);
@@ -119,7 +123,7 @@ public class HUDPane extends BorderPane {
         endTurnButton.getStyleClass().add("warn");
 
         deckButtons.getChildren().addAll(showHandButton, showDiscardedButton);
-        cardButtons.getChildren().addAll(drawCardButton, endTurnButton);
+        cardButtons.getChildren().addAll(drawCardButton, endTurnButton, audioControlButton);
         topBar.setLeft(playerInfoView);
         topBar.setRight(currentStateText);
         setAlignment(deckButtons, Pos.BOTTOM_RIGHT);
