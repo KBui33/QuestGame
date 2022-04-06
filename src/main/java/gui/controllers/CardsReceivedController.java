@@ -26,6 +26,7 @@ public class CardsReceivedController {
 
         cards.forEach(card -> {
             CardView tmp = new CardView(card);
+            tmp.setSize(300);
             if (parent.getMyHandList().size() + cards.size() > 12) {
                 tmp.getButtonBox().setVisible(true);
                 tmp.getPlayButton().setVisible(false);
@@ -38,7 +39,6 @@ public class CardsReceivedController {
         });
 
         cardsReceivedView.getDeckView().setListViewItems(cardsAwarded);
-        cardsReceivedView.getInfoText().setText("Cards earned for sponsoring the quest.");
 
         cardsReceivedView.getAcceptButton().setOnAction(e -> {
             if (cardsAwarded.size() + parent.getMyHandList().size() > 12) {

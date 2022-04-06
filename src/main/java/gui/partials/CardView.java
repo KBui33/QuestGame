@@ -95,4 +95,9 @@ public class CardView extends StackPane {
         getDiscardButton().setOnAction(negButtonEvent);
     }
 
+    public void clearCard() {
+        card = null;
+        imageView.setImage(null);
+    }
+
 }

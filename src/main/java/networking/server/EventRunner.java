@@ -150,12 +150,7 @@ public class EventRunner extends Runner{
                 while (gameState.getGameStatus().equals(GameStatus.FINDING_EVENT_CARD)) Thread.sleep(1000);
             }
 
-
             // Discarding Event card
-            if(gameState.getGameStatus().equals(GameStatus.ENDING_EVENT)){
-                gameState.discardStoryCard(gameState.getCurrentStoryCard());
-            }
-
             System.out.println("== Event runner says: Ending event");
             server.notifyClients(new EventCommand(EventCommandName.EVENT_COMPLETED));
 
