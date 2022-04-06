@@ -6,7 +6,7 @@ import javafx.scene.media.MediaPlayer;
 import java.net.URL;
 
 public class Audio {
-    private static final URL theme = Audio.class.getResource("/audio/NowWeRide.mp3");
+    private static final URL theme = Audio.class.getResource("/audio/CelticAmbiance.mp3");
 
     private static MediaPlayer mediaPlayer;
 

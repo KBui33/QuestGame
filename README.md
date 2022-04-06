@@ -10,6 +10,6 @@
 
 ### Music
 
-Music: Now We Ride by Alexander Nakarada (www.serpentsoundstudios.com) \
+Music: Celtic Ambiance by Alexander Nakarada (www.serpentsoundstudios.com) \
 Licensed under Creative Commons BY Attribution 4.0 License
 http://creativecommons.org/licenses/by/4.0/
