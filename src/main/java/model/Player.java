@@ -85,6 +85,13 @@ public class Player implements Playable, Serializable {
         System.out.println("== After: " + shields);
     }
 
+    public void decrementShields(int dec){
+        System.out.println("== Before: " + shields + " Received: " + dec);
+        shields -= dec;
+        this.incrementRank();
+        System.out.println("== After: " + shields);
+    }
+
     public void incrementRank() {
         Rank currentRank = rankCard.getRank();
         boolean shouldIncrementRank = false;

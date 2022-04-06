@@ -4,6 +4,7 @@ import component.card.Card;
 import component.card.Rank;
 import model.*;
 
+import java.io.IOException;
 import java.util.*;
 
 public class EventRunner extends Runner{
@@ -11,17 +12,17 @@ public class EventRunner extends Runner{
     private InternalGameState gameState;
     private Event event;
 
-    public EventRunner(Server server) {
-        this.server = server;
-        this.gameState = server.getGameState();
-    }
-
     @Override
-    public void loop() throws InterruptedException {
-        // Need to set card
+    public void loop() throws InterruptedException, IOException {
+
+        Server server = Server.getInstance();
+        InternalGameState gameState = server.getGameState();
+        Event event = gameState.getCurrentEvent();
+
+        // Set event and card
         gameState.setGameStatus(GameStatus.RUNNING_EVENT);
         EventCommand startEvent = new EventCommand(EventCommandName.EVENT_STARTED);
-        startEvent.setCard(gameState.getCurrentStoryCard());
+        startEvent.setEvent(event);
         server.notifyClients(startEvent);
 
         System.out.println("== Event runner says: Initializing event");
@@ -34,6 +35,7 @@ public class EventRunner extends Runner{
         server.resetNumResponded(CommandType.EVENT);
 
         EventCommand runningGameCommand = new EventCommand(EventCommandName.EVENT_NON_INTERACTIVE);
+        runningGameCommand.setCard(gameState.getCurrentStoryCard());
         ArrayList<Player> players = new ArrayList<>();
         int totalCards = 0;
         try{
@@ -67,7 +69,8 @@ public class EventRunner extends Runner{
                             players.remove(player);
                         }
                     }
-                    runningGameCommand.setShields(-1);
+                    runningGameCommand.setShieldResult(EventCommandName.EVENT_SHIELD_LOST);
+                    runningGameCommand.setShields(1);
                     break;
                 }
                 case "Prosperity Throughout the Realm": {
@@ -82,7 +85,8 @@ public class EventRunner extends Runner{
                     // Send only to drawer
                     players = new ArrayList<Player>(List.of(gameState.getCurrentTurnPlayer()));
                     // Need to update drawer shield
-                    runningGameCommand.setShields(-2);
+                    runningGameCommand.setShieldResult(EventCommandName.EVENT_SHIELD_LOST);
+                    runningGameCommand.setShields(2);
                     break;
                 }
                 case "Chivalrous Deed": {
@@ -101,6 +105,7 @@ public class EventRunner extends Runner{
                         }
                     }
 
+                    runningGameCommand.setShieldResult(EventCommandName.EVENT_SHIELD_GAIN);
                     runningGameCommand.setShields(3);
                     break;
                 }
@@ -131,6 +136,15 @@ public class EventRunner extends Runner{
             }else {
                 for(Player player: players){
                     int playerId = player.getPlayerId();
+
+                    int add_lose_shields = runningGameCommand.getShields();
+
+                    if(runningGameCommand.getShieldResult().equals(EventCommandName.EVENT_SHIELD_GAIN)){
+                        player.incrementShields(add_lose_shields);
+                    }else {
+                        player.decrementShields(add_lose_shields);
+                    }
+                    runningGameCommand.setEvent(event);
                     server.notifyClientByPlayerId(playerId, runningGameCommand);
                 }
 
@@ -142,19 +156,24 @@ public class EventRunner extends Runner{
 
             // Discarding Event card
             if(gameState.getGameStatus().equals(GameStatus.ENDING_EVENT)){
-                gameState.discardStoryCard(event.getEvent());
+                gameState.discardStoryCard(gameState.getCurrentStoryCard());
             }
-            //Discard card and get new card
-            shouldStopRunner();
+
             System.out.println("== Event runner says: Ending event");
             server.notifyClients(new EventCommand(EventCommandName.EVENT_COMPLETED));
 
             gameState.setGameStatus(GameStatus.RUNNING);
+
+            shouldStopRunner();
+            System.out.println("== Event runner says: Event completed");
         }catch(Exception e){
             e.printStackTrace();
             shouldStopRunner();
         }
     }
+
+    public void endEventTurns(){}
+
 
     @Override
     protected void waitForResponses() {

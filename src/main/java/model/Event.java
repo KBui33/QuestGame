@@ -27,7 +27,7 @@ public class Event implements Serializable {
         eventPlayers.forEach(this::addEventPlayer);
     }
 
-    public EventCard getEvent() {
+    public EventCard getEventCard() {
         return event;
     }
 

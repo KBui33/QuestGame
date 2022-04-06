@@ -684,7 +684,7 @@ public class GameController {
 
         if (commandName.equals(EventCommandName.EVENT_STARTED)) {
             System.out.println("== Setting up Event");
-            Card eventCard = command.getCard();
+            Card eventCard = command.getEvent().getEventCard();
 
             // TODO:: make EventSetupController view and send event over
 
@@ -706,19 +706,20 @@ public class GameController {
 
             });
         } else if (commandName.equals(EventCommandName.EVENT_NON_INTERACTIVE)){
-
             Card eventCard = command.getCard();
             System.out.println("== Event not interactive");
-            endEvent((EventCard) eventCard);
+            Platform.runLater(() -> {
+
+            });
         }
 
     }
 
-    public void endEvent(EventCard eventCard){
-        EventCommand eventFinishCommand = (EventCommand) defaultServerCommand(new EventCommand(EventCommandName.END_EVENT));
-        EventCommand eventFinishedCommand = (EventCommand) client.sendCommand(eventFinishCommand);
-        if(eventFinishedCommand.getPlayer() != null)  updatePlayer(eventFinishedCommand.getPlayer());
-    }
+//    public void endEvent(EventCard eventCard){
+//        EventCommand eventFinishCommand = (EventCommand) defaultServerCommand(new EventCommand(EventCommandName.END_EVENT));
+//        EventCommand eventFinishedCommand = (EventCommand) client.sendCommand(eventFinishCommand);
+//        if(eventFinishedCommand.getPlayer() != null)  updatePlayer(eventFinishedCommand.getPlayer());
+//    }
 
 
     public void setUpEvent(EventCard event) {
