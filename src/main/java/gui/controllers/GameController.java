@@ -702,7 +702,14 @@ public class GameController {
             setUpEvent((EventCard) eventCard);
         } else if (commandName.equals(EventCommandName.EVENT_INTERACTIVE)) {
             System.out.println("== Event is interactive");
+
+            Card eventCard = command.getEvent().getEventCard();
+
+
             Platform.runLater(() -> {
+                eventController.showInteractiveEvent((EventCard) eventCard, command.getCards(), (cards) -> {
+
+                });
 
             });
         } else if (commandName.equals(EventCommandName.EVENT_NON_INTERACTIVE)){
@@ -714,13 +721,6 @@ public class GameController {
         }
 
     }
-
-//    public void endEvent(EventCard eventCard){
-//        EventCommand eventFinishCommand = (EventCommand) defaultServerCommand(new EventCommand(EventCommandName.END_EVENT));
-//        EventCommand eventFinishedCommand = (EventCommand) client.sendCommand(eventFinishCommand);
-//        if(eventFinishedCommand.getPlayer() != null)  updatePlayer(eventFinishedCommand.getPlayer());
-//    }
-
 
     public void setUpEvent(EventCard event) {
         EventCommand eventSetupCompleteCommand = (EventCommand) defaultServerCommand(new EventCommand(EventCommandName.SETUP_COMPLETE));

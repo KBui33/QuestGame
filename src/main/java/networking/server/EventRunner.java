@@ -40,7 +40,7 @@ public class EventRunner extends Runner{
         int totalCards = 0;
         try{
             // Figure out which event is being played
-            switch(gameState.getCurrentStoryCard().getTitle()){
+            switch(event.getEventCard().getTitle()){
                 case "King's Recognition":{
                     // Can't do this rn (do not have something to keep track this card rn)
                     break;
@@ -151,12 +151,9 @@ public class EventRunner extends Runner{
                     runningGameCommand.setPlayer(player);
                     server.notifyClientByPlayerId(playerId, runningGameCommand);
                 }
-
                 while (gameState.getGameStatus().equals(GameStatus.RUNNING_EVENT)) Thread.sleep(1000);
             }
 
-            //Update the internal state
-            System.out.println("== Event runner says: Updating internal state");
 
             // Discarding Event card
             if(gameState.getGameStatus().equals(GameStatus.ENDING_EVENT)){
