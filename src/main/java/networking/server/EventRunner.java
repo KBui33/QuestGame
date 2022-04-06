@@ -8,9 +8,6 @@ import java.io.IOException;
 import java.util.*;
 
 public class EventRunner extends Runner{
-    private Server server;
-    private InternalGameState gameState;
-    private Event event;
 
     @Override
     public void loop() throws InterruptedException, IOException {
@@ -36,7 +33,6 @@ public class EventRunner extends Runner{
 
         EventCommand runningGameCommand = new EventCommand(EventCommandName.EVENT_NON_INTERACTIVE);
         runningGameCommand.setEvent(event);
-        ArrayList<Player> players = new ArrayList<>();
         int totalCards = 0;
         try{
             // Figure out which event is being played
@@ -49,7 +45,7 @@ public class EventRunner extends Runner{
                     // Send to the lowest rank players
                     // The Lowest rank players
                     for(Player player: gameState.getPlayers()) {
-                        if (player.getRank() == Rank.SQUIRE) players.add(player);
+                        if (player.getRank() == Rank.SQUIRE) event.addEventPlayer(player);
                     }
 
                     runningGameCommand.setCommandName(EventCommandName.EVENT_INTERACTIVE);
@@ -61,12 +57,12 @@ public class EventRunner extends Runner{
                     break;
                 }
                 case "Pox":{
-                    players = gameState.getPlayers();
+                    event.addArrayEventPlayers(gameState.getPlayers());
                     // Removing the drawer
                     for(Player player: gameState.getPlayers()){
                         if(player.getPlayerId()
                                 == gameState.getCurrentTurnPlayer().getPlayerId()) {
-                            players.remove(player);
+                            event.removePlayer(player);
                         }
                     }
                     runningGameCommand.setShieldResult(EventCommandName.EVENT_SHIELD_LOST);
@@ -76,14 +72,14 @@ public class EventRunner extends Runner{
                 case "Prosperity Throughout the Realm": {
                     // Send to all player except drawer
                     // Need to update players with new shield values
-                    players = gameState.getPlayers();
+                    event.addArrayEventPlayers(gameState.getPlayers());
                     runningGameCommand.setCommandName(EventCommandName.EVENT_INTERACTIVE);
                     totalCards = 2;
                     break;
                 }
                 case "Plague": {
                     // Send only to drawer
-                    players = new ArrayList<Player>(List.of(gameState.getCurrentTurnPlayer()));
+                    event.addArrayEventPlayers(new ArrayList<Player>(List.of(gameState.getCurrentTurnPlayer())));
                     // Need to update drawer shield
                     runningGameCommand.setShieldResult(EventCommandName.EVENT_SHIELD_LOST);
                     runningGameCommand.setShields(2);
@@ -101,7 +97,7 @@ public class EventRunner extends Runner{
                     for (Player player: gameState.getPlayers()){
                         if (player.getRank() == Rank.SQUIRE
                                 && player.getShields() == lowestShields) {
-                            players.add(player);
+                            event.addEventPlayer(player);
                         }
                     }
 
@@ -118,7 +114,7 @@ public class EventRunner extends Runner{
 
             // Give cards to players
             if(runningGameCommand.getCommandName() == EventCommandName.EVENT_INTERACTIVE && totalCards != 0){
-                for(Player player: players){
+                for(EventPlayer player: event.getEventPlayers()){
                     int playerId = player.getPlayerId();
                     shouldRespond++;
 
@@ -130,28 +126,28 @@ public class EventRunner extends Runner{
 
                     runningGameCommand.setCards(cards);
                     runningGameCommand.setPlayerId(playerId);
-                    runningGameCommand.setPlayer(player);
+                    runningGameCommand.setPlayer(player.getPlayer());
                     server.notifyClientByPlayerId(playerId, runningGameCommand);
                 }
 
                 waitForResponses();
             }else {
-                for(Player player: players){
+                for(EventPlayer player: event.getEventPlayers()){
                     int playerId = player.getPlayerId();
-
                     int add_lose_shields = runningGameCommand.getShields();
 
-                    if(runningGameCommand.getShieldResult().equals(EventCommandName.EVENT_SHIELD_GAIN)){
-                        player.incrementShields(add_lose_shields);
-                    }else {
+                    if(runningGameCommand.getShieldResult().equals(EventCommandName.EVENT_SHIELD_LOST)
+                            && player.getShields() > add_lose_shields){
                         player.decrementShields(add_lose_shields);
+                    }else if (runningGameCommand.getShieldResult().equals(EventCommandName.EVENT_SHIELD_GAIN)) {
+                        player.incrementShields(add_lose_shields);
                     }
 
                     runningGameCommand.setPlayerId(playerId);
-                    runningGameCommand.setPlayer(player);
+                    runningGameCommand.setPlayer(player.getPlayer());
                     server.notifyClientByPlayerId(playerId, runningGameCommand);
                 }
-                while (gameState.getGameStatus().equals(GameStatus.RUNNING_EVENT)) Thread.sleep(1000);
+                while (gameState.getGameStatus().equals(GameStatus.FINDING_EVENT_CARD)) Thread.sleep(1000);
             }
 
 
@@ -179,10 +175,13 @@ public class EventRunner extends Runner{
     @Override
     protected void waitForResponses() {
         try {
+            Server server = Server.getInstance();
             while (server.getNumResponded(CommandType.EVENT) < shouldRespond) Thread.sleep(1000);
             server.resetNumResponded(CommandType.EVENT);
             shouldRespond = 0;
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

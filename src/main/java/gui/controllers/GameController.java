@@ -706,7 +706,7 @@ public class GameController {
             Card eventCard = command.getEvent().getEventCard();
             Platform.runLater(() -> {
                 eventController.showInteractiveEvent((EventCard) eventCard, command.getCards(), (cards) -> {
-
+                    System.out.println("interactive");
                 });
             });
         } else if (commandName.equals(EventCommandName.EVENT_NON_INTERACTIVE)){
@@ -715,7 +715,7 @@ public class GameController {
             Card eventCard = command.getEvent().getEventCard();
             Platform.runLater(() -> {
                 eventController.showNonInteractiveEvent((EventCard) eventCard, () -> {
-
+                    System.out.println("non int");
                 });
             });
         }
