@@ -44,11 +44,11 @@ public class PlayerInfoView extends VBox {
         if (p.getRankCard().getRank() == Rank.ROUND_TABLE_KNIGHT) {
             shieldsView.setVisible(false);
             rankCard.setVisible(false);
-            name.setText("Player " + p.getPlayerId() + " - Knight of the Round Table");
+            name.setText("Player " + p.getPlayerNumber() + " - Knight of the Round Table");
         } else {
             shieldsView.setVisible(true);
             rankCard.setVisible(true);
-            name.setText("Player " + p.getPlayerId());
+            name.setText("Player " + p.getPlayerNumber());
             shieldsView.setShields(p.getShields());
             rankCard.setCard(p.getRankCard());
         }

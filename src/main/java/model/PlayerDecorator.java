@@ -59,6 +59,9 @@ public abstract class PlayerDecorator implements Playable, Serializable {
         this.player.incrementShields(inc);
     }
 
+    @Override
+    public void decrementShields(int dec) {this.player.decrementShields(dec);}
+
     public abstract int calculateBattlePoints();
 
     public Player getPlayer() {
@@ -80,6 +83,8 @@ public abstract class PlayerDecorator implements Playable, Serializable {
     public void resetCardsUsed() {
         cardsUsed.clear();
     }
+
+    public int getShields(){return this.player.getShields();}
 
     @Override
     public boolean equals(Object o) {

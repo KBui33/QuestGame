@@ -25,16 +25,26 @@ public class StageSetupView extends BorderPane {
     }
 
     public StageSetupView(Card card) {
-        stageCard = new CardView(card);
-        stageCard.setSize(200);
-        stageCard.getButtonBox().setVisible(true);
-        stageCard.getPlayButton().setVisible(false);
-        stageCard.getDiscardButton().setText("Remove");
+        this();
+        setStageCard(card);
+    }
+
+    public StageSetupView() {
+        stageCard = new CardView();
         setAlignment(stageCard, Pos.CENTER);
         this.setTop(stageCard);
 
         weaponsView = new DeckView();
         weaponsView.setHeight(225);
+    }
+
+    public void setStageCard(Card card) {
+        this.stageCard.setCard(card);
+        stageCard.setSize(200);
+        stageCard.getButtonBox().setVisible(true);
+        stageCard.getPlayButton().setVisible(false);
+        stageCard.getDiscardButton().setText("Remove");
+
         if (card instanceof FoeCard) {
             this.setCenter(weaponsView.getListView());
         } else {

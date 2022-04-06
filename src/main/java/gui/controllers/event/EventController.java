@@ -6,6 +6,7 @@ import gui.controllers.CardsReceivedController;
 import gui.controllers.GameController;
 import gui.partials.event.EventView;
 import model.Event;
+import model.EventCommandName;
 import utils.Callback;
 import utils.CallbackEmpty;
 
@@ -41,8 +42,17 @@ public class EventController {
         });
     }
 
-    public void showNonInteractiveEvent(EventCard event, CallbackEmpty callback) {
+    public void showNonInteractiveEvent(EventCard event, int shields, EventCommandName shieldResult, CallbackEmpty callback) {
         updateEvent(event);
+        switch (shieldResult) {
+            case EVENT_SHIELD_LOST -> {
+                eventView.getInfoText().setText(eventView.getInfoText().getText() + ": You have lost " + shields + " shields.");
+            }
+            case EVENT_SHIELD_GAIN -> {
+                eventView.getInfoText().setText(eventView.getInfoText().getText() + ": You have gained " + shields + " shields.");
+            }
+        }
+
         eventView.mode(EventView.Mode.NONINTERACTIVE);
         showGui();
 

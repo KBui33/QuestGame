@@ -1,5 +1,6 @@
 package gui.panes;
 
+import gui.partials.AudioControlButton;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -18,6 +19,7 @@ public class LobbyPane extends BorderPane {
     private VBox infoBox;
     private HBox buttonBox;
     private Button readyButton, leaveButton;
+    private AudioControlButton audioControlButton;
 
     public Text getHeader() {
         return header;
@@ -77,10 +79,18 @@ public class LobbyPane extends BorderPane {
         leaveButton.setPrefSize(150, 25);
         leaveButton.getStyleClass().add("warn");
 
+        audioControlButton = new AudioControlButton();
+        setAlignment(audioControlButton, Pos.CENTER_LEFT);
+        setMargin(audioControlButton, new Insets(5));
+
         buttonBox.getChildren().addAll(leaveButton, readyButton);
+
+        BorderPane bp = new BorderPane();
+        bp.setLeft(audioControlButton);
+        bp.setCenter(buttonBox);
 
         this.setTop(header);
         this.setCenter(infoBox);
-        this.setBottom(buttonBox);
+        this.setBottom(bp);
     }
 }

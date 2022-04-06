@@ -30,5 +30,6 @@ public enum GameStatus {
 
     ENDING_EVENT,
     FINDING_EVENT_CARD,
+    TAKING_EVENT_ADVENTURE_CARD,
     GAME_OVER
 }

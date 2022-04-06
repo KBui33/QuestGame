@@ -38,7 +38,7 @@ public class EventView extends BorderPane {
         continueButton.getStyleClass().add("success");
 
         eventCard = new CardView();
-        eventCard.setSize(200);
+        eventCard.setSize(250);
         setAlignment(eventCard, Pos.CENTER);
 
         infoBox = new VBox();

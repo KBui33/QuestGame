@@ -1,5 +1,6 @@
 package gui.panes;
 
+import gui.partials.AudioControlButton;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -22,6 +23,7 @@ public class ConnectPane extends BorderPane {
     private Label serverAddressLabel;
     private TextField serverAddress;
     private Button connectButton;
+    private AudioControlButton audioControlButton;
 
     public TextField getServerAddress() {
         return serverAddress;
@@ -49,6 +51,7 @@ public class ConnectPane extends BorderPane {
         connectButton = new Button("Connect");
         connectButton.getStyleClass().add("success");
 
+        audioControlButton = new AudioControlButton();
 
         mainColumn.getChildren().addAll(serverAddressLabel, serverAddress, connectButton);
         mainColumn.setSpacing(10);
@@ -58,6 +61,9 @@ public class ConnectPane extends BorderPane {
         setAlignment(header, Pos.CENTER);
         setMargin(header, new Insets(20));
         this.setCenter(mainColumn);
+        this.setBottom(audioControlButton);
+        setAlignment(audioControlButton, Pos.BOTTOM_LEFT);
+        setMargin(audioControlButton, new Insets(5));
 
     }
 }

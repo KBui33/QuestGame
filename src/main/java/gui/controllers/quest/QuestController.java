@@ -91,7 +91,7 @@ public class QuestController extends AbstractFightController {
 
         // get all players and when they failed or if they succeeded
         quest.getPlayers().forEach(p -> {
-            players.add("Player " + p.getPlayerId());
+            players.add("Player " + p.getPlayer().getPlayerNumber());
             System.out.println();
             Boolean res = quest.getCurrentStage().getStageResults().get(p.getPlayerId());
             outcomes.add(res != null && res ? "Passed" : "Failed");

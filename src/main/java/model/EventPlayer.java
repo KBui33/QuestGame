@@ -2,14 +2,13 @@ package model;
 
 import java.io.Serializable;
 
-public class EventPlayer extends Player implements Serializable {
-    private Player player;
-
+public class EventPlayer extends PlayerDecorator implements Serializable {
     public EventPlayer(Player player) {
-        this.player = player;
+        super(player);
     }
 
-    public Player getPlayer() {
-        return player;
+    @Override
+    public int calculateBattlePoints() {
+        return 0;
     }
 }
