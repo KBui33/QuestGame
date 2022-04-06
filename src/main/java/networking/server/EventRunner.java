@@ -35,7 +35,7 @@ public class EventRunner extends Runner{
         server.resetNumResponded(CommandType.EVENT);
 
         EventCommand runningGameCommand = new EventCommand(EventCommandName.EVENT_NON_INTERACTIVE);
-        runningGameCommand.setCard(gameState.getCurrentStoryCard());
+        runningGameCommand.setEvent(event);
         ArrayList<Player> players = new ArrayList<>();
         int totalCards = 0;
         try{
@@ -129,6 +129,8 @@ public class EventRunner extends Runner{
                     for(int i = 0; i < totalCards; i++) cards.add(gameState.drawAdventureCard());
 
                     runningGameCommand.setCards(cards);
+                    runningGameCommand.setPlayerId(playerId);
+                    runningGameCommand.setPlayer(player);
                     server.notifyClientByPlayerId(playerId, runningGameCommand);
                 }
 
@@ -144,7 +146,9 @@ public class EventRunner extends Runner{
                     }else {
                         player.decrementShields(add_lose_shields);
                     }
-                    runningGameCommand.setEvent(event);
+
+                    runningGameCommand.setPlayerId(playerId);
+                    runningGameCommand.setPlayer(player);
                     server.notifyClientByPlayerId(playerId, runningGameCommand);
                 }
 
