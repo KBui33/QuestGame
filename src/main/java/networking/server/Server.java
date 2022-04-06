@@ -145,7 +145,7 @@ public class Server implements Runnable {
         public void run() {
             try {
                 SocketChannel socketChannel = _serverSocketChannel.accept();
-                Thread.sleep(10000);
+
 
                 if (_broadcastClients.size() >= MAX_CLIENTS) {
                     System.out.println("== Server says:  Client limit reached");
@@ -175,7 +175,7 @@ public class Server implements Runnable {
 
                     System.out.println("== Server Says: New client connected");
                 }
-            } catch (IOException | ClassNotFoundException | InterruptedException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
