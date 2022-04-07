@@ -9,7 +9,7 @@
 
 ### How to build
 
-1. Run `mvn clean install`
+1. Run `mvn clean package`
 
 2. The generated jar will be located at `target/quest.jar`
 

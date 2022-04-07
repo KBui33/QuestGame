@@ -18,7 +18,7 @@ import static gui.main.Construct.SCREEN_WIDTH;
 /**
  * @author James DiNovo
  *
- * GamePane contains the main game gui
+ * HUDPane contains the main game gui and player information
  *
  */
 public class HUDPane extends BorderPane {

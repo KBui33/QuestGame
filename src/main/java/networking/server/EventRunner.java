@@ -45,8 +45,12 @@ public class EventRunner extends Runner{
                 case "Queen's Favor": {
                     // Send to the lowest rank players
                     // The Lowest rank players
-                    for(Player player: gameState.getPlayers()) {
-                        if (player.getRank() == Rank.SQUIRE) event.addEventPlayer(player);
+                    ArrayList<Player> tmp = new ArrayList<>(gameState.getPlayers());
+                    Collections.sort(tmp);
+                    // compare based only on rank not shields
+                    Rank lowestRank = tmp.get(0).getRank();
+                    for(Player player: tmp) {
+                        if (player.getRank().ordinal() <= lowestRank.ordinal()) event.addEventPlayer(player);
                     }
 
                     runningGameCommand.setCommandName(EventCommandName.EVENT_INTERACTIVE);
@@ -89,17 +93,11 @@ public class EventRunner extends Runner{
                 case "Chivalrous Deed": {
                     // Send to players with the lowest rank and low shield
                     // The lowest amount of shields a player can have
-                    int lowestShields = gameState.getPlayers()
-                            .stream()
-                            .min(Comparator.comparing(Player::getShields))
-                            .orElseThrow().getShields();
-
-                    // Getting players that match conditions
-                    for (Player player: gameState.getPlayers()){
-                        if (player.getRank() == Rank.SQUIRE
-                                && player.getShields() == lowestShields) {
-                            event.addEventPlayer(player);
-                        }
+                    ArrayList<Player> tmp = new ArrayList<>(gameState.getPlayers());
+                    Collections.sort(tmp);
+                    Player lowestPlayer = tmp.get(0);
+                    for(Player player: tmp) {
+                        if (player.compareTo(lowestPlayer) <= 0) event.addEventPlayer(player);
                     }
 
                     runningGameCommand.setShieldResult(EventCommandName.EVENT_SHIELD_GAIN);

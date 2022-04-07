@@ -700,7 +700,7 @@ public class GameController {
             });
         } else if (commandName.equals(EventCommandName.EVENT_INTERACTIVE)) {
             System.out.println("== Event is interactive");
-
+            view.getHud().getCurrentStateText().setText("Event in effect.");
             EventCard eventCard = command.getEvent().getEventCard();
             Platform.runLater(() -> {
                 eventController.showInteractiveEvent(eventCard, command.getCards(), (cards) -> {
@@ -709,11 +709,12 @@ public class GameController {
                     eventCompleteCommand.setCards(cards);
                     EventCommand eventCompletedCommand = (EventCommand) client.sendCommand(eventCompleteCommand);
                     if(eventCompletedCommand.getPlayer() != null) updatePlayer(eventCompletedCommand.getPlayer());
+                    waitTurn();
                 });
             });
         } else if (commandName.equals(EventCommandName.EVENT_NON_INTERACTIVE)){
             System.out.println("== Event not interactive");
-
+            view.getHud().getCurrentStateText().setText("Event in effect.");
             EventCard eventCard = command.getEvent().getEventCard();
             Platform.runLater(() -> {
                 eventController.showNonInteractiveEvent(eventCard, command.getShields(), command.getShieldResult(), () -> {
@@ -722,6 +723,7 @@ public class GameController {
                     EventCommand eventCompleteCommand = (EventCommand) defaultServerCommand(new EventCommand(EventCommandName.END_EVENT));
                     EventCommand eventCompletedCommand = (EventCommand) client.sendCommand(eventCompleteCommand);
                     if(eventCompletedCommand.getPlayer() != null) updatePlayer(eventCompletedCommand.getPlayer());
+                    waitTurn();
                 });
             });
         }

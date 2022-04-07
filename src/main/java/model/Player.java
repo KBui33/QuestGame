@@ -7,9 +7,10 @@ import component.card.RankCard;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
-public class Player implements Playable, Serializable {
+public class Player implements Playable, Serializable, Comparable {
     private int playerId;
     private int playerNumber;
     private final List<Card> cards;
@@ -156,5 +157,18 @@ public class Player implements Playable, Serializable {
 //        }
 
         return bp;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Player otherPlayer = (Player) o;
+        // compare players based on rank first
+        int res = this.getRank().ordinal() - otherPlayer.getRank().ordinal();
+        if (res == 0) {
+            // if their ranks are identical use shields
+            return this.getShields() - otherPlayer.getShields();
+        } else {
+            return res;
+        }
     }
 }
