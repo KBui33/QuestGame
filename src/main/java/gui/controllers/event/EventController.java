@@ -5,7 +5,6 @@ import component.card.EventCard;
 import gui.controllers.CardsReceivedController;
 import gui.controllers.GameController;
 import gui.partials.event.EventView;
-import model.Event;
 import model.EventCommandName;
 import utils.Callback;
 import utils.CallbackEmpty;

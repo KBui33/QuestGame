@@ -3,7 +3,6 @@ package gui.other;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
-import java.net.URL;
 
 /**
  * @author James DiNovo
@@ -11,14 +10,12 @@ import java.net.URL;
  * Manages mediaplayer. Plays game audio through entire game.
  */
 public class Audio {
-    private static final URL theme = Audio.class.getResource("/audio/CelticAmbiance.mp3");
 
     private static MediaPlayer mediaPlayer;
 
     public static void theme() {
 
-        assert theme != null;
-        Media media = new Media(theme.toString());
+        Media media = new Media(String.valueOf(Audio.class.getResource("/audio/CelticAmbiance.mp3")));
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setVolume(0.1);
         mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
