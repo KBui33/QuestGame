@@ -1,8 +1,6 @@
 package component.deck;
 
 import component.card.Card;
-import component.card.EventCard;
-import model.Event;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,10 +20,7 @@ public abstract class Deck implements Serializable {
     public abstract void init();
 
     public void shuffle(){
-        // shuffle a lot
-        for (int i = 0; i < 7; i++) {
-            Collections.shuffle(cards);
-        }
+        Collections.shuffle(cards);
 
     }
 
