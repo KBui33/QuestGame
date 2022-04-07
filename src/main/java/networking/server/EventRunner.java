@@ -11,30 +11,31 @@ public class EventRunner extends Runner{
 
     @Override
     public void loop() throws InterruptedException, IOException {
-
-        Server server = Server.getInstance();
-        InternalGameState gameState = server.getGameState();
-        Event event = gameState.getCurrentEvent();
-
-        // Set event and card
-        gameState.setGameStatus(GameStatus.RUNNING_EVENT);
-        EventCommand startEvent = new EventCommand(EventCommandName.EVENT_STARTED);
-        startEvent.setEvent(event);
-        server.notifyClients(startEvent);
-
-        System.out.println("== Event runner says: Initializing event");
-        System.out.println("== Event runner says: Event card " + gameState.getCurrentStoryCard().getTitle() + " in play");
-
-        // Wait for the client to get command and the card
-        while (gameState.getGameStatus().equals(GameStatus.RUNNING_EVENT)) Thread.sleep(1000);
-
-        shouldRespond = 0;
-        server.resetNumResponded(CommandType.EVENT);
-
-        EventCommand runningGameCommand = new EventCommand(EventCommandName.EVENT_NON_INTERACTIVE);
-        runningGameCommand.setEvent(event);
-        int totalCards = 0;
         try{
+            Server server = Server.getInstance();
+            InternalGameState gameState = server.getGameState();
+            Event event = gameState.getCurrentEvent();
+            shouldRespond = 0;
+            server.resetNumResponded(CommandType.EVENT);
+
+            // Set event and card
+            gameState.setGameStatus(GameStatus.RUNNING_EVENT);
+            EventCommand startEvent = new EventCommand(EventCommandName.EVENT_STARTED);
+            startEvent.setEvent(event);
+            server.notifyClients(startEvent);
+
+            System.out.println("== Event runner says: Initializing event");
+            System.out.println("== Event runner says: Event card " + gameState.getCurrentStoryCard().getTitle() + " in play");
+
+            // Wait for all clients to be ready
+            for(Player player: gameState.getPlayers()) shouldRespond++;
+            waitForResponses();
+
+
+            server.resetNumResponded(CommandType.EVENT);
+            EventCommand runningGameCommand = new EventCommand(EventCommandName.EVENT_NON_INTERACTIVE);
+            int totalCards = 0;
+
             // Figure out which event is being played
             switch(event.getEventCard().getTitle()){
                 case "King's Recognition":{
@@ -113,11 +114,11 @@ public class EventRunner extends Runner{
             }
 
             // Give cards to players
-            if(runningGameCommand.getCommandName() == EventCommandName.EVENT_INTERACTIVE && totalCards != 0){
-                for(EventPlayer player: event.getEventPlayers()){
-                    int playerId = player.getPlayerId();
-                    shouldRespond++;
+            for(EventPlayer player: event.getEventPlayers()){
+                int playerId = player.getPlayerId();
+                shouldRespond++;
 
+                if(runningGameCommand.getCommandName() == EventCommandName.EVENT_INTERACTIVE && totalCards != 0){
                     System.out.println("== Event runner says: Sending "+ totalCards + " adventure card(s) to player " + playerId);
                     gameState.setGameStatus(GameStatus.TAKING_EVENT_ADVENTURE_CARD);
 
@@ -125,15 +126,7 @@ public class EventRunner extends Runner{
                     for(int i = 0; i < totalCards; i++) cards.add(gameState.drawAdventureCard());
 
                     runningGameCommand.setCards(cards);
-                    runningGameCommand.setPlayerId(playerId);
-                    runningGameCommand.setPlayer(player.getPlayer());
-                    server.notifyClientByPlayerId(playerId, runningGameCommand);
-                }
-
-                waitForResponses();
-            }else {
-                for(EventPlayer player: event.getEventPlayers()){
-                    int playerId = player.getPlayerId();
+                }else{
                     int add_lose_shields = runningGameCommand.getShields();
 
                     if(runningGameCommand.getShieldResult().equals(EventCommandName.EVENT_SHIELD_LOST)
@@ -142,17 +135,22 @@ public class EventRunner extends Runner{
                     }else if (runningGameCommand.getShieldResult().equals(EventCommandName.EVENT_SHIELD_GAIN)) {
                         player.incrementShields(add_lose_shields);
                     }
-
-                    runningGameCommand.setPlayerId(playerId);
-                    runningGameCommand.setPlayer(player.getPlayer());
-                    server.notifyClientByPlayerId(playerId, runningGameCommand);
                 }
-                while (gameState.getGameStatus().equals(GameStatus.FINDING_EVENT_CARD)) Thread.sleep(1000);
+
+                gameState.setCurrentEvent(event);
+
+                runningGameCommand.setEvent(event);
+                runningGameCommand.setPlayerId(playerId);
+                runningGameCommand.setPlayer(player.getPlayer());
+                server.notifyClientByPlayerId(playerId, runningGameCommand);
             }
+
+            waitForResponses();
 
             // Discarding Event card
             System.out.println("== Event runner says: Ending event");
             server.notifyClients(new EventCommand(EventCommandName.EVENT_COMPLETED));
+
 
             gameState.setGameStatus(GameStatus.RUNNING);
 
@@ -160,7 +158,6 @@ public class EventRunner extends Runner{
             System.out.println("== Event runner says: Event completed");
         }catch(Exception e){
             e.printStackTrace();
-            shouldStopRunner();
         }
     }
 

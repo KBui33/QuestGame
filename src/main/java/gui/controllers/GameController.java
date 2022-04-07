@@ -706,6 +706,7 @@ public class GameController {
                 eventController.showInteractiveEvent(eventCard, command.getCards(), (cards) -> {
                     // TODO :: - ACCEPTED...SEND COMMAND BACK TO SERVER WITH CARDS
                     EventCommand eventCompleteCommand = (EventCommand) defaultServerCommand(new EventCommand(EventCommandName.END_EVENT));
+                    eventCompleteCommand.setCards(cards);
                     EventCommand eventCompletedCommand = (EventCommand) client.sendCommand(eventCompleteCommand);
                     if(eventCompletedCommand.getPlayer() != null) updatePlayer(eventCompletedCommand.getPlayer());
                 });
