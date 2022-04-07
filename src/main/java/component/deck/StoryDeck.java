@@ -61,4 +61,50 @@ public class StoryDeck extends Deck {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void shuffle() {
+        super.shuffle();
+        // uncomment to rig the deck
+//        this.rig();
+    }
+
+    /**
+     * Rigging the deck so it starts with one 2-stage quest,
+     * followed by a tournament, followed by an event
+     */
+    public void rig() {
+        Card questSet = null, tournamentSet = null, eventSet = null;
+        for (int i = 0; i < cards.size(); i++) {
+            if (questSet == null && cards.get(i) instanceof QuestCard) {
+                if (((QuestCard) cards.get(i)).getStages() == 2) {
+                    questSet = cards.remove(i);
+                }
+            } else if (tournamentSet == null && cards.get(i) instanceof TournamentCard) {
+                tournamentSet = cards.remove(i);
+            } else if (eventSet == null && cards.get(i) instanceof EventCard) {
+                eventSet = cards.remove(i);
+            }
+
+            if (questSet != null && tournamentSet != null && eventSet != null) {
+                // add cards to front
+                cards.add(eventSet);
+                cards.add(tournamentSet);
+                cards.add(questSet);
+                return;
+            }
+        }
+
+        // we failed to find all the cards and cant rig the deck
+        // add back any we removed
+        if (eventSet != null) {
+            cards.add(eventSet);
+        }
+        if (tournamentSet != null) {
+            cards.add(tournamentSet);
+        }
+        if (questSet != null) {
+            cards.add(questSet);
+        }
+    }
 }
