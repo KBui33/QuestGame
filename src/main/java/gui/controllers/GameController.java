@@ -204,6 +204,7 @@ public class GameController {
 
     private void waitTurn() {
         disableView(true);
+        view.getMainPane().getChildren().clear();
         view.getHud().getCurrentStateText().setText("Wait for your turn");
     }
 
@@ -330,6 +331,8 @@ public class GameController {
                 // we have room in hand
                 addCardToHand(myHand, card);
             }
+            view.getMainPane().remove(drawnCard);
+            waitTurn();
 
             // tell server card accepted either way so game can continue
             // will probably need to change later
@@ -339,9 +342,11 @@ public class GameController {
             if (acceptedTournamentCardCommand.getPlayer() != null)
                 updatePlayer(acceptedTournamentCardCommand.getPlayer());
 
-            view.getMainPane().remove(drawnCard);
         }, e -> {
             discardCard(drawnCard);
+
+            view.getMainPane().remove(drawnCard);
+            waitTurn();
 
             // Server command
             TournamentCommand discardTournamentCardCommand = (TournamentCommand) defaultServerCommand(new TournamentCommand(TournamentCommandName.DISCARD_TOURNAMENT_CARD));
@@ -350,7 +355,6 @@ public class GameController {
             if (discardedTournamentCardCommand.getPlayer() != null)
                 updatePlayer(discardedTournamentCardCommand.getPlayer());
 
-            view.getMainPane().remove(drawnCard);
         });
     }
 
