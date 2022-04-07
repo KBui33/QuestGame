@@ -144,8 +144,8 @@ public class Server implements Runnable {
             try {
                 SocketChannel socketChannel = _serverSocketChannel.accept();
 
-
-                if (_broadcastClients.size() >= MAX_CLIENTS) {
+                if(socketChannel == null) {}
+                else if (_broadcastClients.size() >= MAX_CLIENTS) {
                     System.out.println("== Server says:  Client limit reached"); //24.57.60.208
 
                     socketChannel.write(ByteBuffer.wrap(Command.toBytesArray(new BaseCommand(BaseCommandName.MAX_CLIENTS_REACHED))));
