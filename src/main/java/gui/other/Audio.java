@@ -5,6 +5,11 @@ import javafx.scene.media.MediaPlayer;
 
 import java.net.URL;
 
+/**
+ * @author James DiNovo
+ *
+ * Manages mediaplayer. Plays game audio through entire game.
+ */
 public class Audio {
     private static final URL theme = Audio.class.getResource("/audio/CelticAmbiance.mp3");
 
