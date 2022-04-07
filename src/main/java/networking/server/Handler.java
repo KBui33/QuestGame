@@ -4,6 +4,7 @@ package networking.server;
 import model.Command;
 import networking.*;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -72,7 +73,7 @@ public class Handler implements Runnable {
                 _selectionKey.cancel();
                 _socketChannel.close();
                 System.out.println("== Reading: Connection dropped with client");
-            } else {
+            } else if(numBytes > 0) {
                 Server.getWorkerPool().execute(new Runnable() {
                     @Override
                     public void run() {
