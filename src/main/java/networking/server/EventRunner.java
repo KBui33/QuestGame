@@ -47,9 +47,10 @@ public class EventRunner extends Runner{
                     // The Lowest rank players
                     ArrayList<Player> tmp = new ArrayList<>(gameState.getPlayers());
                     Collections.sort(tmp);
-                    Player lowestPlayer = tmp.get(0);
+                    // compare based only on rank not shields
+                    Rank lowestRank = tmp.get(0).getRank();
                     for(Player player: tmp) {
-                        if (player.compareTo(lowestPlayer) <= 0) event.addEventPlayer(player);
+                        if (player.getRank().ordinal() <= lowestRank.ordinal()) event.addEventPlayer(player);
                     }
 
                     runningGameCommand.setCommandName(EventCommandName.EVENT_INTERACTIVE);
