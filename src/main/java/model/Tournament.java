@@ -1,5 +1,6 @@
 package model;
 
+import component.card.Card;
 import component.card.TournamentCard;
 
 import java.io.Serializable;
@@ -116,6 +117,19 @@ public class Tournament implements Serializable {
         for(TournamentPlayer player: currentPlayers){
             player.incrementShields(players.size() + tournamentCard.getShields());
         }
+    }
+
+    /**
+     * Get all the cards used in a tournament
+     * @return
+     */
+    public ArrayList<Card> getCardsUsed() {
+        ArrayList<Card> cardsUsed = new ArrayList<>();
+        for (TournamentPlayer player: players) {
+            cardsUsed.addAll(player.getCardsUsed());
+        }
+
+        return cardsUsed;
     }
 
 
