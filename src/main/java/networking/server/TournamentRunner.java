@@ -70,6 +70,9 @@ public class TournamentRunner extends Runner {
                 distributeTournamentShields(server, gameState, tournament);
 
                 server.notifyClients(new TournamentCommand(TournamentCommandName.TOURNAMENT_COMPLETED));
+
+                System.out.println("== Discarding cards used");
+                discardCardsUsed(gameState, tournament);
             }
             gameState.setGameStatus(GameStatus.RUNNING);
 
@@ -162,6 +165,10 @@ public class TournamentRunner extends Runner {
             takeTournamentShieldsCommand.setPlayer(tournamentPlayer.getPlayer());
             server.notifyClientByPlayerId(playerId, takeTournamentShieldsCommand);
         }
+    }
+
+    private void discardCardsUsed(InternalGameState gameState, Tournament tournament) {
+        gameState.discardAdventureCards(tournament.getCardsUsed());
     }
 
     @Override
