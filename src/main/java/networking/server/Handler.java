@@ -47,8 +47,8 @@ public class Handler implements Runnable {
     synchronized void process()  {
         try {
             _readBuffer.flip();
-            byte[] bytes = new byte[_readBuffer.limit()];
-            _readBuffer.get(bytes);
+            byte[] bytes = new byte[_readBuffer.remaining()];
+            _readBuffer.get(bytes, 0, bytes.length);
 
             // Convert input to game command and send for processing
             Command receivedCommand = Command.fromBytesArray(bytes);
@@ -73,7 +73,7 @@ public class Handler implements Runnable {
                 _selectionKey.cancel();
                 _socketChannel.close();
                 System.out.println("== Reading: Connection dropped with client");
-            } else if(numBytes > 0) {
+            } else {
                 Server.getWorkerPool().execute(new Runnable() {
                     @Override
                     public void run() {
