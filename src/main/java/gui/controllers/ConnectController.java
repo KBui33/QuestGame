@@ -35,7 +35,7 @@ public class ConnectController {
             } catch(IOException | ClassNotFoundException err) {
                 // display error to user later on
                 err.printStackTrace();
-                AlertBox.alert("Could not connect to server.\nMake sure there is a game server running.", Alert.AlertType.ERROR);
+                AlertBox.alert("Could not connect to server.\n" + err.getMessage(), Alert.AlertType.ERROR);
             }
 
 
