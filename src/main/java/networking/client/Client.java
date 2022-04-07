@@ -12,8 +12,8 @@ import java.util.Scanner;
 
 public class Client {
     private final int PORT = 80;
-    private static final int READ_BUFFER_SIZE = 8192;
-    private static final int WRITE_BUFFER_SIZE = 8192;
+    private static final int READ_BUFFER_SIZE = 16384;
+    private static final int WRITE_BUFFER_SIZE = 16384;
 
     // Various game commands
     public static enum ClientEvent {
