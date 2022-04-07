@@ -79,7 +79,7 @@ public class InternalGameState implements BaseGameState, Serializable {
         storyDeck.shuffle();
         adventureDeck.shuffle();
         assignPlayerNumbers();
-        dealAdventureCards(9); // Deal 12 adventure cards to each player
+        dealAdventureCards(12); // Deal 12 adventure cards to each player
         gameStatus = GameStatus.STARTED;
     }
 
