@@ -1,5 +1,7 @@
 package model;
 
+import org.apache.commons.lang3.SerializationUtils;
+
 import java.io.*;
 
 public class Command implements Serializable {
@@ -49,21 +51,24 @@ public class Command implements Serializable {
     }
 
     public static Command fromBytesArray(byte[] bytes) throws IOException, ClassNotFoundException {
-        Command command = null;
-        ByteArrayInputStream bis = new ByteArrayInputStream(bytes, 0, bytes.length);
-        ObjectInputStream ins = new ObjectInputStream(bis);
-        try {
-            command = (Command) ins.readObject();
-        } catch (EOFException e) {}
-        ins.close();
-        return command;
+        return SerializationUtils.deserialize(bytes);
+//        Command command = null;
+//        ByteArrayInputStream bis = new ByteArrayInputStream(bytes, 0, bytes.length);
+//        ObjectInputStream ins = new ObjectInputStream(bis);
+//        try {
+//            command = (Command) ins.readObject();
+//        } catch (EOFException e) {}
+//        ins.close();
+//        return command;
     }
 
     public static byte[] toBytesArray(Command command) throws IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream outs = new ObjectOutputStream(bos);
-        outs.writeObject(command);
-        outs.close();
-        return bos.toByteArray();
+        return SerializationUtils.serialize(command);
+//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//        ObjectOutputStream outs = new ObjectOutputStream(bos);
+//        outs.writeObject(command);
+//        outs.flush();
+//        outs.close();
+//        return bos.toByteArray();
     }
 }

@@ -10,6 +10,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Scanner;
 
+// 24.57.60.208
 public class Client {
     private final int PORT = 80;
     private static final int READ_BUFFER_SIZE = 16384;
