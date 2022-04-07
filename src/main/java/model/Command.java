@@ -51,13 +51,16 @@ public class Command implements Serializable {
     public static Command fromBytesArray(byte[] bytes) throws IOException, ClassNotFoundException {
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes, 0, bytes.length);
         ObjectInputStream ins = new ObjectInputStream(bis);
-        return (Command) ins.readObject();
+        Command command = (Command) ins.readObject();
+        ins.close();
+        return command;
     }
 
     public static byte[] toBytesArray(Command command) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream outs = new ObjectOutputStream(bos);
         outs.writeObject(command);
+        outs.close();
         return bos.toByteArray();
     }
 }
