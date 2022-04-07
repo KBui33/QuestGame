@@ -69,8 +69,8 @@ public class Client {
 
         if (numBytes != -1) {
             _readBuffer.flip();
-            byte[] bytes = new byte[_readBuffer.limit()];
-            _readBuffer.get(bytes);
+            byte[] bytes = new byte[_readBuffer.remaining()];
+            _readBuffer.get(bytes, 0, bytes.length);
 
             // Convert input to game command and send for processing
             Command receivedCommand = Command.fromBytesArray(bytes);
@@ -156,8 +156,8 @@ public class Client {
 
             _socketChannel.read(_readBuffer);
             _readBuffer.flip();
-            byte[] inMessage = new byte[_readBuffer.limit()];
-            _readBuffer.get(inMessage);
+            byte[] inMessage = new byte[_readBuffer.remaining()];
+            _readBuffer.get(inMessage, 0, inMessage.length);
 
             receivedCommand = Command.fromBytesArray(inMessage);
             System.out.println("== Server says: " + receivedCommand);
