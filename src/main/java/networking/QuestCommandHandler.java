@@ -133,7 +133,7 @@ public class QuestCommandHandler extends CommandHandlerDecorator {
 
         }
 
-        server.incrementNumResponded(CommandType.QUEST);
+        server.incrementNumResponded(CommandType.QUEST, playerId);
         server.notifyClients(returnCommand);
 
         return returnCommand;

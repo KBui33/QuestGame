@@ -78,7 +78,7 @@ public class GameCommandHandler extends CommandHandlerDecorator {
             returnCommand.setPlayerId(playerId);
         }
 
-        server.incrementNumResponded(CommandType.GAME);
+        server.incrementNumResponded(CommandType.GAME, playerId);
         server.notifyClients(returnCommand);
 
         if (startGame) new Thread(new GameRunner(server, server.getGameState())).start();

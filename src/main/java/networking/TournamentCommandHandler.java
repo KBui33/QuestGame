@@ -98,7 +98,7 @@ public class TournamentCommandHandler extends CommandHandlerDecorator  {
 
         }
 
-        server.incrementNumResponded(CommandType.TOURNAMENT);
+        server.incrementNumResponded(CommandType.TOURNAMENT, playerId);
         server.notifyClients(returnCommand);
 
         return returnCommand;

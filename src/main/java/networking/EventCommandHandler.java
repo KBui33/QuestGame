@@ -49,7 +49,7 @@ public class EventCommandHandler extends CommandHandlerDecorator {
             gameState.setGameStatus(GameStatus.FINDING_EVENT_CARD);
         }
 
-        server.incrementNumResponded(CommandType.EVENT);
+        server.incrementNumResponded(CommandType.EVENT, playerId);
         server.notifyClients(returnCommand);
 
         return returnCommand;

@@ -71,6 +71,8 @@ public class TournamentRunner extends Runner {
 
                 server.notifyClients(new TournamentCommand(TournamentCommandName.TOURNAMENT_COMPLETED));
 
+
+
                 System.out.println("== Discarding cards used");
                 discardCardsUsed(gameState, tournament);
             }
