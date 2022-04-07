@@ -20,8 +20,6 @@ public class Client {
         EXTERNAL_GAME_STATE_UPDATED, GAME_COMMAND_RECEIVED
     }
 
-    ;
-
     private static Client instance = null;
 
     private SocketChannel _socketChannel;
@@ -78,8 +76,15 @@ public class Client {
             System.out.println("== Received command: " + receivedCommand);
             _readBuffer.clear();
 
-            if (!receivedCommand.getCommandName().equals(BaseCommandName.CONNECT_SUCCESSFULL))
-                throw new IOException("Could not connect to server: " + receivedCommand);
+            if (!receivedCommand.getCommandName().equals(BaseCommandName.CONNECT_SUCCESSFULL)) {
+                if(receivedCommand.getCommandName().equals(BaseCommandName.GAME_ALREADY_STARTED))
+                    throw new IOException("Game has already begun");
+                else if(receivedCommand.getCommandName().equals(BaseCommandName.MAX_CLIENTS_REACHED))
+                    throw new IOException("Maximum number of players reached");
+                else
+                    throw new IOException("Connection error...");
+            }
+
         }
     }
 
