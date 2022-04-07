@@ -125,6 +125,7 @@ public class EventRunner extends Runner{
 
                     runningGameCommand.setCards(cards);
                 }else{
+                    System.out.println("== Event runner says: Sending updated player to" + playerId);
                     int add_lose_shields = runningGameCommand.getShields();
 
                     if(runningGameCommand.getShieldResult().equals(EventCommandName.EVENT_SHIELD_LOST)
