@@ -22,7 +22,11 @@ public abstract class Deck implements Serializable {
     public abstract void init();
 
     public void shuffle(){
-        Collections.shuffle(cards);
+        // shuffle a lot
+        for (int i = 0; i < 7; i++) {
+            Collections.shuffle(cards);
+        }
+
     }
 
     public Card draw(){

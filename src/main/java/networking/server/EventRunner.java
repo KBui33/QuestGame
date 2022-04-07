@@ -108,7 +108,6 @@ public class EventRunner extends Runner{
                     // To much work rn  :( (me don't want to do)
                     break;
                 }
-
             }
 
             // Give cards to players

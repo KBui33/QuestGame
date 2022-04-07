@@ -148,9 +148,10 @@ public class Server implements Runnable {
 
 
                 if (_broadcastClients.size() >= MAX_CLIENTS) {
-                    System.out.println("== Server says:  Client limit reached");
+                    System.out.println("== Server says:  Client limit reached"); //24.57.60.208
+
                     socketChannel.write(ByteBuffer.wrap(Command.toBytesArray(new BaseCommand(BaseCommandName.MAX_CLIENTS_REACHED))));
-                } else if (internalGameState.getGameStatus().equals(GameStatus.STARTED)) {
+                } else if (internalGameState.getGameStatus() == null || !internalGameState.getGameStatus().equals(GameStatus.READY)) {
                     System.out.println("== Server says:  Game has already started. No longer accepting players");
                     socketChannel.write(ByteBuffer.wrap(Command.toBytesArray(new BaseCommand(BaseCommandName.GAME_ALREADY_STARTED))));
                 } else {

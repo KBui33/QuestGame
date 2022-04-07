@@ -20,7 +20,7 @@ public class AdventureDeck extends Deck{
             JSONArray weapons = (JSONArray) jsonObject.get("weapons");
             JSONArray foes = (JSONArray) jsonObject.get("foes");
             // not needed *yet*
-            JSONArray tests = (JSONArray) jsonObject.get("tests");
+//            JSONArray tests = (JSONArray) jsonObject.get("tests");
 //            JSONArray allies = (JSONArray) jsonObject.get("allies");
 //            JSONArray amours = (JSONArray) jsonObject.get("amours");
 
