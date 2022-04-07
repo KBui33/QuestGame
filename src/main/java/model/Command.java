@@ -49,9 +49,12 @@ public class Command implements Serializable {
     }
 
     public static Command fromBytesArray(byte[] bytes) throws IOException, ClassNotFoundException {
+        Command command = null;
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes, 0, bytes.length);
         ObjectInputStream ins = new ObjectInputStream(bis);
-        Command command = (Command) ins.readObject();
+        try {
+            command = (Command) ins.readObject();
+        } catch (EOFException e) {}
         ins.close();
         return command;
     }
