@@ -1,16 +1,11 @@
 package gui.controllers.tournament;
 
 import component.card.Card;
-import component.card.WeaponCard;
 import gui.controllers.AbstractFightController;
 import gui.controllers.GameController;
-import gui.other.AlertBox;
-import gui.partials.CardView;
 import gui.partials.tournament.TournamentPlayerCardsView;
 import gui.partials.tournament.TournamentView;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
 import model.Tournament;
 import utils.Callback;
 import utils.CallbackEmpty;

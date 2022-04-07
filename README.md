@@ -7,7 +7,7 @@
 
 3. At least two clients are required to connect to the server and click ready to start the game.
 
-### How to build
+### How to build Client GUI jar
 
 1. Run `mvn clean package`
 
