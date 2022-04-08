@@ -2,7 +2,6 @@ package networking.client;
 
 import java.util.*;
 import java.util.concurrent.Callable;
-import java.util.function.Function;
 
 public class ClientEventManager {
     private final Object MONITOR = new Object(); // Monitor object for synchronization

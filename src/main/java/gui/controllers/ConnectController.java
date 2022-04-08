@@ -8,9 +8,6 @@ import javafx.scene.control.Alert;
 import networking.client.Client;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * @author James DiNovo
