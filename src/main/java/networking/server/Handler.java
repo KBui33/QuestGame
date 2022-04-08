@@ -4,6 +4,7 @@ package networking.server;
 import model.Command;
 import networking.*;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -14,11 +15,13 @@ public class Handler implements Runnable {
     private final SocketChannel _socketChannel;
     private final SelectionKey _selectionKey;
 
-    private static final int READ_BUFFER_SIZE = 4096;
-    private static final int WRITE_BUFFER_SIZE = 4096;
+    private static final int READ_BUFFER_SIZE = 16384;
+    private static final int WRITE_BUFFER_SIZE = 16384;
 
-    private ByteBuffer _readBuffer = ByteBuffer.allocate(READ_BUFFER_SIZE);
-    private ByteBuffer _writeBuffer = ByteBuffer.allocate(WRITE_BUFFER_SIZE);
+    private ByteBuffer _readBuffer; // = ByteBuffer.allocate(READ_BUFFER_SIZE);
+    private ByteBuffer _readLength;
+    private ByteBuffer _writeBuffer; // = ByteBuffer.allocate(WRITE_BUFFER_SIZE);
+    private ByteBuffer _writeLength;
 
     private CommandHandler commandHandler;
 
@@ -45,16 +48,24 @@ public class Handler implements Runnable {
 
     synchronized void process()  {
         try {
-            _readBuffer.flip();
-            byte[] bytes = new byte[_readBuffer.limit()];
-            _readBuffer.get(bytes);
+            _readBuffer.rewind();
+            byte[] bytes = new byte[_readBuffer.remaining()];
+            _readBuffer.get(bytes, 0, bytes.length);
 
             // Convert input to game command and send for processing
             Command receivedCommand = Command.fromBytesArray(bytes);
             System.out.println("== Received command: " + receivedCommand);
             Command sentCommand = handleCommand(receivedCommand);
             System.out.println("== Send command: " + sentCommand);
-            _writeBuffer = ByteBuffer.wrap(Command.toBytesArray(sentCommand));
+
+            byte[] outMessage = Command.toBytesArray(sentCommand);
+            _writeLength = ByteBuffer.allocate(4);
+            _writeLength.putInt(outMessage.length);
+            _writeLength.rewind();
+            _writeBuffer = ByteBuffer.allocate(outMessage.length);
+            _writeBuffer.put(outMessage);
+
+            //_writeBuffer = ByteBuffer.wrap(Command.toBytesArray(sentCommand));
 
             _selectionKey.interestOps(SelectionKey.OP_WRITE);
             _selectionKey.selector().wakeup();
@@ -65,14 +76,20 @@ public class Handler implements Runnable {
 
     synchronized void read() throws IOException {
         try {
-            int numBytes = _socketChannel.read(_readBuffer);
+            _readLength = ByteBuffer.allocate(4);
+            _socketChannel.read(_readLength);
+            _readLength.rewind();
+            int numBytes = _readLength.getInt();
+
             System.out.println("== Reading: " + numBytes + " byte(s)");
 
-            if(numBytes == -1) {
+            if(numBytes <= 0) {
                 _selectionKey.cancel();
                 _socketChannel.close();
                 System.out.println("== Reading: Connection dropped with client");
             } else {
+                _readBuffer = ByteBuffer.allocate(numBytes);
+                _socketChannel.read(_readBuffer);
                 Server.getWorkerPool().execute(new Runnable() {
                     @Override
                     public void run() {
@@ -86,19 +103,23 @@ public class Handler implements Runnable {
     }
 
     void write() throws  IOException {
-        int numBytes = 0;
+        long numBytes = 0;
 
         try {
-            numBytes = _socketChannel.write(_writeBuffer);
+            _writeBuffer.rewind();
+            numBytes = _socketChannel.write(new ByteBuffer[]{_writeLength, _writeBuffer});
             System.out.println("== Writing: " + numBytes + " byte(s)");
 
-            if(numBytes > 0) {
+//            if(numBytes > 0) {
                 _readBuffer.clear();
+                _readLength.clear();
+
                 _writeBuffer.clear();
+                _writeLength.clear();
 
                 _selectionKey.interestOps(SelectionKey.OP_READ);
                 _selectionKey.selector().wakeup();
-            }
+//            }
         } catch(IOException e) {
             e.printStackTrace();
         }

@@ -10,6 +10,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
+/**
+ * @author James DiNovo
+ *
+ * For representing cards within the GUI
+ */
 public class CardView extends StackPane {
     private ImageView imageView;
     private VBox buttonBox;
@@ -88,6 +93,11 @@ public class CardView extends StackPane {
     public void setButtonEvents(EventHandler<ActionEvent> posButtonEvent, EventHandler<ActionEvent> negButtonEvent) {
         getPlayButton().setOnAction(posButtonEvent);
         getDiscardButton().setOnAction(negButtonEvent);
+    }
+
+    public void clearCard() {
+        card = null;
+        imageView.setImage(null);
     }
 
 }

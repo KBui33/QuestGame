@@ -1,11 +1,12 @@
 package gui.panes;
 
+import gui.partials.AudioControlButton;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 
 /**
@@ -18,6 +19,7 @@ public class LobbyPane extends BorderPane {
     private VBox infoBox;
     private HBox buttonBox;
     private Button readyButton, leaveButton;
+    private AudioControlButton audioControlButton;
 
     public Text getHeader() {
         return header;
@@ -66,8 +68,8 @@ public class LobbyPane extends BorderPane {
 
         buttonBox = new HBox();
         buttonBox.setSpacing(10);
+        buttonBox.setMaxWidth(310);
         buttonBox.setAlignment(Pos.CENTER);
-        setMargin(buttonBox, new Insets(20));
 
         readyButton = new Button("Ready");
         readyButton.setPrefSize(150, 25);
@@ -77,10 +79,20 @@ public class LobbyPane extends BorderPane {
         leaveButton.setPrefSize(150, 25);
         leaveButton.getStyleClass().add("warn");
 
+        audioControlButton = new AudioControlButton();
+
         buttonBox.getChildren().addAll(leaveButton, readyButton);
+
+        StackPane sp = new StackPane();
+        setAlignment(sp, Pos.CENTER);
+        sp.setMaxWidth(this.getMaxWidth());
+        sp.getChildren().addAll(audioControlButton, buttonBox);
+        StackPane.setAlignment(audioControlButton, Pos.BOTTOM_LEFT);
+        StackPane.setMargin(audioControlButton, new Insets(5));
+        StackPane.setMargin(buttonBox, new Insets(5));
 
         this.setTop(header);
         this.setCenter(infoBox);
-        this.setBottom(buttonBox);
+        this.setBottom(sp);
     }
 }

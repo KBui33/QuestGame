@@ -22,11 +22,16 @@ public class QuestSetupView extends BorderPane {
     private Text promptText;
     private VBox topBox;
     private HBox stageBox;
-    private Button nextStageButton;
-    public static String STAGE_PROMPT = "Choose a card for stage ";
+    private Button nextStageButton, backButton;
+    private StageSetupView stageSetupView;
+    public static String STAGE_PROMPT = "Set up stage ";
 
     public CardView getChosenQuestCard() {
         return chosenQuestCard;
+    }
+
+    public StageSetupView getStageSetupView() {
+        return stageSetupView;
     }
 
     public Text getPromptText() {
@@ -37,14 +42,20 @@ public class QuestSetupView extends BorderPane {
         return nextStageButton;
     }
 
+    public Button getBackButton() {
+        return backButton;
+    }
+
     public StageSetupView setStageSetupView(Card card) {
-        StageSetupView ssv = new StageSetupView(card);
-        this.setCenter(ssv);
-        return ssv;
+        stageSetupView.setStageCard(card);
+        this.setCenter(stageSetupView);
+        return stageSetupView;
     }
 
     public void clearStage() {
         this.setCenter(null);
+        getStageSetupView().getStageCard().clearCard();
+        getStageSetupView().getWeaponsView().getListView().getItems().clear();
     }
 
     public QuestSetupView(Card card) {
@@ -74,8 +85,13 @@ public class QuestSetupView extends BorderPane {
         nextStageButton.getStyleClass().add("success");
         nextStageButton.setVisible(false);
 
+        backButton = new Button("Back");
+        backButton.getStyleClass().add("warn");
+        backButton.setVisible(false);
 
-        stageBox.getChildren().addAll(promptText, nextStageButton);
+        stageSetupView = new StageSetupView();
+
+        stageBox.getChildren().addAll(backButton, promptText, nextStageButton);
         topBox.getChildren().addAll(chosenQuestCard, stageBox);
         this.setTop(topBox);
 

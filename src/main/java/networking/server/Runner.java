@@ -5,18 +5,23 @@ import model.Player;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import static utils.Utility.shiftLeft;
 
 public abstract class Runner implements Runnable {
     private boolean stopRunner = false;
     protected int shouldRespond = 0;
+    protected final HashSet<Integer> shouldRespondIds = new HashSet<>();
     @Override
     public void run() {
         while (!stopRunner) {
             try {
                 loop();
             } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -26,7 +31,7 @@ public abstract class Runner implements Runnable {
         this.stopRunner = true;
     }
 
-    protected abstract void loop() throws InterruptedException;
+    protected abstract void loop() throws InterruptedException, IOException;
 
     protected void waitForResponses() {};
 
@@ -50,6 +55,10 @@ public abstract class Runner implements Runnable {
         }
 
         return promptOrder;
+    }
+
+    protected  void initShouldRespondIds(Object o) {
+        shouldRespondIds.clear();
     }
 
 }

@@ -5,6 +5,11 @@ import gui.main.Construct;
 import gui.panes.LobbyPane;
 import javafx.scene.Scene;
 
+/**
+ * @author James DiNovo
+ *
+ * Lobby scene for displaying lobby view and initializing controller
+ */
 public class LobbyScene extends Scene {
 
     public LobbyScene() {

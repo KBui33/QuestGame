@@ -1,6 +1,7 @@
 package gui.controllers;
 
 import component.card.*;
+import gui.controllers.event.EventController;
 import gui.controllers.quest.QuestController;
 import gui.controllers.quest.QuestSetupController;
 import gui.controllers.tournament.TournamentController;
@@ -39,6 +40,7 @@ public class GameController {
     private GamePane view;
     private QuestController questController;
     private TournamentController tournamentController;
+    private EventController eventController;
     private final GameController gc;
 
     private final ArrayList<Callable> eventSubscriptions = new ArrayList<>();
@@ -202,6 +204,7 @@ public class GameController {
 
     private void waitTurn() {
         disableView(true);
+        view.getMainPane().getChildren().clear();
         view.getHud().getCurrentStateText().setText("Wait for your turn");
     }
 
@@ -328,6 +331,8 @@ public class GameController {
                 // we have room in hand
                 addCardToHand(myHand, card);
             }
+            view.getMainPane().remove(drawnCard);
+            waitTurn();
 
             // tell server card accepted either way so game can continue
             // will probably need to change later
@@ -337,9 +342,11 @@ public class GameController {
             if (acceptedTournamentCardCommand.getPlayer() != null)
                 updatePlayer(acceptedTournamentCardCommand.getPlayer());
 
-            view.getMainPane().remove(drawnCard);
         }, e -> {
             discardCard(drawnCard);
+
+            view.getMainPane().remove(drawnCard);
+            waitTurn();
 
             // Server command
             TournamentCommand discardTournamentCardCommand = (TournamentCommand) defaultServerCommand(new TournamentCommand(TournamentCommandName.DISCARD_TOURNAMENT_CARD));
@@ -348,7 +355,6 @@ public class GameController {
             if (discardedTournamentCardCommand.getPlayer() != null)
                 updatePlayer(discardedTournamentCardCommand.getPlayer());
 
-            view.getMainPane().remove(drawnCard);
         });
     }
 
@@ -390,12 +396,11 @@ public class GameController {
     }
 
     private void disableView(Boolean disable) {
-        if (disable) {
-            view.getHud().getCardButtons().setVisible(false);
-            clearCardViewButtonsHighlight();
-        } else {
-            view.getHud().getCardButtons().setVisible(true);
-        }
+//        if (disable) {
+//            view.getHud().getControlButtons().setVisible(false);
+//        } else {
+//            view.getHud().getControlButtons().setVisible(true);
+//        }
         disableDecks(disable);
         hideDecks();
     }
@@ -403,6 +408,7 @@ public class GameController {
     private void disableDecks(Boolean disable) {
         if (disable) {
             view.getHud().getDeckButtons().setVisible(false);
+            clearCardViewButtonsHighlight();
         } else {
             view.getHud().getDeckButtons().setVisible(true);
         }
@@ -447,6 +453,7 @@ public class GameController {
 
 
     public void setCardViewButtonActions(CardView cardView) {
+        cardView.setSize(300);
         cardView.getDiscardButton().setOnAction(e -> {
             // send delete signal to server and await response
             System.out.println("Discarding card");
@@ -527,7 +534,7 @@ public class GameController {
 
                 ArrayList<String> players = new ArrayList<>();
                 winners.forEach(w -> {
-                    players.add("Player " + w.getPlayerId());
+                    players.add("Player " + w.getPlayerNumber());
                 });
                 endGameView.getResultsView().setItems(players);
 
@@ -682,15 +689,51 @@ public class GameController {
 
         if (commandName.equals(EventCommandName.EVENT_STARTED)) {
             System.out.println("== Setting up Event");
-            Card eventCard = command.getCard();
+            EventCard eventCard = command.getEvent().getEventCard();
 
             // TODO:: make EventSetupController view and send event over
-            setUpEvent((EventCard) eventCard);
-        } else if (commandName.equals(EventCommandName.EVENT_EXTRA_INFO)) {
-            System.out.println("== Got extra stuff");
+
+            Platform.runLater(() -> {
+                eventController = new EventController(gc, eventCard);
+                AlertBox.alert("An Event card has been drawn.\n" + eventCard.getTitle(), Alert.AlertType.INFORMATION, e -> {
+                    // when player clicks ok, tell server to move on
+                    EventCommand eventSetupCompleteCommand = (EventCommand) defaultServerCommand(new EventCommand(EventCommandName.SETUP_COMPLETE));
+                    EventCommand eventSetupCompletedCommand = (EventCommand) client.sendCommand(eventSetupCompleteCommand);
+                    if (eventSetupCompletedCommand.getPlayer() != null) updatePlayer(eventSetupCompletedCommand.getPlayer());
+                });
+            });
+        } else if (commandName.equals(EventCommandName.EVENT_INTERACTIVE)) {
+            System.out.println("== Event is interactive");
+            view.getHud().getCurrentStateText().setText("Event in effect.");
+            EventCard eventCard = command.getEvent().getEventCard();
+            Platform.runLater(() -> {
+                eventController.showInteractiveEvent(eventCard, command.getCards(), (cards) -> {
+                    // TODO :: - ACCEPTED...SEND COMMAND BACK TO SERVER WITH CARDS
+                    EventCommand eventCompleteCommand = (EventCommand) defaultServerCommand(new EventCommand(EventCommandName.END_EVENT));
+                    eventCompleteCommand.setCards(cards);
+                    EventCommand eventCompletedCommand = (EventCommand) client.sendCommand(eventCompleteCommand);
+                    if(eventCompletedCommand.getPlayer() != null) updatePlayer(eventCompletedCommand.getPlayer());
+                    waitTurn();
+                });
+            });
+        } else if (commandName.equals(EventCommandName.EVENT_NON_INTERACTIVE)){
+            System.out.println("== Event not interactive");
+            view.getHud().getCurrentStateText().setText("Event in effect.");
+            EventCard eventCard = command.getEvent().getEventCard();
+            Platform.runLater(() -> {
+                eventController.showNonInteractiveEvent(eventCard, command.getShields(), command.getShieldResult(), () -> {
+
+                    // TODO :: - ACCEPTED...SEND COMMAND BACK TO SERVER
+                    EventCommand eventCompleteCommand = (EventCommand) defaultServerCommand(new EventCommand(EventCommandName.END_EVENT));
+                    EventCommand eventCompletedCommand = (EventCommand) client.sendCommand(eventCompleteCommand);
+                    if(eventCompletedCommand.getPlayer() != null) updatePlayer(eventCompletedCommand.getPlayer());
+                    waitTurn();
+                });
+            });
         }
 
     }
+
 
     public void handleTournamentCommands(TournamentCommand command) {
         CommandName commandName = command.getCommandName();
@@ -732,8 +775,10 @@ public class GameController {
 
         } else if (commandName.equals(TournamentCommandName.NO_PLAYER_JOINED_TOURNAMENT)) { // Handle if no player joins the tournament
             System.out.println("== No player joined tournament ");
-
-            AlertBox.alert("Nobody else joined the tournament so you win by default.");
+            // if no player joins the tournament just carry on with game?
+//            Platform.runLater(() -> {
+//                AlertBox.alert("Nobody else joined the tournament so you win by default.");
+//            });
         } else if (commandName.equals(TournamentCommandName.PLAYER_TAKE_TOURNAMENT_CARD)) { // Handle accepting/discarding tournament adventure card
             System.out.println("== It's my turn to accept/discard tournament adventure card");
             Card tournamentAdventureCard = command.getCard();
@@ -752,6 +797,7 @@ public class GameController {
             view.getHud().getCurrentStateText().setText("Prepare for Battle");
 
             Platform.runLater(() -> {
+                disableView(false);
                 tournamentController.pickCards(tournament, cards -> {
                     // send cards picked to server
                     TournamentCommand takeTournamentTurnCommand = (TournamentCommand) defaultServerCommand(new TournamentCommand(TournamentCommandName.TAKE_TOURNAMENT_TURN));
@@ -760,22 +806,8 @@ public class GameController {
                     if (tookTournamentTurnCommand.getPlayer() != null) updatePlayer(tookTournamentTurnCommand.getPlayer());
                     waitTurn();
                 });
-                disableView(false);
             });
 
-        } else if (commandName.equals(TournamentCommandName.TOURNAMENT_WON)) { // TODO::Remove/Not needed
-            System.out.println("== I just won the tournament.");
-            Card tournamentAdventureCard = command.getCard();
-            Tournament tournament = command.getTournament();
-
-            // TODO:: GUI Stuff
-
-        } else if (commandName.equals(TournamentCommandName.TOURNAMENT_LOST)) { // TODO::Remove/Not needed
-            System.out.println("== I just lost the tournament");
-            Card tournamentAdventureCard = command.getCard();
-            Tournament tournament = command.getTournament();
-
-            // TODO:: GUI Stuff
         } else if (commandName.equals(TournamentCommandName.PLAYER_END_TOURNAMENT)) { // Complete tournament
             System.out.println("== As tournament participant, I end the tournament");
             view.getHud().getCurrentStateText().setText("Tournament Over");
@@ -791,18 +823,12 @@ public class GameController {
                     waitTurn();
                 });
             });
-
+        } else if (commandName.equals(TournamentCommandName.PLAYER_TAKE_TOURNAMENT_SHIELDS)) { // Receive tournament shields
+            System.out.println("== As tournament winner, I receive tournament shields");
+            if (command.getPlayer() != null) updatePlayer(command.getPlayer()); // Update player
         }
     }
 
-
-    public void setUpEvent(EventCard event) {
-        EventCommand eventSetupCompleteCommand = (EventCommand) defaultServerCommand(new EventCommand(EventCommandName.SETUP_COMPLETE));
-        eventSetupCompleteCommand.setEvent(new Event(event));
-        EventCommand eventSetupCompletedCommand = (EventCommand) client.sendCommand(eventSetupCompleteCommand);
-        if (eventSetupCompletedCommand.getPlayer() != null) updatePlayer(eventSetupCompletedCommand.getPlayer());
-
-    }
 
     /**
      * Unsubscribe from all events

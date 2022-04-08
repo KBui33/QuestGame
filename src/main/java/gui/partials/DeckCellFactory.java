@@ -4,6 +4,11 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
 
+/**
+ * @author James DiNovo
+ *
+ * Custom listview cell factory for implementing DeckView
+ */
 public class DeckCellFactory implements Callback<ListView<CardView>, ListCell<CardView>> {
     @Override
     public ListCell<CardView> call(ListView<CardView> param) {
@@ -16,7 +21,6 @@ public class DeckCellFactory implements Callback<ListView<CardView>, ListCell<Ca
                     setGraphic(null);
                 } else {
                     setItem(card);
-                    // will be card.imageview later on
                     setGraphic(card);
 
                 }

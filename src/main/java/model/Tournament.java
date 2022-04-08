@@ -1,5 +1,6 @@
 package model;
 
+import component.card.Card;
 import component.card.TournamentCard;
 
 import java.io.Serializable;
@@ -33,9 +34,9 @@ public class Tournament implements Serializable {
         this.currentTurnPlayer = currentTurnPlayer;
     }
 
-    public void startTournament(){
+    public boolean startTournament(){
         this.currentPlayers = new ArrayList<>(players);
-        // checkPlayers(); REMOVE FOR NOW
+        return checkPlayers();
     }
 
     public void setTournamentCard(TournamentCard tournamentCard) {
@@ -70,11 +71,13 @@ public class Tournament implements Serializable {
     /**
      * Checks if there is only one player in the tournament
      * */
-    public void checkPlayers(){
+    public boolean checkPlayers(){
         if(currentPlayers.size() == 1) {
-            currentPlayers.get(0)
-                    .incrementShields(1 + tournamentCard.getShields());
+            currentPlayers.get(0).incrementShields(1 + tournamentCard.getShields());
+            return false;
         }
+
+        return true;
     }
 
     /**
@@ -99,24 +102,9 @@ public class Tournament implements Serializable {
                 System.out.println("== Player " + currentPlayer.getPlayerId() + " has same battle points as " + highestPlayer.getPlayerId());
             }
         }
-//        for(int i = 0; i < currentPlayers.size(); i++){
-//            TournamentPlayer currentPlayer = currentPlayers.get(i);
-//
-//            if(currentPlayer.calculateBattlePoints() == highestPlayer.calculateBattlePoints()){
-//                System.out.println("== Player " + currentPlayer.getPlayerId() + " has same battle points as " + highestPlayer.getPlayerId());
-//            } else {
-//                losers.add(currentPlayer);
-//            }
-//        }
 
-        System.out.println("== Before size: " + currentPlayers.size());
         for (TournamentPlayer loser : losers) {
-            System.out.println("== Loser: " + loser.getPlayerId() + " " + currentPlayers.remove(loser));
-        }
-        System.out.println("== After size: " + currentPlayers.size());
-
-        for(TournamentPlayer pl: currentPlayers) {
-            System.out.println("== Winner: " + pl.getPlayerId() + " BP: " + pl.calculateBattlePoints());
+            currentPlayers.remove(loser);
         }
 
         return losers;
@@ -129,6 +117,19 @@ public class Tournament implements Serializable {
         for(TournamentPlayer player: currentPlayers){
             player.incrementShields(players.size() + tournamentCard.getShields());
         }
+    }
+
+    /**
+     * Get all the cards used in a tournament
+     * @return
+     */
+    public ArrayList<Card> getCardsUsed() {
+        ArrayList<Card> cardsUsed = new ArrayList<>();
+        for (TournamentPlayer player: players) {
+            cardsUsed.addAll(player.getCardsUsed());
+        }
+
+        return cardsUsed;
     }
 
 

@@ -23,11 +23,21 @@ public class Event implements Serializable {
         this.eventPlayers.add(new EventPlayer(p));
     }
 
+    public EventPlayer getEventPlayer(int playerId){
+        for(EventPlayer player: eventPlayers){
+            if(player.getPlayerId() == playerId) return player;
+        }
+
+        return null;
+    }
+
+    public boolean removePlayer(Player player){return this.eventPlayers.remove(new EventPlayer(player));}
+
     public void addArrayEventPlayers(ArrayList<Player> eventPlayers) {
         eventPlayers.forEach(this::addEventPlayer);
     }
 
-    public EventCard getEvent() {
+    public EventCard getEventCard() {
         return event;
     }
 

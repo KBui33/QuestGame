@@ -1,8 +1,6 @@
 package component.deck;
 
 import component.card.Card;
-import component.card.EventCard;
-import model.Event;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,7 +9,7 @@ import java.util.List;
 
 public abstract class Deck implements Serializable {
 
-    protected List<Card>  cards;
+    protected List<Card> cards;
     protected List<Card> discarded;
 
     public Deck() {
@@ -24,20 +22,6 @@ public abstract class Deck implements Serializable {
     public void shuffle(){
         Collections.shuffle(cards);
 
-//        //Testing
-//        if(!(cards.get(0).getTitle().equals("Queen's Favor")) & cards.get(0) instanceof EventCard){
-//            EventCard queen = (EventCard) cards.stream()
-//                    .filter(card -> "Queen's Favor".equals(card.getTitle()))
-//                    .findFirst()
-//                    .orElse(null);
-//
-//            int queenIndex = cards.indexOf(queen);
-//
-//            Card temp = cards.get(0);
-//
-//            cards.set(0, queen);
-//            cards.set(queenIndex - 1, temp);
-//        }
     }
 
     public Card draw(){

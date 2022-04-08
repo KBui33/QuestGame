@@ -1,5 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Server" type="Application" factoryName="Application">
+    <output_file path="./LOGS.txt" is_save="true" />
     <option name="MAIN_CLASS_NAME" value="networking.server.Server" />
     <module name="quest" />
     <extension name="coverage">
