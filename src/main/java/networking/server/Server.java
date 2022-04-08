@@ -118,6 +118,10 @@ public class Server implements Runnable {
         return 0;
     }
 
+    public HashSet<Integer> getHaveResponded(CommandType commandType) {
+        return numResponded.get(commandType);
+    }
+
     @Override
     public void run() {
         try {
@@ -143,36 +147,51 @@ public class Server implements Runnable {
         public void run() {
             try {
                 SocketChannel socketChannel = _serverSocketChannel.accept();
+                ByteBuffer byteLength = ByteBuffer.allocate(4);
+                ByteBuffer byteBuffer;
+                byte[] outMessage;
 
-                if(socketChannel == null) {}
-                else if (_broadcastClients.size() >= MAX_CLIENTS) {
-                    System.out.println("== Server says:  Client limit reached");
+                if(socketChannel != null) {
+                 if (_broadcastClients.size() >= MAX_CLIENTS) {
+                        System.out.println("== Server says:  Client limit reached");
+                        outMessage = Command.toBytesArray(new BaseCommand(BaseCommandName.MAX_CLIENTS_REACHED));
+                     byteLength.putInt(outMessage.length).rewind();
+                     byteBuffer = ByteBuffer.allocate(outMessage.length);
+                     byteBuffer.put(outMessage).rewind();
+                     socketChannel.write(new ByteBuffer[] {byteLength, byteBuffer});
+                    } else if (internalGameState.getGameStatus() == null || !internalGameState.getGameStatus().equals(GameStatus.READY)) {
+                        System.out.println("== Server says:  Game has already started. No longer accepting players");
+                     outMessage = Command.toBytesArray(new BaseCommand(BaseCommandName.GAME_ALREADY_STARTED));
+                     byteLength.putInt(outMessage.length).rewind();
+                     byteBuffer = ByteBuffer.allocate(outMessage.length);
+                     byteBuffer.put(outMessage).rewind();
+                     socketChannel.write(new ByteBuffer[] {byteLength, byteBuffer});
+                    } else {
+                     outMessage = Command.toBytesArray(new BaseCommand(BaseCommandName.CONNECT_SUCCESSFULL));
+                     byteLength.putInt(outMessage.length).rewind();
+                     byteBuffer = ByteBuffer.allocate(outMessage.length);
+                     byteBuffer.put(outMessage).rewind();
+                     socketChannel.write(new ByteBuffer[] {byteLength, byteBuffer});
+                        Socket broadcastSocket = _serverBroadcastSocket.accept();
+                        registerClientForBroadcasts(broadcastSocket);
 
-                    socketChannel.write(ByteBuffer.wrap(Command.toBytesArray(new BaseCommand(BaseCommandName.MAX_CLIENTS_REACHED))));
-                } else if (internalGameState.getGameStatus() == null || !internalGameState.getGameStatus().equals(GameStatus.READY)) {
-                    System.out.println("== Server says:  Game has already started. No longer accepting players");
-                    socketChannel.write(ByteBuffer.wrap(Command.toBytesArray(new BaseCommand(BaseCommandName.GAME_ALREADY_STARTED))));
-                } else {
-                    socketChannel.write(ByteBuffer.wrap(Command.toBytesArray(new BaseCommand(BaseCommandName.CONNECT_SUCCESSFULL))));
+                        Socket gameStateUpdateSocket = _serverGameStateUpdateSocket.accept();
+                        registerClientForGameStateUpdates(gameStateUpdateSocket);
 
-                    Socket broadcastSocket = _serverBroadcastSocket.accept();
-                    registerClientForBroadcasts(broadcastSocket);
+                        new Handler(Server.this, _selector, socketChannel);
 
-                    Socket gameStateUpdateSocket = _serverGameStateUpdateSocket.accept();
-                    registerClientForGameStateUpdates(gameStateUpdateSocket);
+                        clientPlayerIds.put(lastClientIndex, 0);
+                        BaseCommand joinedCommand = new BaseCommand(BaseCommandName.JOINED);
+                        joinedCommand.setClientIndex(lastClientIndex);
 
-                    if (socketChannel != null) new Handler(Server.this, _selector, socketChannel);
+                        notifyClient(lastClientIndex, joinedCommand);
 
-                    clientPlayerIds.put(lastClientIndex, 0);
-                    BaseCommand joinedCommand = new BaseCommand(BaseCommandName.JOINED);
-                    joinedCommand.setClientIndex(lastClientIndex);
+                        lastClientIndex++;
+                        notifyClients(new BaseCommand(BaseCommandName.HAS_JOINED));
 
-                    notifyClient(lastClientIndex, joinedCommand);
+                        System.out.println("== Server Says: New client connected");
+                    }
 
-                    lastClientIndex++;
-                    notifyClients(new BaseCommand(BaseCommandName.HAS_JOINED));
-
-                    System.out.println("== Server Says: New client connected");
                 }
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();

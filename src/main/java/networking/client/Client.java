@@ -30,8 +30,10 @@ public class Client {
 
     private Scanner _scanner;
     private String serverHost;
-    private ByteBuffer _readBuffer = ByteBuffer.allocate(READ_BUFFER_SIZE);
-    private ByteBuffer _writeBuffer = ByteBuffer.allocate(WRITE_BUFFER_SIZE);
+    private ByteBuffer _readBuffer; // = ByteBuffer.allocate(READ_BUFFER_SIZE);
+    private ByteBuffer _readLength;
+    private ByteBuffer _writeBuffer; // = ByteBuffer.allocate(WRITE_BUFFER_SIZE);
+    private ByteBuffer _writeLength;
 
     private int playerId = -1;
     private int clientIndex = -1;
@@ -63,17 +65,25 @@ public class Client {
         _socketChannel = SocketChannel.open(address);
         System.out.println("== Client connected to server socket");
 
-        int numBytes = _socketChannel.read(_readBuffer);
+        _readLength = ByteBuffer.allocate(4);
+        _socketChannel.read(_readLength);
+        _readLength.rewind();
+        int numBytes = _readLength.getInt();
 
-        if (numBytes != -1) {
-            _readBuffer.flip();
+        if (numBytes > 0) {
+            _readBuffer = ByteBuffer.allocate(numBytes);
+            _socketChannel.read(_readBuffer);
+            _readBuffer.rewind();
+
             byte[] bytes = new byte[_readBuffer.remaining()];
             _readBuffer.get(bytes, 0, bytes.length);
 
             // Convert input to game command and send for processing
             Command receivedCommand = Command.fromBytesArray(bytes);
             System.out.println("== Received command: " + receivedCommand);
+
             _readBuffer.clear();
+            _readLength.clear();
 
             if (!receivedCommand.getCommandName().equals(BaseCommandName.CONNECT_SUCCESSFULL)) {
                 if(receivedCommand.getCommandName().equals(BaseCommandName.GAME_ALREADY_STARTED))
@@ -148,12 +158,26 @@ public class Client {
         Command receivedCommand = null;
         try {
             byte[] outMessage = Command.toBytesArray(command);
-            _writeBuffer = ByteBuffer.wrap(outMessage);
-            _socketChannel.write(_writeBuffer);
-            _writeBuffer.clear();
+            _writeLength = ByteBuffer.allocate(4);
+            _writeLength.putInt(outMessage.length);
+            _writeLength.rewind();
 
+            _writeBuffer = ByteBuffer.allocate(outMessage.length);
+            _writeBuffer.put(outMessage);
+            _writeBuffer.rewind();
+
+            _socketChannel.write(new ByteBuffer[]{_writeLength, _writeBuffer});
+
+            _writeBuffer.clear();
+            _readLength.clear();
+
+            _readLength = ByteBuffer.allocate(4);
+            _socketChannel.read(_readLength);
+            _readLength.rewind();
+            int numBytes = _readLength.getInt();
+            _readBuffer = ByteBuffer.allocate(numBytes);
             _socketChannel.read(_readBuffer);
-            _readBuffer.flip();
+            _readBuffer.rewind();
             byte[] inMessage = new byte[_readBuffer.remaining()];
             _readBuffer.get(inMessage, 0, inMessage.length);
 
@@ -161,6 +185,7 @@ public class Client {
             System.out.println("== Server says: " + receivedCommand);
 
             _readBuffer.clear();
+            _writeBuffer.clear();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
