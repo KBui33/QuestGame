@@ -25,14 +25,14 @@ public class StoryDeck extends Deck {
             JSONArray tournaments = (JSONArray) jsonObject.get("tournaments");
 
             Iterator<JSONObject> it = quests.iterator();
-//            while(it.hasNext()) {
-//                JSONObject obj = (JSONObject) it.next();
-//                String title = (String)  obj.get("title");
-//                String image = (String) obj.get("image");
-//                String foe = (String) obj.get("foe");
-//                Long stages = (Long) obj.get("stages");
-//                this.cards.add(new QuestCard(title, image, Math.toIntExact(stages), foe));
-//            }
+            while(it.hasNext()) {
+                JSONObject obj = (JSONObject) it.next();
+                String title = (String)  obj.get("title");
+                String image = (String) obj.get("image");
+                String foe = (String) obj.get("foe");
+                Long stages = (Long) obj.get("stages");
+                this.cards.add(new QuestCard(title, image, Math.toIntExact(stages), foe));
+            }
 
             it = events.iterator();
             while(it.hasNext()){
