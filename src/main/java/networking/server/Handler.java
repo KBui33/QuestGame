@@ -4,6 +4,7 @@ package networking.server;
 import model.Command;
 import networking.*;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -14,8 +15,8 @@ public class Handler implements Runnable {
     private final SocketChannel _socketChannel;
     private final SelectionKey _selectionKey;
 
-    private static final int READ_BUFFER_SIZE = 4096;
-    private static final int WRITE_BUFFER_SIZE = 4096;
+    private static final int READ_BUFFER_SIZE = 16384;
+    private static final int WRITE_BUFFER_SIZE = 16384;
 
     private ByteBuffer _readBuffer = ByteBuffer.allocate(READ_BUFFER_SIZE);
     private ByteBuffer _writeBuffer = ByteBuffer.allocate(WRITE_BUFFER_SIZE);
@@ -46,8 +47,8 @@ public class Handler implements Runnable {
     synchronized void process()  {
         try {
             _readBuffer.flip();
-            byte[] bytes = new byte[_readBuffer.limit()];
-            _readBuffer.get(bytes);
+            byte[] bytes = new byte[_readBuffer.remaining()];
+            _readBuffer.get(bytes, 0, bytes.length);
 
             // Convert input to game command and send for processing
             Command receivedCommand = Command.fromBytesArray(bytes);

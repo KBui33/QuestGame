@@ -6,6 +6,11 @@ import gui.panes.GamePane;
 import gui.panes.HUDPane;
 import javafx.scene.Scene;
 
+/**
+ * @author James DiNovo
+ *
+ * GameScene hosts game views and launches controller
+ */
 public class GameScene extends Scene {
     public GameScene() {
         super(new GamePane(), Construct.SCREEN_WIDTH, Construct.SCREEN_HEIGHT);

@@ -18,6 +18,8 @@ public abstract class Runner implements Runnable {
                 loop();
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -26,7 +28,7 @@ public abstract class Runner implements Runnable {
         this.stopRunner = true;
     }
 
-    protected abstract void loop() throws InterruptedException;
+    protected abstract void loop() throws InterruptedException, IOException;
 
     protected void waitForResponses() {};
 

@@ -1,21 +1,24 @@
 package model;
 
+import component.card.AllyCard;
 import component.card.Card;
 import component.card.Rank;
 import component.card.RankCard;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
-public class Player implements Serializable {
+public class Player implements Playable, Serializable, Comparable {
     private int playerId;
-    private List<Card> cards;
+    private int playerNumber;
+    private final List<Card> cards;
     private RankCard rankCard;
     private int shields;
 
     public Player() {
-        cards = new ArrayList<Card>();
+        cards = new ArrayList<>();
         rankCard = new RankCard(Rank.SQUIRE);
         shields = 0;
     }
@@ -25,12 +28,12 @@ public class Player implements Serializable {
         this.playerId = playerId;
     }
 
-    public void addCard(Card card) {
-        this.cards.add(card);
+    public boolean addCard(Card card) {
+        return this.cards.add(card);
     }
 
-    public void addCards(ArrayList<Card> cards) {
-        this.cards.addAll(cards);
+    public boolean addCards(ArrayList<Card> cards) {
+        return this.cards.addAll(cards);
     }
 
     public Card discardCard(int cardIndex) {
@@ -53,6 +56,14 @@ public class Player implements Serializable {
         this.playerId = playerId;
     }
 
+    public int getPlayerNumber() {
+        return playerNumber;
+    }
+
+    public void setPlayerNumber(int playerNumber) {
+        this.playerNumber = playerNumber;
+    }
+
     public List<Card> getCards() {
         return cards;
     }
@@ -71,7 +82,7 @@ public class Player implements Serializable {
         return shields;
     }
 
-    public int getBattlePoints() { return rankCard.getBattlePoints(); }
+    public int getBattlePoints() { return rankCard.getBattlePoints() + handBattlePoints(); }
 
     public void setShields(int shields) {
         this.shields = shields;
@@ -85,28 +96,34 @@ public class Player implements Serializable {
         System.out.println("== After: " + shields);
     }
 
+    public void decrementShields(int dec){
+        System.out.println("== Before: " + shields + " Received: " + dec);
+        shields -= dec;
+        this.incrementRank();
+        System.out.println("== After: " + shields);
+    }
+
     public void incrementRank() {
         Rank currentRank = rankCard.getRank();
         boolean shouldIncrementRank = false;
         switch (currentRank) {
-            case SQUIRE: {
-                if(this.shields >= 5) {
+            case SQUIRE -> {
+                if (this.shields >= 5) {
                     shouldIncrementRank = true;
                     this.shields -= 5;
                 }
-                break;
-            } case KNIGHT: {
-                if(this.shields >= 7) {
+            }
+            case KNIGHT -> {
+                if (this.shields >= 7) {
                     shouldIncrementRank = true;
                     this.shields -= 7;
                 }
-                break;
-            } case CHAMPION_KNIGHT: {
-                if(this.shields >= 10) {
+            }
+            case CHAMPION_KNIGHT -> {
+                if (this.shields >= 10) {
                     shouldIncrementRank = true;
                     this.shields -= 10;
                 }
-                break;
             }
         }
 
@@ -117,8 +134,7 @@ public class Player implements Serializable {
     public boolean equals(Object o) {
         if (o == null) return false;
         if (o == this) return true;
-        if (!(o instanceof Player)) return false;
-        Player p = (Player) o;
+        if (!(o instanceof Player p)) return false;
         return p.playerId == this.playerId;
     }
 
@@ -128,5 +144,31 @@ public class Player implements Serializable {
                 "playerId=" + playerId +
                 ", cards=" + cards +
                 '}';
+    }
+
+    /**
+     * Computes the total battle points of the cards in a player's hand
+     * @return an int, representing the battle points of all battleable cards in a player's hand (Only allies for now)
+     */
+    private int handBattlePoints() {
+        int bp = 0;
+//        for (Card card: cards) {
+//            if (card.getClass() == AllyCard.class) bp += ((AllyCard) card).getBattlePoints();
+//        }
+
+        return bp;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Player otherPlayer = (Player) o;
+        // compare players based on rank first
+        int res = this.getRank().ordinal() - otherPlayer.getRank().ordinal();
+        if (res == 0) {
+            // if their ranks are identical use shields
+            return this.getShields() - otherPlayer.getShields();
+        } else {
+            return res;
+        }
     }
 }

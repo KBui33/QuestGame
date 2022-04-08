@@ -14,12 +14,12 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import model.FoeStage;
 import model.Quest;
-import model.Stage;
 import utils.Callback;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author James DiNovo
@@ -28,8 +28,8 @@ import java.util.List;
  */
 public class QuestSetupController extends AbstractFightController {
     private QuestSetupView questSetupView;
-    private StageSetupView currentStage;
-    private ArrayList<Stage> stages;
+    private ArrayList<FoeStage> stages;
+    private int prevStageBp;
     private Quest quest;
 
     public QuestSetupController(GameController parent, QuestCard questCard, Callback<Quest> callback) {
@@ -38,8 +38,10 @@ public class QuestSetupController extends AbstractFightController {
         this.questSetupView = new QuestSetupView(questCard);
         this.weaponCards = FXCollections.observableArrayList();
         this.weaponNames = new HashSet<>();
+        this.stages = new ArrayList<>();
+        prevStageBp = 0;
 
-        this.questSetupView.getPromptText().setText(QuestSetupView.STAGE_PROMPT + (quest.currentStageCount() + 1));
+        this.questSetupView.getPromptText().setText(QuestSetupView.STAGE_PROMPT + (stages.size() + 1));
 
         // if they choose to sponsor allow them to pick a foe and weapons for that foe for each stage...
         ObservableList<CardView> foesOrTests = parent.getMyHandList().filtered(c -> c.getCard() instanceof FoeCard || c.getCard() instanceof TestCard);
@@ -47,6 +49,81 @@ public class QuestSetupController extends AbstractFightController {
 
 
         ObservableList<CardView> addedWeapons = FXCollections.observableArrayList();
+
+        setUpCards(foesOrTests, weapons, addedWeapons);
+
+        questSetupView.getBackButton().setOnAction(e -> {
+            returnToPreviousStage(foesOrTests, weapons, addedWeapons);
+
+            if (stages.isEmpty()) {
+                questSetupView.getBackButton().setVisible(false);
+            }
+            questSetupView.getNextStageButton().setText("Next");
+            this.questSetupView.getPromptText().setText(QuestSetupView.STAGE_PROMPT + (stages.size() + 1));
+        });
+
+        questSetupView.getNextStageButton().setOnAction(e -> {
+            if (questSetupView.getStageSetupView().getStageCard().getCard() instanceof FoeCard) {
+                List<WeaponCard> wl = new ArrayList<>();
+                for (CardView cv : weaponCards) {
+                    wl.add((WeaponCard) cv.getCard());
+                }
+                // not fully implemented...
+                // could end up in situations where players do not have enough cards to complete setting up quest
+                // requires back button implementation and previous stage states stored
+                FoeStage curStage = new FoeStage((FoeCard) questSetupView.getStageSetupView().getStageCard().getCard(),  wl, quest.getQuestFoe());
+                int curBp = quest.computeFoeStageBattlePoints(curStage);
+
+                if (curBp > prevStageBp) {
+                    // we can add stage
+                    stages.add(curStage);
+                    prevStageBp = curBp;
+                    questSetupView.getBackButton().setVisible(true);
+                } else {
+                    // we cant add stage player must rearrange cards
+                    AlertBox.alert("The battle points for this stage must be greater than the previous foe stage." +
+                            "\nCurrent Stage Battle Points: " + curBp + "\nPrevious Stage Battle Points: " + prevStageBp);
+                    return;
+                }
+
+//                quest.addStage(new FoeStage((FoeCard) currentStage.getStageCard().getCard(),  wl, quest.getQuestFoe()));
+            }
+            addedWeapons.clear();
+            weaponNames.clear();
+            weaponCards.clear();
+
+            clearStage();
+
+            if (stages.size() == questCard.getStages()) {
+                // quest set up complete
+//                parent.questSetupComplete(quest);
+                cleanUpGui();
+                stages.forEach(s -> {
+                    quest.addStage(s);
+                });
+                callback.call(quest);
+            } else {
+                if (questCard.getStages() - stages.size() <= 1) {
+                    questSetupView.getNextStageButton().setText("Finish");
+                }
+                this.questSetupView.getPromptText().setText(QuestSetupView.STAGE_PROMPT + (stages.size() + 1));
+
+                parent.getView().getHud().getMyHand().setListViewItems(foesOrTests);
+                parent.showHand();
+            }
+
+        });
+    }
+
+    public QuestSetupView getView() {
+        return questSetupView;
+    }
+
+    private void setUpCards(ObservableList<CardView> foesOrTests, ObservableList<CardView> weapons, ObservableList<CardView> addedWeapons) {
+        addedWeapons.clear();
+        weaponNames.clear();
+        weaponCards.clear();
+
         for (CardView f : foesOrTests) {
             f.getPlayButton().setVisible(true);
             f.getDiscardButton().setVisible(false);
@@ -59,6 +136,7 @@ public class QuestSetupController extends AbstractFightController {
                     parent.getMyHandList().add(f);
                     parent.getMyHandList().addAll(addedWeapons);
                     addedWeapons.clear();
+                    weaponNames.clear();
                     parent.getView().getHud().getMyHand().setListViewItems(foesOrTests);
                     parent.showHand();
                 });
@@ -93,64 +171,63 @@ public class QuestSetupController extends AbstractFightController {
 
             });
         }
+
         parent.getView().getHud().getMyHand().setListViewItems(foesOrTests);
         parent.showHand();
+    }
 
-        questSetupView.getNextStageButton().setOnAction(e -> {
-            if (currentStage.getStageCard().getCard() instanceof FoeCard) {
-                List<WeaponCard> wl = new ArrayList<>();
-                for (CardView cv : weaponCards) {
-                    wl.add((WeaponCard) cv.getCard());
-                }
-                quest.addStage(new FoeStage((FoeCard) currentStage.getStageCard().getCard(),  wl, quest.getQuestFoe()));
-            }
-            addedWeapons.clear();
-            weaponNames.clear();
-            weaponCards.clear();
+    private void returnToPreviousStage(ObservableList<CardView> foesOrTests, ObservableList<CardView> weapons, ObservableList<CardView> addedWeapons) {
+        ArrayList<CardView> cardsToAdd = new ArrayList<>();
+        // handle any already selected cards
+        if (questSetupView.getStageSetupView().getStageCard().getCard() != null && !Objects.equals(questSetupView.getStageSetupView().getStageCard().getCard().getCardImg(), "")) {
+            cardsToAdd.add(new CardView(questSetupView.getStageSetupView().getStageCard().getCard()));
+        }
+        if (!questSetupView.getStageSetupView().getWeaponsView().getListView().getItems().isEmpty()) {
+            questSetupView.getStageSetupView().getWeaponsView().getListView().getItems().forEach(c -> {
+                cardsToAdd.add(new CardView(c.getCard()));
+            });
+        }
 
-            clearStage();
+        FoeStage prevStage = stages.remove(stages.size() - 1);
+        if (prevStage != null) {
+            // need to add these cards back into hand
+            cardsToAdd.add(new CardView(prevStage.getFoe()));
+            prevStage.getWeapons().forEach(wp -> {
+                cardsToAdd.add(new CardView(wp));
+            });
 
-            if (quest.currentStageCount() == questCard.getStages()) {
-                // quest set up complete
-//                parent.questSetupComplete(quest);
-                cleanUpGui();
-                callback.call(quest);
-            } else {
-                if (questCard.getStages() - quest.currentStageCount() <= 1) {
-                    questSetupView.getNextStageButton().setText("Finish");
-                }
-                this.questSetupView.getPromptText().setText(QuestSetupView.STAGE_PROMPT + (quest.currentStageCount() + 1));
+            prevStageBp -= quest.computeFoeStageBattlePoints(prevStage);
+        } else {
+            prevStageBp = 0;
+        }
 
-                parent.getView().getHud().getMyHand().setListViewItems(foesOrTests);
-                parent.showHand();
-            }
+        if (prevStageBp < 0) {
+            prevStageBp = 0;
+        }
 
+
+        clearStage();
+        // reset cards
+        cardsToAdd.forEach(c -> {
+            parent.setCardViewButtonActions(c);
         });
+        parent.getMyHandList().addAll(cardsToAdd);
+        setUpCards(foesOrTests, weapons, addedWeapons);
     }
 
-    public QuestSetupView getView() {
-        return questSetupView;
-    }
-
-    public StageSetupView addStage(Card card, EventHandler<ActionEvent> e) {
-        currentStage = questSetupView.setStageSetupView(card);
-        this.currentStage.getStageCard().getDiscardButton().setOnAction(e);
+    public void addStage(Card card, EventHandler<ActionEvent> e) {
+        questSetupView.setStageSetupView(card);
+        questSetupView.getStageSetupView().getStageCard().getDiscardButton().setOnAction(e);
         weaponCards.clear();
         if (card instanceof FoeCard) {
-            currentStage.getWeaponsView().setListViewItems(weaponCards);
+            questSetupView.getStageSetupView().getWeaponsView().setListViewItems(weaponCards);
         }
         questSetupView.getNextStageButton().setVisible(true);
-        return currentStage;
     }
 
     public void clearStage() {
         questSetupView.getNextStageButton().setVisible(false);
         questSetupView.clearStage();
-
-    }
-
-    private void setStageView(StageSetupView ssv) {
-
     }
 
 }

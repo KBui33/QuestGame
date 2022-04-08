@@ -1,8 +1,8 @@
 package gui.panes;
 
+import gui.partials.AudioControlButton;
 import gui.partials.DeckView;
 import gui.partials.PlayerInfoView;
-import gui.partials.ShieldsView;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -18,18 +18,19 @@ import static gui.main.Construct.SCREEN_WIDTH;
 /**
  * @author James DiNovo
  *
- * GamePane contains the main game gui
+ * HUDPane contains the main game gui and player information
  *
  */
 public class HUDPane extends BorderPane {
 
     private BorderPane topBar;
-    private VBox deckButtons, cardButtons;
+    private VBox deckButtons, controlButtons;
     private DeckView myHand, discardedCards;
     private HBox rankInfoBox;
     private PlayerInfoView playerInfoView;
     private Text currentStateText;
     private Button showHandButton, showDiscardedButton, drawCardButton, endTurnButton;
+    private AudioControlButton audioControlButton;
 
     public DeckView getMyHand() {
         return myHand;
@@ -71,8 +72,8 @@ public class HUDPane extends BorderPane {
         return deckButtons;
     }
 
-    public VBox getCardButtons() {
-        return cardButtons;
+    public VBox getControlButtons() {
+        return controlButtons;
     }
 
     public HBox getRankInfoBox() {
@@ -90,10 +91,10 @@ public class HUDPane extends BorderPane {
         deckButtons.setMaxSize(150, 60);
         setMargin(deckButtons, new Insets(5));
 
-        cardButtons = new VBox();
-        cardButtons.setSpacing(5);
-        cardButtons.setMaxSize(150, 60);
-        setMargin(cardButtons, new Insets(5));
+        controlButtons = new VBox();
+        controlButtons.setSpacing(5);
+        controlButtons.setMaxSize(150, 60);
+        setMargin(controlButtons, new Insets(5));
 
         myHand = new DeckView();
         discardedCards = new DeckView();
@@ -111,21 +112,24 @@ public class HUDPane extends BorderPane {
 
         showDiscardedButton = new Button("Discarded");
 
+        audioControlButton = new AudioControlButton();
+
         drawCardButton = new Button("Draw Card");
         drawCardButton.getStyleClass().add("success");
         drawCardButton.setVisible(false);
 
         endTurnButton = new Button("End Turn");
         endTurnButton.getStyleClass().add("warn");
+        endTurnButton.setVisible(false);
 
         deckButtons.getChildren().addAll(showHandButton, showDiscardedButton);
-        cardButtons.getChildren().addAll(drawCardButton, endTurnButton);
+        controlButtons.getChildren().addAll(drawCardButton, endTurnButton, audioControlButton);
         topBar.setLeft(playerInfoView);
         topBar.setRight(currentStateText);
         setAlignment(deckButtons, Pos.BOTTOM_RIGHT);
         this.setRight(deckButtons);
-        setAlignment(cardButtons, Pos.BOTTOM_LEFT);
-        this.setLeft(cardButtons);
+        setAlignment(controlButtons, Pos.BOTTOM_LEFT);
+        this.setLeft(controlButtons);
         setAlignment(playerInfoView, Pos.TOP_LEFT);
         setAlignment(currentStateText, Pos.TOP_RIGHT);
         this.setTop(topBar);

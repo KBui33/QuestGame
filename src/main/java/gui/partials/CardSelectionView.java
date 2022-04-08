@@ -1,12 +1,16 @@
 package gui.partials;
 
-import gui.partials.DeckView;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
+/**
+ * @author James DiNovo
+ *
+ * Display cards available for users to play during the given game state
+ */
 public class CardSelectionView extends BorderPane {
     private DeckView weaponsView;
     private Button doneButton;

@@ -13,9 +13,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -47,7 +45,7 @@ public class Server implements Runnable {
     private ExternalGameState externalGameState;
 
     private HashMap<Integer, Integer> clientPlayerIds;
-    private HashMap<CommandType, Integer> numResponded; // Keeps track of clients who responded to a given command
+    private HashMap<CommandType, HashSet<Integer>> numResponded; // Keeps track of clients who responded to a given command
 
     Server() throws IOException {
         // Initialize game state
@@ -105,18 +103,18 @@ public class Server implements Runnable {
 
     public Integer removeClientPlayerId(int clientIndex) { return clientPlayerIds.remove(clientIndex); }
 
-    public int incrementNumResponded(CommandType commandType) {
-        if(!numResponded.containsKey(commandType)) numResponded.put(commandType, 0);
-        numResponded.put(commandType, numResponded.get(commandType) + 1);
-        return numResponded.get(commandType);
+    public int incrementNumResponded(CommandType commandType, int index) {
+        if(!numResponded.containsKey(commandType)) numResponded.put(commandType, new HashSet<>());
+        numResponded.get(commandType).add(index);
+        return numResponded.get(commandType).size();
     }
 
     public void resetNumResponded(CommandType commandType) {
-        if(numResponded.containsKey(commandType)) numResponded.put(commandType, 0);
+        if(numResponded.containsKey(commandType)) numResponded.put(commandType, new HashSet<>());
     }
 
     public int getNumResponded(CommandType commandType) {
-        if(numResponded.containsKey(commandType)) return numResponded.get(commandType);
+        if(numResponded.containsKey(commandType)) return numResponded.get(commandType).size();
         return 0;
     }
 
@@ -146,11 +144,12 @@ public class Server implements Runnable {
             try {
                 SocketChannel socketChannel = _serverSocketChannel.accept();
 
-
-                if (_broadcastClients.size() >= MAX_CLIENTS) {
+                if(socketChannel == null) {}
+                else if (_broadcastClients.size() >= MAX_CLIENTS) {
                     System.out.println("== Server says:  Client limit reached");
+
                     socketChannel.write(ByteBuffer.wrap(Command.toBytesArray(new BaseCommand(BaseCommandName.MAX_CLIENTS_REACHED))));
-                } else if (internalGameState.getGameStatus().equals(GameStatus.STARTED)) {
+                } else if (internalGameState.getGameStatus() == null || !internalGameState.getGameStatus().equals(GameStatus.READY)) {
                     System.out.println("== Server says:  Game has already started. No longer accepting players");
                     socketChannel.write(ByteBuffer.wrap(Command.toBytesArray(new BaseCommand(BaseCommandName.GAME_ALREADY_STARTED))));
                 } else {

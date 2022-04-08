@@ -33,7 +33,7 @@ public class BaseCommandHandler implements CommandHandler {
             returnCommand.setCommandName(BaseCommandName.DISCONNECTED);
         }
 
-        server.incrementNumResponded(CommandType.BASE);
+        server.incrementNumResponded(CommandType.BASE, clientIndex);
         server.notifyClients(returnCommand);
 
         if (startGame) new Thread(new GameRunner(server, server.getGameState())).start();

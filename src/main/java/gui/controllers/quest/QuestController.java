@@ -1,16 +1,13 @@
 package gui.controllers.quest;
 
 import component.card.Card;
-import component.card.WeaponCard;
 import gui.controllers.AbstractFightController;
+import gui.controllers.CardsReceivedController;
 import gui.controllers.GameController;
-import gui.other.AlertBox;
-import gui.partials.CardView;
 import gui.partials.quest.QuestCompleteView;
 import gui.partials.quest.QuestView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
 import model.Player;
 import model.Quest;
 import utils.Callback;
@@ -75,47 +72,7 @@ public class QuestController extends AbstractFightController {
         this.questStarted = true;
         this.questView.mode(QuestView.Mode.PICK_CARDS);
 
-        ObservableList<CardView> weapons = parent.getMyHandList().filtered(c -> c.getCard() instanceof WeaponCard);
-        ObservableList<CardView> addedWeapons = FXCollections.observableArrayList();
-
-        for (CardView w : weapons) {
-            w.getPlayButton().setVisible(true);
-            w.getPlayButton().setText("Add Weapon");
-            w.getDiscardButton().setVisible(false);
-            w.getPlayButton().setOnAction(e1 -> {
-                if (canAddWeapon(w.getCard())) {
-                    // once foe is chosen remove it from hand
-                    parent.getMyHandList().remove(w);
-                    addedWeapons.add(w);
-                    parent.hideDecks();
-                    // add it to stage
-                    CardView weap = addWeapon((WeaponCard) w.getCard());
-                    weap.getDiscardButton().setOnAction(e2 -> {
-                        removeWeapon(weap);
-                        parent.getMyHandList().add(w);
-                        addedWeapons.remove(w);
-                        parent.showHand();
-                    });
-                } else {
-                    AlertBox.alert(w.getCard().getTitle() + " has already been added to your selection.", Alert.AlertType.WARNING);
-                }
-            });
-        }
-        parent.getView().getHud().getMyHand().setListViewItems(weapons);
-        parent.showHand();
-
-        questView.getStageCardSelectionView().getWeaponsView().setListViewItems(weaponCards);
-
-        getQuestView().getStageCardSelectionView().getDoneButton().setOnAction(e -> {
-            ArrayList<Card> wl = new ArrayList<>();
-            for (CardView cv : weaponCards) {
-                wl.add((WeaponCard) cv.getCard());
-            }
-
-            addedWeapons.clear();
-            weaponNames.clear();
-            weaponCards.clear();
-
+        pickWeapons(questView.getStageCardSelectionView(), wl -> {
             cleanUpGui();
             questView.clearStage();
 
@@ -134,7 +91,7 @@ public class QuestController extends AbstractFightController {
 
         // get all players and when they failed or if they succeeded
         quest.getPlayers().forEach(p -> {
-            players.add("Player " + p.getPlayerId());
+            players.add("Player " + p.getPlayer().getPlayerNumber());
             System.out.println();
             Boolean res = quest.getCurrentStage().getStageResults().get(p.getPlayerId());
             outcomes.add(res != null && res ? "Passed" : "Failed");
@@ -164,45 +121,18 @@ public class QuestController extends AbstractFightController {
         updateQuest(quest);
         this.questView.mode(QuestView.Mode.SPONSOR_CARDS);
 
-        ObservableList<CardView> cardsAwarded = FXCollections.observableArrayList();
+        CardsReceivedController cardsReceivedController = new CardsReceivedController(parent, questView.getCardsReceivedView());
 
-        cards.forEach(card -> {
-            CardView tmp = new CardView(card);
-            if (parent.getMyHandList().size() + cards.size() > 12) {
-                tmp.getButtonBox().setVisible(true);
-                tmp.getPlayButton().setVisible(false);
-                tmp.getDiscardButton().setOnAction(e -> {
-                    parent.sponsorDiscardRewardCard(tmp.getCard());
-                    cardsAwarded.remove(tmp);
-                });
-            }
-            cardsAwarded.add(tmp);
+        cardsReceivedController.receiveCards(cards, chosen -> {
+            cleanUpGui();
+            callback.call(chosen);
         });
-
-        this.questView.getQuestSponsorCardsView().getDeckView().setListViewItems(cardsAwarded);
-
-        this.questView.getQuestSponsorCardsView().getAcceptButton().setOnAction(e -> {
-            if (cardsAwarded.size() + parent.getMyHandList().size() > 12) {
-                AlertBox.alert("You cannot have more than 12 cards in your hand. You must choose "
-                        + ((cardsAwarded.size() + parent.getMyHandList().size()) - 12) + " cards to discard from your " +
-                        "reward.", Alert.AlertType.WARNING);
-            } else {
-                cleanUpGui();
-                ArrayList<Card> cardsKept = new ArrayList<>();
-                cardsAwarded.forEach(card -> {
-                    cardsKept.add(card.getCard());
-                });
-                callback.call(cardsKept);
-            }
-        });
-
     }
 
     private void showGui() {
         parent.getView().getMainPane().clear();
         parent.getView().getMainPane().add(this.getQuestView());
     }
-
     public QuestView getQuestView() {
         return questView;
     }
