@@ -13,13 +13,15 @@ public class TournamentRunner extends Runner {
             InternalGameState gameState = server.getGameState();
             Tournament tournament = gameState.getCurrentTournament();
 
+            initShouldRespondIds(tournament);
+
             gameState.setGameStatus(GameStatus.RUNNING_TOURNAMENT);
             boolean shouldStartTournament = tournament.startTournament();
 
             shouldRespond = 0;
             server.resetNumResponded(CommandType.TOURNAMENT);
 
-            if(!shouldStartTournament) { // Only one player joined tournament
+            if (!shouldStartTournament) { // Only one player joined tournament
                 // Send end tournament command to player
                 takeEndTournamentTurns(server, gameState, tournament);
 
@@ -72,7 +74,6 @@ public class TournamentRunner extends Runner {
                 server.notifyClients(new TournamentCommand(TournamentCommandName.TOURNAMENT_COMPLETED));
 
 
-
                 System.out.println("== Discarding cards used");
                 discardCardsUsed(gameState, tournament);
             }
@@ -86,7 +87,7 @@ public class TournamentRunner extends Runner {
 
     }
 
-    private void takeTurns(Server server, InternalGameState gameState, Tournament tournament){
+    private void takeTurns(Server server, InternalGameState gameState, Tournament tournament) {
         for (TournamentPlayer tournamentPlayer : tournament.getCurrentPlayers()) {
             tournament.setCurrentTurnPlayer(tournamentPlayer);
             int playerId = tournamentPlayer.getPlayerId();
@@ -174,10 +175,19 @@ public class TournamentRunner extends Runner {
     }
 
     @Override
+    protected void initShouldRespondIds(Object o) {
+        Tournament tournament = (Tournament) o;
+        shouldRespondIds.clear();
+        for (TournamentPlayer player : tournament.getPlayers()) {
+            shouldRespondIds.add(player.getPlayerId());
+        }
+    }
+
+    @Override
     protected void waitForResponses() {
         try {
             Server server = Server.getInstance();
-            while (server.getNumResponded(CommandType.TOURNAMENT) < shouldRespond) Thread.sleep(1000);
+            while (!server.getHaveResponded(CommandType.TOURNAMENT).equals(shouldRespondIds)) Thread.sleep(1000);
             server.resetNumResponded(CommandType.TOURNAMENT);
             shouldRespond = 0;
         } catch (InterruptedException e) {

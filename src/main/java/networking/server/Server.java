@@ -118,6 +118,10 @@ public class Server implements Runnable {
         return 0;
     }
 
+    public HashSet<Integer> getHaveResponded(CommandType commandType) {
+        return numResponded.get(commandType);
+    }
+
     @Override
     public void run() {
         try {
